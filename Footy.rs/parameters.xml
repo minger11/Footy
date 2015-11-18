@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<parameters>
+<parameter name="defender_start_y" displayName="defender_start_y" type="int" defaultValue="390" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="defender_start_x" displayName="defender_start_x" type="int" defaultValue="150" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="attacker_start_y" displayName="attacker_start_y" type="int" defaultValue="390" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="attacker_start_x" displayName="attacker_start_x" type="int" defaultValue="650" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="defender_count" displayName="defender_count" type="int" defaultValue="1" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="attacker_count" displayName="attacker_count" type="int" defaultValue="1" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="attacker_speed" displayName="attacker_speed" type="int" defaultValue="1" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="defender_speed" displayName="defender_speed" type="int" defaultValue="1" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="randomSeed" displayName="randomSeed" type="int" defaultValue="__NULL__" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="tryline_width" displayName="tryline_width" type="int" defaultValue="180" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="display_height" displayName="display_height" type="int" defaultValue="780" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="display_width" displayName="display_width" type="int" defaultValue="1300" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="body_radius" displayName="body_radius" type="int" defaultValue="15" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="fieldInset" displayName="fieldInset" type="int" defaultValue="50" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="fieldIncrement" displayName="fieldIncrement" type="int" defaultValue="100" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="lineRadius" displayName="lineRadius" type="int" defaultValue="1" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+</parameters>

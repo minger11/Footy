@@ -1,0 +1,5 @@
+#!/bin/bash
+
+ffe -o parameters.xml -c csv2xml.fferc parameters.csv
+
+

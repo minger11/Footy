@@ -1,0 +1,16 @@
+defender_start_y;defender_start_y;int;390;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
+defender_start_x;defender_start_x;int;150;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
+attacker_start_y;attacker_start_y;int;390;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
+attacker_start_x;attacker_start_x;int;650;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
+defender_count;defender_count;int;1;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
+attacker_count;attacker_count;int;1;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
+attacker_speed;attacker_speed;int;1;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
+defender_speed;defender_speed;int;1;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
+randomSeed;randomSeed;int;__NULL__;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
+tryline_width;tryline_width;int;180;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
+display_height;display_height;int;780;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
+display_width;display_width;int;1300;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
+body_radius;body_radius;int;15;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
+fieldInset;fieldInset;int;50;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
+fieldIncrement;fieldIncrement;int;100;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
+lineRadius;lineRadius;int;1;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter

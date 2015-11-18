@@ -1,0 +1,21 @@
+structure csv {
+    type separated ;
+    output xml
+    record  parameter{
+    	field name
+	field displayName
+	field type
+	field defaultValue
+	field isReadOnly
+	field converter
+	    }
+}
+
+output xml {
+    file_header "<?xml version=\"1.0\" encoding=\"UTF-8\" ?>\n<parameters>\n"
+    file_trailer "</parameters>"
+    data " %n=\"%t\""
+    record_header "<%r"
+    record_trailer "/>\n"
+    indent ""
+}
