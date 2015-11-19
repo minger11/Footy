@@ -1,9 +1,13 @@
 <repast.simphony.visualization.engine.CartesianDisplayDescriptor>
-  <name>HITUP</name>
+  <name>New Display</name>
   <type>2D</type>
   <styles>
     <entry>
-      <string>environment.Attacker</string>
+      <string>environment.Defender</string>
+      <string>environment.SimpleAgentStyle</string>
+    </entry>
+    <entry>
+      <string>environment.Head</string>
       <string>environment.SimpleAgentStyle</string>
     </entry>
     <entry>
@@ -11,13 +15,17 @@
       <string>environment.SimpleAgentStyle</string>
     </entry>
     <entry>
-      <string>environment.Defender</string>
+      <string>environment.Attacker</string>
       <string>environment.SimpleAgentStyle</string>
     </entry>
   </styles>
   <editedStyles>
     <entry>
-      <string>environment.Attacker</string>
+      <string>environment.Defender</string>
+      <null/>
+    </entry>
+    <entry>
+      <string>environment.Head</string>
       <null/>
     </entry>
     <entry>
@@ -25,7 +33,7 @@
       <null/>
     </entry>
     <entry>
-      <string>environment.Defender</string>
+      <string>environment.Attacker</string>
       <null/>
     </entry>
   </editedStyles>
@@ -39,22 +47,26 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>1604549331</hashCode>
+    <hashCode>1508806212</hashCode>
   </schedParams>
   <layoutClassName>foo.bar.baz</layoutClassName>
   <layoutProjection>space</layoutProjection>
   <layoutInterval>0</layoutInterval>
   <layerOrder>
     <entry>
-      <string>environment.Attacker</string>
+      <string>environment.Defender</string>
       <int>1</int>
+    </entry>
+    <entry>
+      <string>environment.Head</string>
+      <int>3</int>
     </entry>
     <entry>
       <string>environment.Field</string>
       <int>0</int>
     </entry>
     <entry>
-      <string>environment.Defender</string>
+      <string>environment.Attacker</string>
       <int>2</int>
     </entry>
   </layerOrder>
@@ -97,9 +109,9 @@
   </projectionDescriptors>
   <props/>
   <backgroundColor>
-    <red>1</red>
-    <green>1</green>
-    <blue>1</blue>
+    <red>255</red>
+    <green>255</green>
+    <blue>255</blue>
     <alpha>255</alpha>
   </backgroundColor>
   <valueLayers/>

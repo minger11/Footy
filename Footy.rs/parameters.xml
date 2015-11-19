@@ -16,4 +16,5 @@
 <parameter name="fieldInset" displayName="fieldInset" type="int" defaultValue="50" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
 <parameter name="fieldIncrement" displayName="fieldIncrement" type="int" defaultValue="100" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
 <parameter name="lineRadius" displayName="lineRadius" type="int" defaultValue="1" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="initial_head_angle" displayName="lineRadius" type="int" defaultValue="0" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
 </parameters>

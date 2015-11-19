@@ -9,8 +9,9 @@ public class Player extends SimpleAgent {
 	protected Brain brain;
 	protected Senses senses;
 	protected Reflexes reflexes;
-	protected Movement movement;
-	protected MotionVector motion;
+	protected PlayerMovement movement;
+	protected Head head;
+	protected int number;
 	
 	/**
 	 * The constructor for the Player
@@ -18,13 +19,14 @@ public class Player extends SimpleAgent {
 	 * @param space - the space projection
 	 * @param grid - the grid projection
 	 */
-	Player(Context context, int x, int y) {
+	Player(Context context, int x, int y, int number) {
 		super(context, x, y);
 		brain = new Brain();
 		senses = new Senses(this, context);
 		reflexes = new Reflexes(this, context);
-		movement = new Movement(this, context);
-		motion = new MotionVector();
+		movement = new PlayerMovement(this, context);
+		this.number = number;
+		head = new Head(context, x, y, this);
 	}
 	
 	protected void init(){

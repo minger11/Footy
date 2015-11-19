@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.vecmath.Vector3d;
+
 import repast.simphony.random.RandomHelper;
 import repast.simphony.space.SpatialMath;
 import repast.simphony.space.continuous.ContinuousSpace;
@@ -26,9 +28,11 @@ import environment.TryPoint;
 public class Brain {
 
 	private SimpleAgent target;
+	private Vector3d desiredPosition;
 	private Player player;
 	private double speed;
-	private double angle;
+	private double desiredBodyAngle;
+	private double desiredHeadAngle;
 	private NdPoint currentPosition;
 	private NdPoint targetPosition;
 	private ContinuousSpace<Object> space;
@@ -49,6 +53,7 @@ public class Brain {
 	public Brain(){
 		tryline = new ArrayList<SimpleObject>();
 		players = new ArrayList<SimpleObject>();
+		desiredPosition = new Vector3d();
 	}
 
 	/**
@@ -71,21 +76,17 @@ public class Brain {
 				}
 			}
 		}
+		desiredHeadAngle = SpatialMath.calcAngleFor2DMovement(space, currentPosition, targetPosition);
+		desiredBodyAngle = desiredHeadAngle;
 	}
 	
 	/**
 	 * Sets both the speed and angle based on a given target
 	*/
 	public void moveBody(){
-		angle = SpatialMath.calcAngleFor2DMovement(space, currentPosition, targetPosition);
-		double distance = space.getDistance(currentPosition, targetPosition);
-		if(distance<1){
-			speed = distance;
-			} 
-
-		else{
-				speed = maxSpeed;
-			}
+		desiredPosition.set(targetPosition.getX(),targetPosition.getY(),0.0);
+		desiredHeadAngle = SpatialMath.calcAngleFor2DMovement(space, currentPosition, targetPosition);
+		desiredBodyAngle = desiredHeadAngle;
 	}
 	
 	/**
@@ -150,10 +151,16 @@ public class Brain {
 	public SimpleAgent getTarget(){
 		return target;
 	}	
+	public Vector3d getDesiredPosition(){
+		return desiredPosition;
+	}
 	public double getSpeed(){
 		return speed;
 	}	
-	public double getAngle(){
-		return angle;
+	public double getDesiredHeadAngle(){
+		return desiredHeadAngle;
+	}
+	public double getDesiredBodyAngle(){
+		return desiredBodyAngle;
 	}
 }

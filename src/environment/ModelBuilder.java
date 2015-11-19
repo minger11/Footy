@@ -141,7 +141,7 @@ public class ModelBuilder implements ContextBuilder<Object> {
 					int defenderStartX = (Integer)params.getValue("defender_start_x");
 					int defenderStartY = (Integer)params.getValue("defender_start_y");
 					// Create a new defender for each iteration
-					new Defender(context, defenderStartX, defenderStartY);
+					new Defender(context, defenderStartX, defenderStartY, i+1);
 				}
 	}
 	
@@ -167,7 +167,7 @@ public class ModelBuilder implements ContextBuilder<Object> {
 			int attackerStartX = (Integer)params.getValue("attacker_start_x");
 			int attackerStartY = (Integer)params.getValue("attacker_start_y");
 			//create a new attacker for each iteration
-			new Attacker(context, attackerStartX, attackerStartY);
+			new Attacker(context, attackerStartX, attackerStartY, i+1);
 		}
 
 	}

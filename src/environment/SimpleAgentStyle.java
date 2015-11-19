@@ -10,47 +10,66 @@ import saf.v3d.scene.VSpatial;
 public class SimpleAgentStyle extends DefaultStyleOGL2D{
 
 	protected ShapeFactory2D factory;
-	protected VSpatial attackerShape;
-	protected VSpatial defenderShape;
-	protected VSpatial fieldShape;
 	
 	@Override
 	public void init(ShapeFactory2D x){
 		factory = x;
-		try{
-			URL url = getClass().getResource("/maroon.png");
-			attackerShape = factory.createImage(url.getPath());
-			url = getClass().getResource("/baby_blue.png");
-			defenderShape = factory.createImage(url.getPath());
-			}
-		catch (IOException e) {
-		    System.err.println("Couldnt get player images!");
-		}
-		try{
-			URL	url = getClass().getResource("/field.png");
-			fieldShape = factory.createImage(url.getPath());
-			}
-		catch (IOException e) {
-		    System.err.println("Couldnt get field image!");
-		}
 		super.init(factory);
 	}
 	
 	@Override
 	public VSpatial getVSpatial(Object o, saf.v3d.scene.VSpatial spatial) {
-		if (o instanceof Attacker)
-			return attackerShape;
-		if (o instanceof Defender)
-			return defenderShape;
-		if (o instanceof Field)
-			return fieldShape;
-		return null;
+		if(spatial == null){
+			if (o instanceof Attacker){
+				try{
+					URL url = getClass().getResource("/maroon.png");
+					return(factory.createImage(url.getPath()));
+					}
+				catch (IOException e) {
+				    System.err.println("Couldnt get player images!");
+				}
+			}
+			if (o instanceof Defender){
+				try{
+					URL url = getClass().getResource("/baby_blue.png");
+					return factory.createImage(url.getPath());
+					}
+				catch (IOException e) {
+				    System.err.println("Couldnt get player images!");
+				}
+			}
+			if (o instanceof Field){
+				try{
+					URL	url = getClass().getResource("/field.png");
+					return factory.createImage(url.getPath());
+					}
+				catch (IOException e) {
+				    System.err.println("Couldnt get field image!");
+				}
+			}
+			if (o instanceof Head){
+				try{
+					URL	url = getClass().getResource("/head.png");
+					return factory.createImage(url.getPath());
+				}
+				catch (IOException e) {
+				    System.err.println("Couldnt get head image!");
+				}
+			}
+			return null;
+		}
+		return spatial;
 	}
 	
 	@Override
 	public float getRotation(Object o) {
 		if (o instanceof Player){
-			double angle = ((Player) o).motion.getAngle();
+			double angle = ((Player) o).movement.currentBodyAngle;
+			float heading = 360-(float)(angle*57.2958);
+			return heading;
+		}
+		if (o instanceof Head){
+			double angle = ((Head) o).player.movement.currentHeadAngle;
 			float heading = 360-(float)(angle*57.2958);
 			return heading;
 		}
@@ -63,8 +82,9 @@ public class SimpleAgentStyle extends DefaultStyleOGL2D{
 			return 0.3f;
 		if (o instanceof Field)
 			return 1f;
+		if (o instanceof Head)
+			return 0.3f;
 		return 1f;
 	}
 }
-
 

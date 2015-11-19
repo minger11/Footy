@@ -14,3 +14,4 @@ body_radius;body_radius;int;15;FALSE;repast.simphony.parameter.StringConverterFa
 fieldInset;fieldInset;int;50;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
 fieldIncrement;fieldIncrement;int;100;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
 lineRadius;lineRadius;int;1;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
+initial_head_angle;lineRadius;int;0;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter

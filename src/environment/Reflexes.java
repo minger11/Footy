@@ -1,5 +1,7 @@
 package environment;
 
+import javax.vecmath.Vector3d;
+
 import repast.simphony.context.Context;
 
 /**
@@ -11,19 +13,21 @@ import repast.simphony.context.Context;
 
 public class Reflexes extends PlayerInterface{
 	
-	Physics physics;
-	
 	Reflexes(Player player, Context context){
 		super(player, context);	
 	}	
 	
 	protected void init(){
-		player.movement.setDesiredMotion(getDesiredMotion());
+		player.movement.setDesiredPosition(getDesiredPosition());
+		player.movement.setDesiredBodyAngle(getDesiredBodyAngle());
+		player.movement.setDesiredHeadAngle(getDesiredHeadAngle());
 		player.movement.init();
 	}
 	
 	protected void step(){
-		player.movement.setDesiredMotion(getDesiredMotion());
+		player.movement.setDesiredPosition(getDesiredPosition());
+		player.movement.setDesiredBodyAngle(getDesiredBodyAngle());
+		player.movement.setDesiredHeadAngle(getDesiredHeadAngle());
 		player.movement.step();
 	}
 	
@@ -31,10 +35,15 @@ public class Reflexes extends PlayerInterface{
 	 * Gets the intended movement angle and speed from the brain
 	 * @return
 	 */
-	protected MotionVector getDesiredMotion(){
-		MotionVector motion = new MotionVector();
-		motion.setVelocity(brain.getSpeed());
-		motion.setAngle(brain.getAngle());
-		return motion;
+	protected Vector3d getDesiredPosition(){
+		return brain.getDesiredPosition();
+	}
+	
+	protected double getDesiredBodyAngle(){
+		return brain.getDesiredBodyAngle();
+	}
+	
+	protected double getDesiredHeadAngle(){
+		return brain.getDesiredHeadAngle();
 	}
 }

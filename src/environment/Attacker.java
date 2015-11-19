@@ -16,8 +16,8 @@ public class Attacker extends Player{
 	 * @param space - the space projection
 	 * @param grid - the grid projection
 	 */
-	Attacker(Context context, int x, int y) {
-		super(context, x, y);
+	Attacker(Context context, int x, int y, int number) {
+		super(context, x, y, number);
 	}
 	
 }

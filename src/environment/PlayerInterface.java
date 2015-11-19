@@ -7,22 +7,17 @@ import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.grid.Grid;
 import brain.Brain;
 
-public class PlayerInterface {
+public class PlayerInterface extends ObjectInterface{
 
-	protected Context<Object> context;
-	protected ContinuousSpace<Object> space;
-	protected Grid<Object> grid;
+
 	protected Player player;
 	protected Brain brain;
-	protected Parameters params;
 	
 	PlayerInterface(Player player, Context context){
-		this.context = context;
-		grid = (Grid)context.getProjection("grid");
-		space = (ContinuousSpace)context.getProjection("space");
+		super(context);
 		this.player = player;
 		brain = player.getBrain();
-		params = RunEnvironment.getInstance().getParameters();
+		
 	}
 	
 	protected void init(){
