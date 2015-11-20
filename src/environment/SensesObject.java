@@ -10,7 +10,7 @@ import repast.simphony.space.continuous.NdPoint;
  * @author user
  *
  */
-public class SimpleObject{
+public class SensesObject{
 	
 		double x;
 		double y;
@@ -23,7 +23,7 @@ public class SimpleObject{
 		 * @param t
 		 * @param p
 		 */
-		SimpleObject(SimpleAgent agent, NdPoint point){
+		SensesObject(SimpleAgent agent, NdPoint point){
 			simpleAgent = agent;
 			NdPoint dynamicPoint = point;
 			double xPosition = dynamicPoint.getX();

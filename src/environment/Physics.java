@@ -1,5 +1,7 @@
 package environment;
 
+import java.util.Iterator;
+
 import javax.vecmath.Vector3d;
 
 /**
@@ -18,11 +20,20 @@ public class Physics {
 
 	Vector3d desiredPosition;
 	Vector3d currentPosition;
+	Vector3d desiredBallPosition;
 	Vector3d velocity;
 	SimpleAgent agent;
 	double timeScale = .1;
 	double acceleration = 1;
 	double maxSpeed = 7;
+	
+	Physics(SimpleAgent agent, Vector3d currentPosition, Vector3d desiredPosition, Vector3d desiredBallPosition, Vector3d velocity){
+		this.desiredBallPosition = desiredBallPosition;
+		this.desiredPosition = desiredPosition;
+		this.currentPosition = currentPosition;		
+		this.velocity = velocity;
+		this.agent = agent;
+	}
 	
 	Physics(SimpleAgent agent, Vector3d currentPosition, Vector3d desiredPosition, Vector3d velocity){
 		this.desiredPosition = desiredPosition;
@@ -32,6 +43,28 @@ public class Physics {
 	}
 	
 	protected Vector3d getUpdatedVelocity(){
+		if(agent instanceof Player){
+			playerPhysics();
+		}
+		if(agent instanceof Ball){
+			ballPhysics((Ball)agent);
+		}
+		return velocity;
+	}
+	
+	protected void ballPhysics(Ball ball){
+		if(ball.player!=null){
+			velocity = ball.player.movement.velocity;
+		} else {
+			velocity.set(desiredPosition);
+		}
+	
+	}
+	
+
+	
+	protected void playerPhysics(){
+		ballHandling();
 		// Vector which will modify the boids velocity vector
 		Vector3d velocityUpdate = new Vector3d();   
 		//Represents the difference between the desired and current positions
@@ -52,7 +85,27 @@ public class Physics {
 		}
 		// Update the position of the boid
 		velocity.scale(timeScale);
-		return velocity;
+	}
+		
+	protected void ballHandling(){
+		Iterator<Object> it = agent.context.getObjects(Ball.class).iterator();
+		Ball ball;
+		if(it.hasNext()){
+			ball = (Ball)it.next();
+			//Player has ball
+			if(ball.currentPosition.equals(agent.currentPosition)){
+				//Player wants to carry ball, balls player is current player
+				if(desiredBallPosition.equals(desiredPosition)){
+					ball.setPlayer((Player)agent);
+					ball.movement.setDesiredPosition(desiredBallPosition);
+				} 
+				//Player wants to move the ball, balls player is now null
+				else {
+					ball.setPlayer(null);
+					ball.movement.setDesiredPosition(desiredBallPosition);
+				}
+			}			
+		}
 	}
 
 	/**

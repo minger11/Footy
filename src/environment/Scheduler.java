@@ -31,6 +31,11 @@ public class Scheduler {
 			Referee ref = (Referee)iter.next();
 			ref.init();
 		}
+		Iterator<Object> itra = context.getObjects(Ball.class).iterator();
+		while(itra.hasNext()){
+			Ball ball = (Ball)itra.next();
+			ball.init();
+		}
 	}
 	
 	@ScheduledMethod ( start = 1 , interval = 1000)
@@ -44,6 +49,11 @@ public class Scheduler {
 		while(iter.hasNext()){
 			Referee ref = (Referee)iter.next();
 			ref.step();
+		}
+		Iterator<Object> itra = context.getObjects(Ball.class).iterator();
+		while(itra.hasNext()){
+			Ball ball = (Ball)itra.next();
+			ball.step();
 		}
 	}
 }

@@ -11,16 +11,19 @@ import repast.simphony.context.Context;
  *
  */
 
-public class Reflexes extends PlayerInterface{
+public class Reflexes {
 	
-	Reflexes(Player player, Context context){
-		super(player, context);	
+	Player player;
+	
+	Reflexes(Player player){
+		this.player = player;
 	}	
 	
 	protected void init(){
 		player.movement.setDesiredPosition(getDesiredPosition());
 		player.movement.setDesiredBodyAngle(getDesiredBodyAngle());
 		player.movement.setDesiredHeadAngle(getDesiredHeadAngle());
+		player.movement.setDesiredBallPosition(getDesiredBallPosition());
 		player.movement.init();
 	}
 	
@@ -36,14 +39,18 @@ public class Reflexes extends PlayerInterface{
 	 * @return
 	 */
 	protected Vector3d getDesiredPosition(){
-		return brain.getDesiredPosition();
+		return player.brain.getDesiredPosition();
 	}
 	
 	protected double getDesiredBodyAngle(){
-		return brain.getDesiredBodyAngle();
+		return player.brain.getDesiredBodyAngle();
 	}
 	
 	protected double getDesiredHeadAngle(){
-		return brain.getDesiredHeadAngle();
+		return player.brain.getDesiredHeadAngle();
+	}
+	
+	protected Vector3d getDesiredBallPosition(){
+		return player.brain.getDesiredBallPosition();
 	}
 }

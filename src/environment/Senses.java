@@ -6,7 +6,6 @@ import java.util.List;
 
 import org.apache.commons.lang3.RandomStringUtils;
 
-import repast.simphony.context.Context;
 import repast.simphony.context.space.continuous.ContinuousSpaceFactory;
 import repast.simphony.context.space.continuous.ContinuousSpaceFactoryFinder;
 import repast.simphony.space.continuous.ContinuousSpace;
@@ -20,27 +19,30 @@ import repast.simphony.space.continuous.SimpleCartesianAdder;
  *
  */
 
-public class Senses extends PlayerInterface{
+public class Senses {
 
-	private List<SimpleObject> players;
-	private List<SimpleObject> tryline;
+	private Player player;
+	private List<SensesObject> players;
+	private List<SensesObject> tryline;
 	
-	Senses(Player player, Context context){
-		super(player, context);
+	Senses(Player player){
+		this.player = player; 
 	}
 	
 	protected void init(){
-		brain.setSpace(makeSpace());
-		brain.setPlayers(getPlayers());
-		brain.setTryline(getTryline());
-		brain.setPosition(getPosition());
-		brain.setPlayer(player);
-		brain.setMaxSpeed(getMaxSpeed());
+		player.brain.setSpace(makeSpace());
+		player.brain.setPlayers(getPlayers());
+		player.brain.setTryline(getTryline());
+		player.brain.setPosition(getPosition());
+		player.brain.setPlayer(player);
+		player.brain.setMaxSpeed(getMaxSpeed());
+		player.brain.setHasBall(getHasBall());
 	}
 	
 	protected void step(){
-		brain.setPlayers(getPlayers());
-		brain.setPosition(getPosition());
+		player.brain.setPlayers(getPlayers());
+		player.brain.setPosition(getPosition());
+		player.brain.setHasBall(getHasBall());
 	}
 	
 	/**
@@ -49,17 +51,26 @@ public class Senses extends PlayerInterface{
 	 * At this stage returns all points in context, needs work
 	 * @return
 	 */
-	public List<SimpleObject> getPlayers(){
-		List<SimpleObject> fresh = new ArrayList<>();
-		Iterator<Object> it = context.getObjects(Player.class).iterator();
+	public List<SensesObject> getPlayers(){
+		List<SensesObject> fresh = new ArrayList<>();
+		Iterator<Object> it = player.context.getObjects(Player.class).iterator();
 		while(it.hasNext()){
 			Player player = (Player)it.next();
 			if(!this.player.equals(player)){
-				fresh.add(new SimpleObject(player,player.currentPosition));
+				fresh.add(new SensesObject(player,player.currentPosition));
 			}
 		}
 		players = fresh;
 		return fresh;
+	}
+	
+	public boolean getHasBall(){
+		Iterator<Object> it = player.context.getObjects(Ball.class).iterator();
+		while(it.hasNext()){
+			Ball ball = (Ball)it.next();
+			if(ball.currentPosition.equals(player.currentPosition))return true;
+		}
+		return false;
 	}
 	
 	/**
@@ -68,12 +79,12 @@ public class Senses extends PlayerInterface{
 	 * At this stage returns all points in context, needs work
 	 * @return
 	 */
-	public List<SimpleObject> getTryline(){
-		List<SimpleObject> fresh = new ArrayList<>();
-		Iterator<Object> it = context.getObjects(TryPoint.class).iterator();
+	public List<SensesObject> getTryline(){
+		List<SensesObject> fresh = new ArrayList<>();
+		Iterator<Object> it = player.context.getObjects(TryPoint.class).iterator();
 		while(it.hasNext()){
 			TryPoint tryPoint = (TryPoint)it.next();
-			fresh.add(new SimpleObject(tryPoint,tryPoint.currentPosition));
+			fresh.add(new SensesObject(tryPoint,tryPoint.currentPosition));
 		}
 		tryline = fresh;
 		return fresh;
@@ -87,11 +98,11 @@ public class Senses extends PlayerInterface{
 		String random = RandomStringUtils.randomAlphanumeric(17).toUpperCase();
 		ContinuousSpaceFactory spaceFactory = 
 				ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null);
-		space = 
-				spaceFactory.createContinuousSpace(random, context, 
+		ContinuousSpace<Object> space = 
+				spaceFactory.createContinuousSpace(random, player.context, 
 						new SimpleCartesianAdder<Object>(), 
 						new repast.simphony.space.continuous.StrictBorders(),
-						(Integer)params.getValue("display_width"), (Integer)params.getValue("display_height"));
+						(Integer)player.params.getValue("display_width"), (Integer)player.params.getValue("display_height"));
 		return space;
 	}
 
@@ -120,10 +131,10 @@ public class Senses extends PlayerInterface{
 
 	public int getMaxSpeed(){
 		if(player instanceof Attacker){
-			return (Integer)params.getValue("attacker_speed");
+			return (Integer)player.params.getValue("attacker_speed");
 		}
 		if(player instanceof Defender){
-			return (Integer)params.getValue("defender_speed");
+			return (Integer)player.params.getValue("defender_speed");
 		}
 		return 1;		
 	}

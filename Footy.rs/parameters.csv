@@ -15,3 +15,5 @@ fieldInset;fieldInset;int;50;FALSE;repast.simphony.parameter.StringConverterFact
 fieldIncrement;fieldIncrement;int;100;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
 lineRadius;lineRadius;int;1;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
 initial_head_angle;lineRadius;int;0;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
+ball_start_y;ball_start_y;int;390;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
+ball_start_x;ball_start_x;int;650;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter

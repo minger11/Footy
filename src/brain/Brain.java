@@ -14,7 +14,7 @@ import environment.Attacker;
 import environment.Defender;
 import environment.Player;
 import environment.SimpleAgent;
-import environment.SimpleObject;
+import environment.SensesObject;
 import environment.TryPoint;
 
 /**
@@ -36,9 +36,11 @@ public class Brain {
 	private NdPoint currentPosition;
 	private NdPoint targetPosition;
 	private ContinuousSpace<Object> space;
-	private List<SimpleObject> tryline;
-	private List<SimpleObject> players;
+	private List<SensesObject> tryline;
+	private List<SensesObject> players;
 	private int maxSpeed;
+	private boolean hasBall;
+	private Vector3d desiredBallPosition;
 	
 	public void init(){
 		mapSurroundings();
@@ -48,12 +50,15 @@ public class Brain {
 	public void step(){
 		mapSurroundings();
 		moveBody();
+		if(hasBall) moveBall();
+		else desiredBallPosition=null;
 	}
 	
 	public Brain(){
-		tryline = new ArrayList<SimpleObject>();
-		players = new ArrayList<SimpleObject>();
+		tryline = new ArrayList<SensesObject>();
+		players = new ArrayList<SensesObject>();
 		desiredPosition = new Vector3d();
+		desiredBallPosition = new Vector3d();
 	}
 
 	/**
@@ -62,15 +67,15 @@ public class Brain {
 	public void setTarget() {
 		if(player instanceof Attacker) {
 			int randomNumber = RandomHelper.nextIntFromTo(0, tryline.size()-1);
-			SimpleObject x = tryline.get(randomNumber);
+			SensesObject x = tryline.get(randomNumber);
 			target = (TryPoint)x.getSimpleAgent();
 			targetPosition = x.getPosition();
 			}
 		else if(player instanceof Defender) {
-			Iterator<SimpleObject> it = players.iterator();
+			Iterator<SensesObject> it = players.iterator();
 			while(it.hasNext()){
 				if(it.next().getSimpleAgent() instanceof Attacker){
-					SimpleObject y = players.iterator().next();
+					SensesObject y = players.iterator().next();
 					target = (Player)y.getSimpleAgent();
 					targetPosition = y.getPosition();
 				}
@@ -89,6 +94,10 @@ public class Brain {
 		desiredBodyAngle = desiredHeadAngle;
 	}
 	
+	public void moveBall(){
+		desiredBallPosition.set(desiredPosition);
+	}
+	
 	/**
 	 * Puts the contents of SimpleObject lists onto the internal projection space
 	 */
@@ -101,9 +110,9 @@ public class Brain {
 	 * Iterates through the tryline and moves each trypoint onto the internal projection space
 	 */
 	public void mapTryline(){
-		Iterator<SimpleObject> it = tryline.iterator();
+		Iterator<SensesObject> it = tryline.iterator();
 		while(it.hasNext()){
-			SimpleObject tryobject = it.next();
+			SensesObject tryobject = it.next();
 			space.moveTo(tryobject.getSimpleAgent(),tryobject.getPosition().getX(),tryobject.getPosition().getY());
 		}
 	}
@@ -113,9 +122,9 @@ public class Brain {
 	 * Sets the point of the target
 	 */
 	public void mapPlayers(){
-		Iterator<SimpleObject> it = players.iterator();
+		Iterator<SensesObject> it = players.iterator();
 		while(it.hasNext()){
-			SimpleObject player = it.next();
+			SensesObject player = it.next();
 			if(player.getSimpleAgent().equals(target)){
 				targetPosition = player.getPosition();
 			}
@@ -136,10 +145,10 @@ public class Brain {
 	public void setPlayer(Player x){
 		player = x;
 	}
-	public void setPlayers(List<SimpleObject> x){
+	public void setPlayers(List<SensesObject> x){
 		players = x;
 	}
-	public void setTryline(List<SimpleObject> x){
+	public void setTryline(List<SensesObject> x){
 		tryline = x;
 	}
 	public void setSpace(ContinuousSpace<Object> x){
@@ -162,5 +171,11 @@ public class Brain {
 	}
 	public double getDesiredBodyAngle(){
 		return desiredBodyAngle;
+	}
+	public void setHasBall(boolean x){
+		hasBall = x;
+	}
+	public Vector3d getDesiredBallPosition(){
+		return desiredBallPosition;
 	}
 }

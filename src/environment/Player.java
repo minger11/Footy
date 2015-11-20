@@ -1,15 +1,15 @@
 package environment;
 
 
-import repast.simphony.context.Context;
 import brain.Brain;
+import repast.simphony.context.Context;
 
 public class Player extends SimpleAgent {
 
 	protected Brain brain;
 	protected Senses senses;
 	protected Reflexes reflexes;
-	protected PlayerMovement movement;
+	protected Movement movement;
 	protected Head head;
 	protected int number;
 	
@@ -22,9 +22,9 @@ public class Player extends SimpleAgent {
 	Player(Context context, int x, int y, int number) {
 		super(context, x, y);
 		brain = new Brain();
-		senses = new Senses(this, context);
-		reflexes = new Reflexes(this, context);
-		movement = new PlayerMovement(this, context);
+		senses = new Senses(this);
+		reflexes = new Reflexes(this);
+		movement = new Movement(this);
 		this.number = number;
 		head = new Head(context, x, y, this);
 	}
@@ -40,11 +40,6 @@ public class Player extends SimpleAgent {
 		senses.step();
 		brain.step();
 		reflexes.step();
-		updatePoints();
-	}
-	
-	protected void updatePoints() {
-		setPosition(getSpace().getLocation(this));
 	}
 	
 	protected Brain getBrain(){

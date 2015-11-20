@@ -10,18 +10,20 @@ import repast.simphony.context.Context;
  *
  */
 
-public class PlayerMovement extends PlayerInterface{
+public class Movement{
 	
+	protected Player player;
 	protected Vector3d desiredPosition; 
 	protected Vector3d velocity;
 	protected Vector3d currentPosition;
+	protected Vector3d desiredBallPosition;
 	protected double currentHeadAngle;
 	protected double currentBodyAngle;
 	protected double desiredHeadAngle;
 	protected double desiredBodyAngle;
 	
-	PlayerMovement(Player player, Context<Object> context){
-		super(player, context);
+	Movement(Player player){
+		this.player = player;
 		velocity = new Vector3d();
 		currentPosition = new Vector3d();
 	}
@@ -41,7 +43,7 @@ public class PlayerMovement extends PlayerInterface{
 	 * passes the current and intended motion vectors to the physics engine updates the current motion with output
 	 */
 	protected void updateMotion(){
-		Physics physics = new Physics(player, currentPosition, desiredPosition, velocity);
+		Physics physics = new Physics(player, currentPosition, desiredPosition, desiredBallPosition, velocity);
 		velocity = physics.getUpdatedVelocity();
 		currentPosition.add(velocity);
 	}
@@ -51,15 +53,16 @@ public class PlayerMovement extends PlayerInterface{
 	 */
 	protected void move(){
 		//Move player
-		space.moveTo(player, currentPosition.getX(), currentPosition.getY());
-		grid.moveTo(player, (int)player.currentPosition.getX(), (int)player.currentPosition.getY());
+		player.space.moveTo(player, currentPosition.getX(), currentPosition.getY());
+		player.grid.moveTo(player, (int)player.currentPosition.getX(), (int)player.currentPosition.getY());
 		player.setPosition(player.currentPosition);
 		//Move head
-		space.moveTo(player.head, player.currentPosition.getX(), player.currentPosition.getY());
-		grid.moveTo(player.head, (int)player.currentPosition.getX(), (int)player.currentPosition.getY());
+		player.space.moveTo(player.head, player.currentPosition.getX(), player.currentPosition.getY());
+		player.grid.moveTo(player.head, (int)player.currentPosition.getX(), (int)player.currentPosition.getY());
 		player.head.setPosition(player.currentPosition);
 		currentHeadAngle = desiredHeadAngle;
 		currentBodyAngle = desiredBodyAngle;
+		player.setPosition(player.space.getLocation(player));
 	}	
 	
 	protected void setDesiredPosition(Vector3d position){
@@ -72,6 +75,10 @@ public class PlayerMovement extends PlayerInterface{
 	
 	protected void setDesiredHeadAngle(double angle){
 		desiredHeadAngle = angle;
+	}
+	
+	protected void setDesiredBallPosition(Vector3d x){
+		this.desiredBallPosition = x;
 	}
 }
 

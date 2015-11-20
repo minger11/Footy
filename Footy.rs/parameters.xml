@@ -17,4 +17,6 @@
 <parameter name="fieldIncrement" displayName="fieldIncrement" type="int" defaultValue="100" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
 <parameter name="lineRadius" displayName="lineRadius" type="int" defaultValue="1" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
 <parameter name="initial_head_angle" displayName="lineRadius" type="int" defaultValue="0" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="ball_start_y" displayName="ball_start_y" type="int" defaultValue="390" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="ball_start_x" displayName="ball_start_x" type="int" defaultValue="650" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
 </parameters>

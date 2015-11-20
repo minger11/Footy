@@ -33,6 +33,7 @@ public class ModelBuilder implements ContextBuilder<Object> {
 		createSimulation();
 		createField();
 		createPlayers();
+		createBall();
 		createBoundary();
 		createReferee();
 		return this.context;
@@ -118,8 +119,14 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	}
 	
 	public void createPlayers() {
-		createDefenders();
+	//	createDefenders();
 		createAttackers();
+	}
+	
+	public void createBall(){
+		int ballStartX = (Integer)params.getValue("ball_start_x");
+		int ballStartY = (Integer)params.getValue("ball_start_y");
+		new Ball(context, ballStartX, ballStartY);
 	}
 	
 	/**

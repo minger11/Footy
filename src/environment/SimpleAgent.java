@@ -1,6 +1,8 @@
 package environment;
 
 import repast.simphony.context.Context;
+import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.parameter.Parameters;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
 import repast.simphony.space.grid.Grid;
@@ -11,6 +13,7 @@ public class SimpleAgent {
 	protected Grid<Object> grid;
 	protected ContinuousSpace<Object> space;
 	protected Context<Object> context;
+	protected Parameters params;
 	
 	SimpleAgent(Context context, int x, int y) {
 		context.add(this);
@@ -20,6 +23,7 @@ public class SimpleAgent {
 		space.moveTo(this, x, y); 
 		currentPosition = space.getLocation(this);
 		this.context = context;
+		params = RunEnvironment.getInstance().getParameters();
 	}
 	
 	protected Context<Object> getContext(){
