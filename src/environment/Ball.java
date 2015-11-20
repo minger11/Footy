@@ -8,10 +8,12 @@ public class Ball extends SimpleAgent{
 	
 	protected BallMovement movement;
 	protected Player player;
+	protected double angle;
 	
 	Ball(Context context, int x, int y){
 		super(context, x, y);
 		movement = new BallMovement(this);
+		angle = 0.0;
 	}
 	
 	public void init(){
@@ -54,6 +56,7 @@ public class Ball extends SimpleAgent{
 			if(ball.player!=null){
 				velocity = physics.getUpdatedVelocity();
 				currentPosition.add(velocity);
+				ball.angle = ball.player.movement.currentBodyAngle;
 			}
 			else {
 				currentPosition = desiredPosition;

@@ -8,7 +8,7 @@
     </entry>
     <entry>
       <string>environment.Ball</string>
-      <string>repast.simphony.visualizationOGL2D.DefaultStyleOGL2D</string>
+      <string>environment.SimpleAgentStyle</string>
     </entry>
     <entry>
       <string>environment.Head</string>
@@ -55,7 +55,7 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>799967819</hashCode>
+    <hashCode>1213271894</hashCode>
   </schedParams>
   <layoutClassName>foo.bar.baz</layoutClassName>
   <layoutProjection>space</layoutProjection>

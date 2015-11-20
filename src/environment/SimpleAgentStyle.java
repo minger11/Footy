@@ -56,6 +56,15 @@ public class SimpleAgentStyle extends DefaultStyleOGL2D{
 				    System.err.println("Couldnt get head image!");
 				}
 			}
+			if (o instanceof Ball){
+				try{
+					URL	url = getClass().getResource("/ball.png");
+					return factory.createImage(url.getPath());
+				}
+				catch (IOException e) {
+				    System.err.println("Couldnt get ball image!");
+				}
+			}
 			return null;
 		}
 		return spatial;
@@ -73,6 +82,11 @@ public class SimpleAgentStyle extends DefaultStyleOGL2D{
 			float heading = 360-(float)(angle*57.2958);
 			return heading;
 		}
+		if (o instanceof Ball){
+			double angle = ((Ball) o).angle;
+			float heading = 360-(float)(angle*57.2958);
+			return heading;
+		}
 		return 0;
 	  }
 
@@ -83,6 +97,8 @@ public class SimpleAgentStyle extends DefaultStyleOGL2D{
 		if (o instanceof Field)
 			return 1f;
 		if (o instanceof Head)
+			return 0.3f;
+		if (o instanceof Ball)
 			return 0.3f;
 		return 1f;
 	}
