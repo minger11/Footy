@@ -734,3 +734,29 @@ Caused by: java.lang.NullPointerException
 	at environment.Ball.step(Ball.java:22)
 	at environment.Scheduler.step(Scheduler.java:56)
 	... 10 more
+FATAL [Thread-6] 2015-11-19 20:07:31,041 repast.simphony.ui.GUIScheduleRunner - RunTimeException when running the schedule
+Current tick (1.0)
+java.lang.RuntimeException: java.lang.reflect.InvocationTargetException
+	at repast.simphony.engine.schedule.DynamicTargetAction.execute(DynamicTargetAction.java:72)
+	at repast.simphony.engine.controller.ScheduledMethodControllerAction$ScheduleMethodAllAction.execute(ScheduledMethodControllerAction.java:333)
+	at repast.simphony.engine.schedule.DefaultAction.execute(DefaultAction.java:38)
+	at repast.simphony.engine.schedule.ScheduleGroup.executeList(ScheduleGroup.java:205)
+	at repast.simphony.engine.schedule.ScheduleGroup.execute(ScheduleGroup.java:231)
+	at repast.simphony.engine.schedule.Schedule.execute(Schedule.java:352)
+	at repast.simphony.ui.GUIScheduleRunner$ScheduleLoopRunnable.run(GUIScheduleRunner.java:52)
+	at java.lang.Thread.run(Thread.java:745)
+Caused by: java.lang.reflect.InvocationTargetException
+	at environment.Scheduler$$FastClassByCGLIB$$a0942a80.invoke(<generated>)
+	at net.sf.cglib.reflect.FastMethod.invoke(FastMethod.java:53)
+	at repast.simphony.engine.schedule.DynamicTargetAction.execute(DynamicTargetAction.java:69)
+	... 7 more
+Caused by: repast.simphony.space.SpatialException: Target location 1300.0 is outside of grid's dimensions.
+	at repast.simphony.space.continuous.AbstractPointTranslator.boundsCheck(AbstractPointTranslator.java:49)
+	at repast.simphony.space.continuous.AbstractPointTranslator.transform(AbstractPointTranslator.java:39)
+	at repast.simphony.space.continuous.AbstractContinuousSpace.doMove(AbstractContinuousSpace.java:144)
+	at repast.simphony.space.continuous.AbstractContinuousSpace.moveTo(AbstractContinuousSpace.java:121)
+	at environment.Ball$BallMovement.move(Ball.java:60)
+	at environment.Ball$BallMovement.step(Ball.java:49)
+	at environment.Ball.step(Ball.java:22)
+	at environment.Scheduler.step(Scheduler.java:56)
+	... 10 more

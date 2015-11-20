@@ -51,8 +51,13 @@ public class Ball extends SimpleAgent{
 		
 		public void updateMotion(){
 			Physics physics = new Physics(ball, currentPosition, desiredPosition, velocity);
-			velocity = physics.getUpdatedVelocity();
-			currentPosition.add(velocity);
+			if(ball.player!=null){
+				velocity = physics.getUpdatedVelocity();
+				currentPosition.add(velocity);
+			}
+			else {
+				currentPosition = desiredPosition;
+			}
 		}
 		
 		protected void move(){

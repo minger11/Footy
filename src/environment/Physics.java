@@ -56,7 +56,7 @@ public class Physics {
 		if(ball.player!=null){
 			velocity = ball.player.movement.velocity;
 		} else {
-			velocity.set(desiredPosition);
+			velocity.set(0,0,0);
 		}
 	
 	}

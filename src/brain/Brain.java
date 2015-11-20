@@ -95,7 +95,11 @@ public class Brain {
 	}
 	
 	public void moveBall(){
-		desiredBallPosition.set(desiredPosition);
+		if(currentPosition.getX()>=250){
+			desiredBallPosition.set(desiredPosition);
+		} else {
+			desiredBallPosition.set(currentPosition.getX(), currentPosition.getY(), 0.0);
+		}
 	}
 	
 	/**
