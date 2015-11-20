@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import javax.vecmath.Vector3d;
+
 import org.apache.commons.lang3.RandomStringUtils;
 
 import repast.simphony.context.space.continuous.ContinuousSpaceFactory;
@@ -68,7 +70,15 @@ public class Senses {
 		Iterator<Object> it = player.context.getObjects(Ball.class).iterator();
 		while(it.hasNext()){
 			Ball ball = (Ball)it.next();
-			if(ball.currentPosition.equals(player.currentPosition))return true;
+			Vector3d vectorToBall = new Vector3d();
+			vectorToBall.sub(ball.movement.currentPosition, player.movement.currentPosition);
+			if(Math.abs(vectorToBall.length())<=(Integer)player.params.getValue("body_radius")+(Integer)player.params.getValue("ball_radius")){
+				if(ball.player==null||ball.player.equals(player)){
+					return true;
+				}
+			}
+			//if(ball.currentPosition.equals(player.currentPosition))return true;
+
 		}
 		return false;
 	}

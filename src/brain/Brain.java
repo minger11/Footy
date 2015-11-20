@@ -50,7 +50,9 @@ public class Brain {
 	public void step(){
 		mapSurroundings();
 		moveBody();
-		if(hasBall) moveBall();
+		if(hasBall) {
+			moveBall();
+		}
 		else desiredBallPosition=null;
 	}
 	
@@ -92,14 +94,19 @@ public class Brain {
 		desiredPosition.set(targetPosition.getX(),targetPosition.getY(),0.0);
 		desiredHeadAngle = SpatialMath.calcAngleFor2DMovement(space, currentPosition, targetPosition);
 		desiredBodyAngle = desiredHeadAngle;
+		//Random spin mode
+		//desiredPosition = new Vector3d(currentPosition.getX(), currentPosition.getY(), 0.0);
+		//desiredHeadAngle = desiredHeadAngle +0.1;
+		//desiredBodyAngle = desiredHeadAngle;
 	}
 	
 	public void moveBall(){
-		if(currentPosition.getX()>=250){
-			desiredBallPosition.set(desiredPosition);
-		} else {
-			desiredBallPosition.set(currentPosition.getX(), currentPosition.getY(), 0.0);
-		}
+		//if(currentPosition.getX()>=450){
+			desiredBallPosition.set(currentPosition.getX(),currentPosition.getY(),0.0);
+		//} else {
+			//pass ball
+		//	desiredBallPosition.set(currentPosition.getX()+80, currentPosition.getY()+50, 0.0);
+		//}
 	}
 	
 	/**

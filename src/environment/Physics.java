@@ -4,6 +4,8 @@ import java.util.Iterator;
 
 import javax.vecmath.Vector3d;
 
+import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
+
 /**
  * A class representing physical laws.
  * Potentially have various copies of this class 
@@ -26,6 +28,7 @@ public class Physics {
 	double timeScale = .1;
 	double acceleration = 1;
 	double maxSpeed = 7;
+	double ballMaxSpeed = 14;
 	
 	Physics(SimpleAgent agent, Vector3d currentPosition, Vector3d desiredPosition, Vector3d desiredBallPosition, Vector3d velocity){
 		this.desiredBallPosition = desiredBallPosition;
@@ -56,7 +59,26 @@ public class Physics {
 		if(ball.player!=null){
 			velocity = ball.player.movement.velocity;
 		} else {
-			velocity.set(0,0,0);
+			// Vector which will modify the boids velocity vector
+			Vector3d velocityUpdate = new Vector3d();   
+			//Represents the difference between the desired and current positions
+			velocityUpdate.sub(desiredPosition, currentPosition);
+
+			//double predAcceleration = (Double)param.getValue("predAcceleration");
+			//double predMaxSpeed = (Double)param.getValue("predMaxSpeed");
+			
+			//velocityUpdate.scale(acceleration * timeScale);
+
+			// Apply the update to the velocity
+			//velocity.add(velocityUpdate);
+			velocity = velocityUpdate;
+			// If our velocity vector exceeds the max speed, throttle it back to the MAX_SPEED
+			if (velocity.length() > ballMaxSpeed ){
+				velocity.normalize();
+				velocity.scale(ballMaxSpeed);
+			}
+			// Update the position of the boid
+			velocity.scale(timeScale);
 		}
 	
 	}
@@ -92,19 +114,70 @@ public class Physics {
 		Ball ball;
 		if(it.hasNext()){
 			ball = (Ball)it.next();
+			Vector3d vectorToBall = new Vector3d();
+			vectorToBall.sub(ball.movement.currentPosition, ((Player)agent).movement.currentPosition);
 			//Player has ball
-			if(ball.currentPosition.equals(agent.currentPosition)){
+			if(Math.abs(vectorToBall.length())<=((Integer)agent.params.getValue("body_radius")+(Integer)agent.params.getValue("ball_radius"))){
 				//Player wants to carry ball, balls player is current player
-				if(desiredBallPosition.equals(desiredPosition)){
+				if(desiredBallPosition.equals(currentPosition)){
 					ball.setPlayer((Player)agent);
 					ball.movement.setDesiredPosition(desiredBallPosition);
+					ball.movement.setDesiredAngle(((Player) agent).movement.currentBodyAngle);
 				} 
 				//Player wants to move the ball, balls player is now null
 				else {
 					ball.setPlayer(null);
 					ball.movement.setDesiredPosition(desiredBallPosition);
 				}
-			}			
+			}
+		}
+	}
+		/**
+		 * Handles positional and angular changes when balls desired angle does not equal current angle
+		 * When player holds ball, desiredangle is set through the physics engine. 
+		 * These angular changes (such as player body angle changes) can also affect the position of the ball.
+		 * This method handles such changes. 
+		 */
+		public void ballAngularManipulation(){
+			Ball ball = ((Ball) agent);
+			if(ball.player!=null){
+				if(ball.movement.desiredAngle!=ball.movement.currentAngle){
+					double angleA = ball.movement.desiredAngle;
+					Vector3d distance = new Vector3d();
+					distance.sub(ball.movement.currentPosition, ball.player.movement.currentPosition);
+					//Distance between player and ball
+					double side = distance.length();
+					//Determines the x and y changes that need to be made (from the players current point)
+					//To put ball at new angle
+					double theta = angleA;
+					double x = side*Math.cos(theta);
+					double y = side*Math.sin(theta);
+					Vector3d angleChange = new Vector3d(ball.player.movement.currentPosition.x+x,ball.player.movement.currentPosition.y+y,0.0);
+					ball.movement.currentPosition = angleChange;
+					ball.movement.currentAngle = ball.movement.desiredAngle;
+				}
+			} else {
+				Iterator<Object> iter = ball.context.getObjects(Player.class).iterator();
+				while(iter.hasNext()){
+					Player player = (Player) iter.next();
+					Vector3d vectorToBall = new Vector3d();
+					vectorToBall.sub(ball.movement.currentPosition, player.movement.currentPosition);
+					double playerBodyRadius = ((Integer)agent.params.getValue("body_radius"));
+					//Player has ball
+					if(vectorToBall.length()<=playerBodyRadius){
+						double moveValue = playerBodyRadius - vectorToBall.length();
+						vectorToBall.normalize();
+						vectorToBall.scale(moveValue);
+						ball.movement.currentPosition.add(vectorToBall);	
+						Vector3d playerVector = new Vector3d();
+						playerVector.set(player.movement.velocity);
+						playerVector.normalize();
+						playerVector.scale(playerBodyRadius);
+						ball.movement.desiredAngle = player.movement.currentPosition.angle(playerVector)-player.movement.currentPosition.angle(ball.movement.currentPosition);
+						ball.movement.currentAngle = ball.movement.desiredAngle;
+						}
+				}
+			}
 		}
 	}
 
@@ -185,4 +258,3 @@ public class Physics {
 		}
 		*/
 	
-}

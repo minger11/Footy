@@ -26,15 +26,15 @@ public class Scheduler {
 			Player player = (Player)it.next();
 			player.init();
 		}
-		Iterator<Object> iter = context.getObjects(Referee.class).iterator();
-		while(iter.hasNext()){
-			Referee ref = (Referee)iter.next();
-			ref.init();
-		}
 		Iterator<Object> itra = context.getObjects(Ball.class).iterator();
 		while(itra.hasNext()){
 			Ball ball = (Ball)itra.next();
 			ball.init();
+		}
+		Iterator<Object> iter = context.getObjects(Referee.class).iterator();
+		while(iter.hasNext()){
+			Referee ref = (Referee)iter.next();
+			ref.init();
 		}
 	}
 	
@@ -45,15 +45,15 @@ public class Scheduler {
 			Player player = (Player)it.next();
 			player.step();
 		}
-		Iterator<Object> iter = context.getObjects(Referee.class).iterator();
-		while(iter.hasNext()){
-			Referee ref = (Referee)iter.next();
-			ref.step();
-		}
 		Iterator<Object> itra = context.getObjects(Ball.class).iterator();
 		while(itra.hasNext()){
 			Ball ball = (Ball)itra.next();
 			ball.step();
+		}
+		Iterator<Object> iter = context.getObjects(Referee.class).iterator();
+		while(iter.hasNext()){
+			Referee ref = (Referee)iter.next();
+			ref.step();
 		}
 	}
 }

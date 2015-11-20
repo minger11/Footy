@@ -20,12 +20,15 @@ public class Referee {
 	ContinuousSpace<Object> space;
 	Grid<Object> grid;
 	Parameters params;
+	MessageBoard messageBoard;
 	
 	Referee(Context<Object> context){
 		this.context = context;
 		grid = (Grid)context.getProjection("grid");
 		space = (ContinuousSpace)context.getProjection("space");
 		params = RunEnvironment.getInstance().getParameters();
+		Iterator<Object> iter = context.getObjects(MessageBoard.class).iterator();
+		this.messageBoard = (MessageBoard) iter.next();
 	}
 	
 	public void init(){
@@ -36,10 +39,23 @@ public class Referee {
 		checkOut();
 		checkTouch();
 		checkTry();
+		checkForward();
 	}
 
+	
+	public void checkForward(){
+		Iterator<Object> it = context.getObjects(Ball.class).iterator();
+		Ball ball = (Ball)it.next();
+		if(ball.player!=null){
+		} else {
+			if(ball.movement.velocity.getX()<0){
+				messageBoard.addMessage(this, "Forward!");
+				endGame();
+			}
+		}
+	}
+	
 	public void checkOut(){
-		
 		Iterator<Object> it = context.getObjects(Attacker.class).iterator();
 		while(it.hasNext()){
 			int upperSideline = (Integer)params.getValue("display_height")-(Integer)params.getValue("fieldInset");
@@ -50,7 +66,7 @@ public class Referee {
 			double attackerUpperEdge = attacker.currentPosition.getY()+(Integer)params.getValue("body_radius");
 			double attackerLowerEdge = attacker.currentPosition.getY()-(Integer)params.getValue("body_radius");
 				if(attackerUpperEdge>=upperEdge||attackerLowerEdge<=lowerEdge){
-					communicate("Out!");
+					messageBoard.addMessage(this, "Out!");
 					endGame();
 				}
 			}
@@ -59,38 +75,35 @@ public class Referee {
 	public void checkTry(){
 		int tryPoint = (Integer)params.getValue("fieldInset") + (Integer)params.getValue("fieldIncrement");
 		int tryEdge = tryPoint + (Integer)params.getValue("lineRadius");
-		Iterator<Object> it = context.getObjects(Attacker.class).iterator();
-		while(it.hasNext()){
-			Attacker attacker = (Attacker)it.next();
-			double attackerEdge = attacker.currentPosition.getX()-(Integer)params.getValue("body_radius");
-				if(attackerEdge<=tryEdge){
-					communicate("Try!");
+		Iterator<Object> it = context.getObjects(Ball.class).iterator();
+		Ball ball = (Ball)it.next();
+		if(ball.player!=null){
+			double ballEdge = ball.currentPosition.getX()-(Integer)params.getValue("ball_radius");
+				if(ballEdge<=tryEdge){
+					messageBoard.addMessage(this, "Try!");
 					endGame();
 				}
-			}
-	}
-	
-	public void checkTouch(){
-		Iterator<Object> it = context.getObjects(Defender.class).iterator();
-		while(it.hasNext()){
-			Defender defender = (Defender)it.next();
-			Iterator<Object> iter = context.getObjects(Attacker.class).iterator();	
-			while(iter.hasNext()){
-				Attacker attacker = (Attacker)iter.next();
-				if (space.getDistance(defender.getPosition(), attacker.getPosition())<(Integer)params.getValue("body_radius")*2){
-					communicate("Touched!");
-					endGame();
-				}
-			}			
 		}
 	}
 	
-	public void communicate(String message){
-		System.out.println("Referee: " + message);
+	public void checkTouch(){
+		Iterator<Object> it = context.getObjects(Ball.class).iterator();
+		Ball ball = (Ball)it.next();
+		if(ball.player!=null){
+				Player ballHandler = ball.player;
+				Iterator<Object> iter = context.getObjects(Defender.class).iterator();
+				while(iter.hasNext()){
+					Defender defender = (Defender)iter.next();	
+					if (space.getDistance(defender.getPosition(), ballHandler.getPosition())<(Integer)params.getValue("body_radius")*2){
+						messageBoard.addMessage(this, "Touched!");
+						endGame();
+					}
+				}
+		}
 	}
 	
 	public void startGame(){
-		communicate("Begin!");
+		messageBoard.addMessage(this, "Begin!");
 	}
 	
 	public void endGame(){

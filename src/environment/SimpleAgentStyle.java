@@ -83,7 +83,7 @@ public class SimpleAgentStyle extends DefaultStyleOGL2D{
 			return heading;
 		}
 		if (o instanceof Ball){
-			double angle = ((Ball) o).angle;
+			double angle = ((Ball) o).movement.currentAngle;
 			float heading = 360-(float)(angle*57.2958);
 			return heading;
 		}
@@ -99,7 +99,7 @@ public class SimpleAgentStyle extends DefaultStyleOGL2D{
 		if (o instanceof Head)
 			return 0.3f;
 		if (o instanceof Ball)
-			return 0.3f;
+			return 0.1f;
 		return 1f;
 	}
 }
