@@ -125,7 +125,7 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	}
 	
 	public void createPlayers() {
-		createDefenders();
+		//createDefenders();
 		createAttackers();
 	}
 	

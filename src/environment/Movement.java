@@ -24,8 +24,10 @@ public class Movement{
 	
 	Movement(Player player){
 		this.player = player;
-		velocity = new Vector3d();
+		velocity = new Vector3d(0.0,0.0,0.0);
 		currentPosition = new Vector3d();
+		desiredPosition = new Vector3d();
+		currentBodyAngle=.003;
 	}
 	
 	protected void init(){

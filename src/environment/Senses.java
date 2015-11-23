@@ -42,6 +42,7 @@ public class Senses {
 	}
 	
 	protected void step(){
+		player.brain.setTryline(getTryline());
 		player.brain.setPlayers(getPlayers());
 		player.brain.setPosition(getPosition());
 		player.brain.setHasBall(getHasBall());
@@ -94,7 +95,9 @@ public class Senses {
 		Iterator<Object> it = player.context.getObjects(TryPoint.class).iterator();
 		while(it.hasNext()){
 			TryPoint tryPoint = (TryPoint)it.next();
-			fresh.add(new SensesObject(tryPoint,tryPoint.currentPosition));
+			if(inView(tryPoint,180.00)){
+				fresh.add(new SensesObject(tryPoint,tryPoint.currentPosition));
+			}
 		}
 		tryline = fresh;
 		return fresh;
@@ -114,6 +117,112 @@ public class Senses {
 						new repast.simphony.space.continuous.StrictBorders(),
 						(Integer)player.params.getValue("display_width"), (Integer)player.params.getValue("display_height"));
 		return space;
+	}
+	
+	/**
+	 * 
+	 * human vision is 180 
+	 * human depth perception is 114
+	 * 
+	 * @param agent
+	 * @return
+	 */
+	public boolean inView(SimpleAgent agent, Double angle){
+		
+		//Total vision angle
+		double fieldOfVisionAngle = angle;
+		double halfVision = fieldOfVisionAngle/2;
+		
+		//Half vision in radians
+		double headToVisionDiff = halfVision*0.0174533;
+		
+		//Normalizes a radian angle for the right side of vision based on the head angle
+		double rightSide = player.movement.currentHeadAngle-headToVisionDiff;
+		if(rightSide<0) rightSide=2*Math.PI+rightSide;
+		//Normalizes a radian angle for the left side of vision based on the head angle
+		double leftSide = player.movement.currentHeadAngle+headToVisionDiff;
+		if(leftSide>2*Math.PI) leftSide=leftSide-2*Math.PI;
+		
+		//Converts the radian angles to gradients
+		double rightSlope = Math.tan(rightSide);
+		double leftSlope = Math.tan(leftSide);
+		
+		//gets the y intercept of both lines
+		double rightIntercept = player.currentPosition.getY()-(rightSlope*player.currentPosition.getX());
+		double leftIntercept = player.currentPosition.getY()-(leftSlope*player.currentPosition.getX());
+		
+		//based on the agents x value, gets the corresponding y values on each line
+		double rightLineY = (agent.currentPosition.getX()*rightSlope)+rightIntercept;
+		double leftLineY = (agent.currentPosition.getX()*leftSlope)+leftIntercept;
+		
+		//gets the agents true y value (ContinuousSpace uses an inverse system where the upper left point is 0,0)
+		double agentY = (Integer)agent.params.getValue("display_height")-agent.currentPosition.getY();
+		
+		if(lookingUp()){
+			if(leftSlope<=0&&rightSlope>=0){
+				if(agentY>=rightLineY&&agentY>=leftLineY){
+					return true;
+				}
+			} else if(leftSlope<=0&&rightSlope<=0){
+				if(agentY>=rightLineY&&agentY>=leftLineY){
+					return true;
+				}
+			} else if(leftSlope>=0&&rightSlope>=0){
+				if(agentY>=rightLineY&&agentY>=leftLineY){
+					return true;
+				}
+			} else {
+				if(lookingLeft()){
+					if(agentY<=rightLineY&&agentY>=leftLineY){
+						return true;
+					}
+				} else {
+					if(agentY>=rightLineY&&agentY<=leftLineY){
+						return true;
+					}
+				}
+			}
+		} else {
+			if(leftSlope<=0&&rightSlope>=0){
+				if(agentY<=rightLineY&&agentY<=leftLineY){
+					return true;
+				}
+			} else if(leftSlope<=0&&rightSlope<=0){
+				if(agentY<=rightLineY&&agentY<=leftLineY){
+					return true;
+				}
+			} else if(leftSlope>=0&&rightSlope>=0){
+				if(agentY<=rightLineY&&agentY<=leftLineY){
+					return true;
+				}
+			}else {
+				if(lookingLeft()){
+					if(agentY<=rightLineY&&agentY>=leftLineY){
+						return true;
+					}
+				} else {
+					if(agentY>=rightLineY&&agentY<=leftLineY){
+						return true;
+					}
+				}
+			}
+		}
+		
+		return false;
+	}
+	
+	public boolean lookingLeft(){
+		if(player.movement.currentHeadAngle>=Math.PI*.5&&player.movement.currentHeadAngle<=Math.PI*1.5){
+			return true;
+		}
+		return false;
+	}	
+		
+	public boolean lookingUp(){
+		if(player.movement.currentHeadAngle<Math.PI){
+			return true;
+		}
+		return false;
 	}
 
 	/**

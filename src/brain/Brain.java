@@ -45,6 +45,9 @@ public class Brain {
 	public void init(){
 		mapSurroundings();
 		setTarget();
+		if(player instanceof Attacker){
+			desiredHeadAngle = desiredBodyAngle = Math.PI;
+		}
 	}
 	
 	public void step(){
@@ -59,8 +62,8 @@ public class Brain {
 	public Brain(){
 		tryline = new ArrayList<SensesObject>();
 		players = new ArrayList<SensesObject>();
-		desiredPosition = new Vector3d();
 		desiredBallPosition = new Vector3d();
+		desiredPosition = new Vector3d();
 	}
 
 	/**
@@ -69,10 +72,17 @@ public class Brain {
 	public void setTarget() {
 		if(player instanceof Attacker) {
 			int randomNumber = RandomHelper.nextIntFromTo(0, tryline.size()-1);
-			SensesObject x = tryline.get(randomNumber);
-			target = (TryPoint)x.getSimpleAgent();
-			targetPosition = x.getPosition();
+			System.out.println(tryline.size());
+			/**
+			try {
+				SensesObject x = tryline.get(randomNumber);
+				target = (TryPoint)x.getSimpleAgent();
+				targetPosition = x.getPosition();
+				//System.out.println("Target acquired!");
+			} catch (Exception e){
+				//System.out.println("No points to find!");
 			}
+		}
 		else if(player instanceof Defender) {
 			Iterator<SensesObject> it = players.iterator();
 			while(it.hasNext()){
@@ -83,21 +93,41 @@ public class Brain {
 				}
 			}
 		}
-		desiredHeadAngle = SpatialMath.calcAngleFor2DMovement(space, currentPosition, targetPosition);
-		desiredBodyAngle = desiredHeadAngle;
+		try{
+			desiredHeadAngle = SpatialMath.calcAngleFor2DMovement(space, currentPosition, targetPosition);
+			desiredBodyAngle = desiredHeadAngle;
+		} catch (Exception e) {
+		*/}
 	}
 	
 	/**
 	 * Sets both the speed and angle based on a given target
 	*/
 	public void moveBody(){
-		desiredPosition.set(targetPosition.getX(),targetPosition.getY(),0.0);
-		desiredHeadAngle = SpatialMath.calcAngleFor2DMovement(space, currentPosition, targetPosition);
-		desiredBodyAngle = desiredHeadAngle;
+		//if(currentPosition.getX()<=550&&currentPosition.getX()>=549.5){
+		//	System.out.println("change!");
+		//	setTarget();
+		//}
+		//if(target!=null){
+		//	desiredPosition.set(targetPosition.getX(),targetPosition.getY(),0.0);
+		//	desiredHeadAngle = SpatialMath.calcAngleFor2DMovement(space, currentPosition, targetPosition);
+		//}
+		//if(target==null){
+		//	setTarget();
+		//}
+		if(target==null){
 		//Random spin mode
-		//desiredPosition = new Vector3d(currentPosition.getX(), currentPosition.getY(), 0.0);
-		//desiredHeadAngle = desiredHeadAngle +0.1;
-		//desiredBodyAngle = desiredHeadAngle;
+		setTarget();
+		desiredPosition = new Vector3d(currentPosition.getX(), currentPosition.getY(), 0.0);
+		desiredHeadAngle = desiredHeadAngle +0.01;
+		}
+		
+		while(desiredHeadAngle>=2*Math.PI){
+			desiredHeadAngle -= 2*Math.PI;
+		}
+		desiredBodyAngle = desiredHeadAngle;
+		
+		//}
 	}
 	
 	public void moveBall(){

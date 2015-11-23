@@ -87,6 +87,13 @@ public class Physics {
 	
 	protected void playerPhysics(){
 		ballHandling();
+		if(desiredPosition!=null){
+			playerVelocity();
+		}
+	}
+		
+	
+	protected void playerVelocity(){
 		// Vector which will modify the boids velocity vector
 		Vector3d velocityUpdate = new Vector3d();   
 		//Represents the difference between the desired and current positions
@@ -108,7 +115,7 @@ public class Physics {
 		// Update the position of the boid
 		velocity.scale(timeScale);
 	}
-		
+	
 	protected void ballHandling(){
 		Iterator<Object> it = agent.context.getObjects(Ball.class).iterator();
 		Ball ball;
