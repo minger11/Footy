@@ -12,9 +12,10 @@ import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.NdPoint;
 import environment.Attacker;
 import environment.Defender;
+import environment.Message;
 import environment.Player;
-import environment.SimpleAgent;
 import environment.SensesObject;
+import environment.SimpleAgent;
 import environment.TryPoint;
 
 /**
@@ -28,6 +29,7 @@ import environment.TryPoint;
 public class Brain {
 
 	private SimpleAgent target;
+	private SensesObject targetObject;
 	private Vector3d desiredPosition;
 	private Player player;
 	private double speed;
@@ -38,9 +40,21 @@ public class Brain {
 	private ContinuousSpace<Object> space;
 	private List<SensesObject> tryline;
 	private List<SensesObject> players;
+	private List<SensesObject> sidelines;
+	private List<SensesObject> balls;
 	private int maxSpeed;
 	private boolean hasBall;
 	private Vector3d desiredBallPosition;
+	private Message lastMessage;
+	private String newMessage;
+	
+	
+	public Brain(){
+		tryline = new ArrayList<SensesObject>();
+		players = new ArrayList<SensesObject>();
+		desiredBallPosition = new Vector3d();
+		desiredPosition = new Vector3d();
+	}
 	
 	public void init(){
 		mapSurroundings();
@@ -58,13 +72,6 @@ public class Brain {
 		}
 		else desiredBallPosition=null;
 	}
-	
-	public Brain(){
-		tryline = new ArrayList<SensesObject>();
-		players = new ArrayList<SensesObject>();
-		desiredBallPosition = new Vector3d();
-		desiredPosition = new Vector3d();
-	}
 
 	/**
 	 * Sets both the SimleAgent target and NdPoint of the target
@@ -72,49 +79,59 @@ public class Brain {
 	public void setTarget() {
 		if(player instanceof Attacker) {
 			int randomNumber = RandomHelper.nextIntFromTo(0, tryline.size()-1);
-			System.out.println(tryline.size());
-			/**
-			try {
+		try {
 				SensesObject x = tryline.get(randomNumber);
 				target = (TryPoint)x.getSimpleAgent();
-				targetPosition = x.getPosition();
-				//System.out.println("Target acquired!");
+				targetObject = x;
 			} catch (Exception e){
-				//System.out.println("No points to find!");
 			}
 		}
-		else if(player instanceof Defender) {
+		else 
+		if(player instanceof Defender) {
+			int randomNumber = RandomHelper.nextIntFromTo(0, players.size()-1);
 			Iterator<SensesObject> it = players.iterator();
 			while(it.hasNext()){
 				if(it.next().getSimpleAgent() instanceof Attacker){
 					SensesObject y = players.iterator().next();
 					target = (Player)y.getSimpleAgent();
-					targetPosition = y.getPosition();
+					targetObject = y;
 				}
 			}
 		}
 		try{
-			desiredHeadAngle = SpatialMath.calcAngleFor2DMovement(space, currentPosition, targetPosition);
+			if(targetObject.isWithinDepth()){
+				desiredHeadAngle = SpatialMath.calcAngleFor2DMovement(space, currentPosition, targetPosition);
+			} else {
+				desiredHeadAngle = targetObject.getAgentAngle();
+			}
 			desiredBodyAngle = desiredHeadAngle;
 		} catch (Exception e) {
-		*/}
+		}
 	}
-	
+
 	/**
 	 * Sets both the speed and angle based on a given target
 	*/
 	public void moveBody(){
-		//if(currentPosition.getX()<=550&&currentPosition.getX()>=549.5){
-		//	System.out.println("change!");
-		//	setTarget();
-		//}
-		//if(target!=null){
-		//	desiredPosition.set(targetPosition.getX(),targetPosition.getY(),0.0);
-		//	desiredHeadAngle = SpatialMath.calcAngleFor2DMovement(space, currentPosition, targetPosition);
-		//}
-		//if(target==null){
-		//	setTarget();
-		//}
+		/**
+		if(currentPosition.getX()<=650&&currentPosition.getX()>=200){
+			//setTarget();
+		}*/
+		if(target!=null){
+			if(targetObject.isWithinDepth()){
+				desiredPosition.set(targetObject.getX(),targetObject.getY(),0.0);
+				desiredHeadAngle = SpatialMath.calcAngleFor2DMovement(space, currentPosition, targetObject.getPosition());
+				desiredBodyAngle = desiredHeadAngle;
+			}
+			else {
+				desiredHeadAngle = targetObject.getAgentAngle();
+				desiredBodyAngle = desiredHeadAngle;
+			}
+		}
+		if(target==null){
+			setTarget();
+		}
+		/**
 		if(target==null){
 		//Random spin mode
 		setTarget();
@@ -127,7 +144,7 @@ public class Brain {
 		}
 		desiredBodyAngle = desiredHeadAngle;
 		
-		//}
+		//}*/
 	}
 	
 	public void moveBall(){
@@ -154,7 +171,9 @@ public class Brain {
 		Iterator<SensesObject> it = tryline.iterator();
 		while(it.hasNext()){
 			SensesObject tryobject = it.next();
-			space.moveTo(tryobject.getSimpleAgent(),tryobject.getPosition().getX(),tryobject.getPosition().getY());
+			if(tryobject.getPosition()!=null){
+				space.moveTo(tryobject.getSimpleAgent(),tryobject.getPosition().getX(),tryobject.getPosition().getY());
+			}
 		}
 	}
 	
@@ -167,9 +186,16 @@ public class Brain {
 		while(it.hasNext()){
 			SensesObject player = it.next();
 			if(player.getSimpleAgent().equals(target)){
-				targetPosition = player.getPosition();
+				targetObject = player;
 			}
-			space.moveTo(player.getSimpleAgent(),player.getPosition().getX(),player.getPosition().getY());
+			if(player.isWithinDepth()){
+				space.moveTo(player.getSimpleAgent(),player.getPosition().getX(),player.getPosition().getY());
+			}
+			if(player.getSimpleAgent() instanceof Attacker){
+				/**if(player.isWithinDepth()){
+					System.out.println("depth");
+				} else System.out.println("side");*/
+			}
 		}
 	}
 		
@@ -180,6 +206,14 @@ public class Brain {
 	 */
 	
 	//Simple getters and setters
+	public void setLastMessage(Message message){
+		lastMessage = message;
+		if(message.isOfficial()){
+			System.out.println("Official: "+message.getMessage());
+		} else {
+			System.out.println(player.getClass()+": "+message.getAngle()+": "+message.getMessage());
+		}
+	}
 	public void setMaxSpeed(int x){
 		maxSpeed = x;
 	}
@@ -192,9 +226,20 @@ public class Brain {
 	public void setTryline(List<SensesObject> x){
 		tryline = x;
 	}
+	public void setBalls(List<SensesObject> x){
+		balls = x;
+	}
+	public void setSidelines(List<SensesObject> x){
+		sidelines = x;
+	}	
 	public void setSpace(ContinuousSpace<Object> x){
 		space = x;
 	}	
+	public String getNewMessage(){
+		String text = newMessage;
+		newMessage = null;
+		return text;
+	}
 	public void setPosition(NdPoint x){
 		currentPosition = x;
 	}	

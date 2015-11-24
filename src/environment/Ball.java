@@ -66,6 +66,7 @@ public class BallMovement{
 		velocity = new Vector3d();
 		currentPosition = new Vector3d();
 		currentAngle = 0.0;
+		desiredAngle = 0.0;
 	}
 	
 	/**
@@ -73,6 +74,7 @@ public class BallMovement{
 	 */
 	protected void init(){
 		currentPosition.set(ball.getPosition().getX(), ball.getPosition().getY(), 0.0);	
+		desiredPosition=currentPosition;
 	}
 	
 	/**

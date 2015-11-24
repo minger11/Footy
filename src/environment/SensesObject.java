@@ -16,6 +16,9 @@ public class SensesObject{
 		double y;
 		NdPoint staticPosition;
 		SimpleAgent simpleAgent;
+		double agentAngle;
+		boolean withinDepth = false;
+		boolean withinSide = false;
 		
 		/**
 		 * Creates a new playerObject with a static NdPoint that cannot change with the player
@@ -31,6 +34,12 @@ public class SensesObject{
 			staticPosition = new NdPoint(xPosition,yPosition);
 			x = staticPosition.getX();
 			y = staticPosition.getY();
+			withinDepth = true;
+		}
+		
+		SensesObject(SimpleAgent agent, Double angle){
+			simpleAgent = agent;
+			agentAngle = angle;
 		}
 		
 		public NdPoint getPosition(){
@@ -45,7 +54,15 @@ public class SensesObject{
 			return x;
 		}
 		
+		public boolean isWithinDepth(){
+			return withinDepth;
+		}
+		
 		public double getY(){
 			return y;
+		}
+		
+		public double getAgentAngle(){
+			return agentAngle;
 		}
 }

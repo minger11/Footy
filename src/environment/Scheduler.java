@@ -38,7 +38,7 @@ public class Scheduler {
 		}
 	}
 	
-	@ScheduledMethod ( start = 1 , interval = 1000)
+	@ScheduledMethod ( start = 1 , interval = 1)
 	public void step(){
 		Iterator<Object> it = context.getObjects(Player.class).iterator();
 		while(it.hasNext()){
@@ -54,6 +54,11 @@ public class Scheduler {
 		while(iter.hasNext()){
 			Referee ref = (Referee)iter.next();
 			ref.step();
+		}
+		Iterator<Object> itera = context.getObjects(MessageBoard.class).iterator();
+		while(itera.hasNext()){
+			MessageBoard mb = (MessageBoard)itera.next();
+			mb.step();
 		}
 	}
 }
