@@ -36,6 +36,11 @@ public class Scheduler {
 			Referee ref = (Referee)iter.next();
 			ref.init();
 		}
+		Iterator<Object> iterz = context.getObjects(Mover.class).iterator();
+		while(iterz.hasNext()){
+			Mover mover = (Mover)iterz.next();
+			mover.init();
+		}
 	}
 	
 	@ScheduledMethod ( start = 1 , interval = 1)
@@ -59,6 +64,11 @@ public class Scheduler {
 		while(itera.hasNext()){
 			MessageBoard mb = (MessageBoard)itera.next();
 			mb.step();
+		}
+		Iterator<Object> iterz = context.getObjects(Mover.class).iterator();
+		while(iterz.hasNext()){
+			Mover mover = (Mover)iterz.next();
+			mover.step();
 		}
 	}
 }

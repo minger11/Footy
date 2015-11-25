@@ -80,7 +80,7 @@ public class Referee {
 		} else {
 			
 			//If the balls velocity is negative on the xaxis, call forward
-			if(ball.movement.velocity.getX()<0){
+			if(ball.velocity.getX()<0){
 				makeCall("Forward!");
 			}
 		}
@@ -106,12 +106,12 @@ public class Referee {
 			
 			//Define the attackers upper and lower reaches
 			Attacker attacker = (Attacker)ball.player;
-			double attackerUpperEdge = attacker.currentPosition.getY()+(Integer)params.getValue("body_radius");
-			double attackerLowerEdge = attacker.currentPosition.getY()-(Integer)params.getValue("body_radius");
+			double attackerUpperEdge = attacker.positionPoint.getY()+(Integer)params.getValue("body_radius");
+			double attackerLowerEdge = attacker.positionPoint.getY()-(Integer)params.getValue("body_radius");
 			
 			//Define the balls upper and lower reaches
-			double ballUpperEdge = ball.currentPosition.getY()+(Integer)params.getValue("ball_radius");
-			double ballLowerEdge = ball.currentPosition.getY()-(Integer)params.getValue("ball_radius");
+			double ballUpperEdge = ball.positionPoint.getY()+(Integer)params.getValue("ball_radius");
+			double ballLowerEdge = ball.positionPoint.getY()-(Integer)params.getValue("ball_radius");
 				
 				//If the attacker crosses the sideline, ball is out
 				if(attackerUpperEdge>=upperEdge||attackerLowerEdge<=lowerEdge){
@@ -140,7 +140,7 @@ public class Referee {
 		
 		//If the ball has a player, check if the ball has touched the tryline
 		if(ball.player!=null){
-			double ballEdge = ball.currentPosition.getX()-(Integer)params.getValue("ball_radius");
+			double ballEdge = ball.positionPoint.getX()-(Integer)params.getValue("ball_radius");
 				if(ballEdge<=tryEdge){
 					
 					makeCall("Try!");
@@ -167,7 +167,7 @@ public class Referee {
 					Defender defender = (Defender)iter.next();	
 					
 					//If the distance between the ball handler and the defender is less than 2 times body radius, the player is touched
-					if (space.getDistance(defender.getPosition(), ballHandler.getPosition())<(Integer)params.getValue("body_radius")*2){
+					if (space.getDistance(defender.getPositionPoint(), ballHandler.getPositionPoint())<(Integer)params.getValue("body_radius")*2){
 						
 						makeCall("Touched!");
 					}

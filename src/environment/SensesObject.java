@@ -42,6 +42,8 @@ public class SensesObject{
 			agentAngle = angle;
 		}
 		
+		//---------------SETTERS AND GETTERS -----------------------//
+		
 		public NdPoint getPosition(){
 			return staticPosition;
 		}

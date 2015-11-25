@@ -9,6 +9,7 @@ import java.util.List;
  * @author user
  *
  */
+
 public class MessageBoard {
 	
 	//The list of sent and pending messages

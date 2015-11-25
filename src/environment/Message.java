@@ -5,6 +5,7 @@ package environment;
  * @author user
  *
  */
+
 public class Message {
 	
 	protected Object sender;

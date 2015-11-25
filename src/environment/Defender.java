@@ -7,6 +7,7 @@ import repast.simphony.context.Context;
  * @author user
  *
  */
+
 public class Defender extends Player{
 	
 	/**

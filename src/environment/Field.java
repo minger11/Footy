@@ -7,6 +7,7 @@ import repast.simphony.context.Context;
  * @author user
  *
  */
+
 public class Field extends SimpleAgent{
 
 	Field(Context context, int x, int y){

@@ -1,17 +1,21 @@
 package environment;
 
-
 import java.util.Iterator;
-
 import brain.Brain;
 import repast.simphony.context.Context;
 
-public class Player extends SimpleAgent {
+/**
+ * The main class for the players
+ * @author user
+ *
+ */
+
+public class Player extends MovingAgent {
 
 	protected Brain brain;
 	protected Senses senses;
 	protected Reflexes reflexes;
-	protected Movement movement;
+	protected PlayerMovement movement;
 	protected Head head;
 	protected int number;
 	protected MessageBoard messageBoard;
@@ -27,14 +31,14 @@ public class Player extends SimpleAgent {
 		brain = new Brain();
 		senses = new Senses(this);
 		reflexes = new Reflexes(this);
-		movement = new Movement(this);
+		movement = new PlayerMovement(this);
 		this.number = number;
 		head = new Head(context, x, y, this);
 		Iterator<Object> iter = context.getObjects(MessageBoard.class).iterator();
 		this.messageBoard = (MessageBoard) iter.next();
 	}
 	
-	protected void init(){
+	protected void init(){	
 		senses.init();
 		brain.init();
 		reflexes.init();

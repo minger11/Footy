@@ -9,7 +9,8 @@ import repast.simphony.space.grid.Grid;
  * @author user
  *
  */
-public class Head extends SimpleAgent{
+
+public class Head extends MovingAgent{
 
 	Player player;
 	

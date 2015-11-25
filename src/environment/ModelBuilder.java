@@ -30,9 +30,10 @@ public class ModelBuilder implements ContextBuilder<Object> {
 		createContext(context);
 		createParameters();
 		createProjections();
-		createSimulation();
+		createScheduler();
 		createMessageBoard();
 		createField();
+		createMover();
 		createPlayers();
 		createBall();
 		createBoundary();
@@ -57,82 +58,74 @@ public class ModelBuilder implements ContextBuilder<Object> {
 		this.params = RunEnvironment.getInstance().getParameters();
 	}
 	
-	public void createSimulation() {
+	/**
+	 * Creates a scheduler to tell each class when and what to do
+	 */
+	public void createScheduler() {
 		Scheduler sim = new Scheduler(context);
 		context.add(sim);
 	}
 	
+	/**
+	 * Creates a referee to adjudicate the game
+	 */
 	public void createReferee(){
 		Referee ref = new Referee(context);
 		context.add(ref);
 	}
 	
+	/**
+	 * Creates a messageboard for audio messages to be sent
+	 */
 	public void createMessageBoard(){
 		MessageBoard mb = new MessageBoard();
 		context.add(mb);
 	}
 	
-	/** 
-	 * Creates both the Grid space and the Continuous Space
-	 * creates the ContinuousSpace
-	 * and Grid projections. In both cases, we begin by getting a factory of the appropriate type
-	 * and then use that factory to create the actual ContinuousSpace or Grid. Both factories
-	 * take similar parameters:
-	• the name of the grid or space
-	• the context to associate the grid or space with
-	• an Adder which determines where objects added to the grid or space will be initially
-	located
-	• a class that describes the borders of the grid or space. Borders determine the
-	behavior of the space or grid at its edges. For example, WrapAroundBorders will
-	wrap the borders, turning the space or grid into a torus. Other border types such as
-	StrictBorders will enforce the border as a boundary across which agents cannot
-	move.
-	• the dimensions of the grid (50 x 50 for example).
-	The GridFactory differs slightly in that it bundles the borders, adder, dimensions etc.
-		into a GridBuilderParameters object. The GridBuilderParameters also takes a boolean
-		value that determines whether more than one object is allowed to occupy a grid point
-		location at a time. With this in mind then, the above code creates a ContinuousSpace
-		named “space” and associates it with the passed in Context. Any object added to this
-		space will be added at a random location via the RandomCartesianAdder. The borders of
-		the space will wrap around forming a torus, set via the
-		repast.simphony.space.continuous.WrapAroundBorders(). Lastly, the dimensions of
-		the space will be 50 x 50. This code also creates a Grid called “grid” and associates it
-		with the Context. The grid will also wrap and form a torus. Objects added to this grid
-		will be added with the SimpleGridAdder which means that they are not given a location
-		when added, but rather held in a kind of “parking lot” waiting to be manually added via
-		one of the Grid’s methods. The true value specifies that multiple occupancy of a grid
-		location is allowed. The grid’s dimensions will be 50 x 50. Note the we are using the
-		SimpleGridAdder here so that we can manually set an agent’s Grid location to correspond
-		to its ContinuousSpace location. We will do this later in the build method.
-		*/
-	public void createProjections() {
-		//sets the height and width of the boxed environment at runtime
-				int displayHeight = (Integer)params.getValue("display_height");
-				int displayWidth = (Integer)params.getValue("display_width");
-				
-				ContinuousSpaceFactory spaceFactory = 
-						ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null);
-				space = 
-						spaceFactory.createContinuousSpace("space", context, 
-								new SimpleCartesianAdder<Object>(), 
-								new repast.simphony.space.continuous.StrictBorders(),
-								displayWidth, displayHeight);				
-				GridFactory gridFactory = GridFactoryFinder.createGridFactory(null);
-				grid = gridFactory.createGrid("grid", context,
-						new GridBuilderParameters<Object>(new StrictBorders(),
-						new SimpleGridAdder<Object>(),
-						true, displayWidth, displayHeight));
+	public void createMover(){
+		Mover mover = new Mover(context);
+		context.add(mover);
 	}
 	
+	/**
+	 * Creates both the continuous space and grid style layouts for display
+	 */
+	public void createProjections() {
+		
+		//sets the height and width of the boxed environment at runtime
+		int displayHeight = (Integer)params.getValue("display_height");
+		int displayWidth = (Integer)params.getValue("display_width");
+				
+		//Creates the space
+		ContinuousSpaceFactory spaceFactory = ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null);
+		space = spaceFactory.createContinuousSpace("space", context, 
+				new SimpleCartesianAdder<Object>(), 
+				new repast.simphony.space.continuous.StrictBorders(),
+				displayWidth, displayHeight);				
+		
+		//Creates the grid
+		GridFactory gridFactory = GridFactoryFinder.createGridFactory(null);
+		grid = gridFactory.createGrid("grid", context,
+				new GridBuilderParameters<Object>(new StrictBorders(),
+				new SimpleGridAdder<Object>(),
+				true, displayWidth, displayHeight));
+	}
+	
+	/**
+	 * Initiates both create attackers and create defenders
+	 */
 	public void createPlayers() {
 		createDefenders();
 		createAttackers();
 	}
 	
+	/**
+	 * Creates the ball and adds it to the field at the position nominated in the parameters
+	 */
 	public void createBall(){
 		int ballStartX = (Integer)params.getValue("ball_start_x");
 		int ballStartY = (Integer)params.getValue("ball_start_y");
-		new Ball(context, ballStartX-15, ballStartY);
+		new Ball(context, ballStartX, ballStartY);
 	}
 	
 	/**
@@ -146,13 +139,17 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	 * So in this case, the Defenders are added to the space and grid using their Adders as described above. 
 	*/
 	public void createDefenders() {
+		
 		// Retrieve defender count from runtime environment
 				int defenderCount = (Integer)params.getValue("defender_count");
+				
 				// iterate through the count
 				for(int i = 0; i < defenderCount; i++) {
+					
 					// Retrieve the starting positions from the runtime environment
 					int defenderStartX = (Integer)params.getValue("defender_start_x");
 					int defenderStartY = (Integer)params.getValue("defender_start_y");
+					
 					// Create a new defender for each iteration
 					new Defender(context, defenderStartX, defenderStartY, i+1);
 				}
@@ -172,19 +169,26 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	 * In general, all random number type operations should be done through the RandomHelper. 
 	*/
 	public void createAttackers() {
+		
 		// Retrieve the attacker count from the runtime environment
 		int attackerCount = (Integer)params.getValue("attacker_count");
+		
 		//iterate through the count
 		for (int i = 0; i < attackerCount; i++) {
+			
 			// Retrieve the starting positions from the runtime environment
 			int attackerStartX = (Integer)params.getValue("attacker_start_x");
 			int attackerStartY = (Integer)params.getValue("attacker_start_y");
+			
 			//create a new attacker for each iteration
 			new Attacker(context, attackerStartX, attackerStartY, i+1);
 		}
 
 	}
 
+	/**
+	 * Creates the field agent and places it in the middle of the screen
+	 */
 	public void createField() {
 		int displayHeight = (Integer)params.getValue("display_height");
 		int displayWidth = (Integer)params.getValue("display_width");
@@ -203,18 +207,23 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	 * creates sideline points at each point along the upper, lower and right edges of the display
 	 */
 	public void createSidelines() {
+		
 		int southernSideline = (Integer)params.getValue("fieldInset");
 		int northernSideline = (Integer)params.getValue("display_height")-(Integer)params.getValue("fieldInset");
 		int westernTryline = (Integer)params.getValue("fieldInset")+(Integer)params.getValue("fieldIncrement");
 		int easternTryline = (Integer)params.getValue("display_width")-(Integer)params.getValue("fieldInset")-(Integer)params.getValue("fieldIncrement");
+		
 		//create horizontal sidelines
 		for (int i = westernTryline; i < easternTryline; i++) {
+			
 			//create upper and lower sidepoints
 			new SidePoint(context, i, southernSideline);
 			new SidePoint(context, i, northernSideline-1);
 		}
+		
 		//create opposing tryline (sideline for this instance)
 		for (int i = southernSideline; i < northernSideline; i++) {
+			
 			//create sidepoint
 			new SidePoint(context, easternTryline-1, i);
 		}
@@ -228,7 +237,7 @@ public class ModelBuilder implements ContextBuilder<Object> {
 		int northernSideline = (Integer)params.getValue("display_height")-(Integer)params.getValue("fieldInset");
 		int easternTryline = (Integer)params.getValue("fieldInset")+(Integer)params.getValue("fieldIncrement");
 		for (int i = southernSideline; i < northernSideline; i++) {
-			//create a new attacker for each iteration
+			//create a new trypoint for each iteration
 			new TryPoint(context, easternTryline, i);
 		}
 	}

@@ -2,21 +2,37 @@ package environment;
 
 import java.io.IOException;
 import java.net.URL;
-
 import repast.simphony.visualizationOGL2D.DefaultStyleOGL2D;
 import saf.v3d.ShapeFactory2D;
 import saf.v3d.scene.VSpatial;
 
+/**
+ * Sets out the look and appearance of the background and agents
+ * @author user
+ *
+ */
 public class SimpleAgentStyle extends DefaultStyleOGL2D{
 
 	protected ShapeFactory2D factory;
 	
+	//The scales of the various images
+	protected float playerScale = 0.3f;
+	protected float fieldScale = 1f;
+	protected float headScale = 0.3f;
+	protected float ballScale = 0.1f;
+	
+	/**
+	 * Creates the shapefactory to be used to create shapes
+	 */
 	@Override
 	public void init(ShapeFactory2D x){
 		factory = x;
 		super.init(factory);
 	}
 	
+	/**
+	 * Gets the various images used in the simulation
+	 */
 	@Override
 	public VSpatial getVSpatial(Object o, saf.v3d.scene.VSpatial spatial) {
 		if(spatial == null){
@@ -70,36 +86,42 @@ public class SimpleAgentStyle extends DefaultStyleOGL2D{
 		return spatial;
 	}
 	
+	/**
+	 * Sets the rotation of the agent shapes, retrieves this from the model
+	 */
 	@Override
 	public float getRotation(Object o) {
 		if (o instanceof Player){
-			double angle = ((Player) o).movement.currentBodyAngle;
+			double angle = ((Player) o).rotation;
 			float heading = 360-(float)(angle*57.2958);
 			return heading;
 		}
 		if (o instanceof Head){
-			double angle = ((Head) o).player.movement.currentHeadAngle;
+			double angle = ((Head) o).rotation;
 			float heading = 360-(float)(angle*57.2958);
 			return heading;
 		}
 		if (o instanceof Ball){
-			double angle = ((Ball) o).movement.currentAngle;
+			double angle = ((Ball) o).rotation;
 			float heading = 360-(float)(angle*57.2958);
 			return heading;
 		}
 		return 0;
 	  }
 
+	/**
+	 * Sets the scale of the agents
+	 */
 	@Override
 	public float getScale(Object o) {
 		if (o instanceof Player)
-			return 0.3f;
+			return playerScale;
 		if (o instanceof Field)
-			return 1f;
+			return fieldScale;
 		if (o instanceof Head)
-			return 0.3f;
+			return headScale;
 		if (o instanceof Ball)
-			return 0.1f;
+			return ballScale;
 		return 1f;
 	}
 }

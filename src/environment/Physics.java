@@ -4,8 +4,6 @@ import java.util.Iterator;
 
 import javax.vecmath.Vector3d;
 
-import org.apache.commons.math3.geometry.euclidean.threed.Vector3D;
-
 /**
  * A class representing physical laws.
  * Potentially have various copies of this class 
@@ -57,7 +55,7 @@ public class Physics {
 	
 	protected void ballPhysics(Ball ball){
 		if(ball.player!=null){
-			velocity = ball.player.movement.velocity;
+			velocity = ball.player.velocity;
 		} else {
 			// Vector which will modify the boids velocity vector
 			Vector3d velocityUpdate = new Vector3d();   
@@ -122,14 +120,14 @@ public class Physics {
 		if(it.hasNext()){
 			ball = (Ball)it.next();
 			Vector3d vectorToBall = new Vector3d();
-			vectorToBall.sub(ball.movement.currentPosition, ((Player)agent).movement.currentPosition);
+			vectorToBall.sub(ball.positionVector, ((Player)agent).positionVector);
 			//Player has ball
 			if(Math.abs(vectorToBall.length())<=((Integer)agent.params.getValue("body_radius")+(Integer)agent.params.getValue("ball_radius"))){
 				//Player wants to carry ball, balls player is current player
 				if(desiredBallPosition.equals(currentPosition)){
 					ball.setPlayer((Player)agent);
 					ball.movement.setDesiredPosition(desiredBallPosition);
-					ball.movement.setDesiredAngle(((Player) agent).movement.currentBodyAngle);
+					ball.movement.setDesiredAngle(((Player) agent).rotation);
 				} 
 				//Player wants to move the ball, balls player is now null
 				else {
@@ -148,10 +146,10 @@ public class Physics {
 		public void ballAngularManipulation(){
 			Ball ball = ((Ball) agent);
 			if(ball.player!=null){
-				if(ball.movement.desiredAngle!=ball.movement.currentAngle){
+				if(ball.movement.desiredAngle!=ball.rotation){
 					double angleA = ball.movement.desiredAngle;
 					Vector3d distance = new Vector3d();
-					distance.sub(ball.movement.currentPosition, ball.player.movement.currentPosition);
+					distance.sub(ball.positionVector, ball.player.positionVector);
 					//Distance between player and ball
 					double side = distance.length();
 					//Determines the x and y changes that need to be made (from the players current point)
@@ -159,29 +157,29 @@ public class Physics {
 					double theta = angleA;
 					double x = side*Math.cos(theta);
 					double y = side*Math.sin(theta);
-					Vector3d angleChange = new Vector3d(ball.player.movement.currentPosition.x+x,ball.player.movement.currentPosition.y+y,0.0);
-					ball.movement.currentPosition = angleChange;
-					ball.movement.currentAngle = ball.movement.desiredAngle;
+					Vector3d angleChange = new Vector3d(ball.player.positionVector.x+x,ball.player.positionVector.y+y,0.0);
+					ball.positionVector = angleChange;
+					ball.rotation = ball.movement.desiredAngle;
 				}
 			} else {
 				Iterator<Object> iter = ball.context.getObjects(Player.class).iterator();
 				while(iter.hasNext()){
 					Player player = (Player) iter.next();
 					Vector3d vectorToBall = new Vector3d();
-					vectorToBall.sub(ball.movement.currentPosition, player.movement.currentPosition);
+					vectorToBall.sub(ball.positionVector, player.positionVector);
 					double playerBodyRadius = ((Integer)agent.params.getValue("body_radius"));
 					//Player has ball
 					if(vectorToBall.length()<=playerBodyRadius){
 						double moveValue = playerBodyRadius - vectorToBall.length();
 						vectorToBall.normalize();
 						vectorToBall.scale(moveValue);
-						ball.movement.currentPosition.add(vectorToBall);	
+						ball.positionVector.add(vectorToBall);	
 						Vector3d playerVector = new Vector3d();
-						playerVector.set(player.movement.velocity);
+						playerVector.set(player.velocity);
 						playerVector.normalize();
 						playerVector.scale(playerBodyRadius);
-						ball.movement.desiredAngle = player.movement.currentPosition.angle(playerVector)-player.movement.currentPosition.angle(ball.movement.currentPosition);
-						ball.movement.currentAngle = ball.movement.desiredAngle;
+						ball.movement.desiredAngle = player.positionVector.angle(playerVector)-player.positionVector.angle(ball.positionVector);
+						ball.rotation = ball.movement.desiredAngle;
 						}
 				}
 			}
