@@ -99,12 +99,6 @@ public class Utils {
 	return absoluteAngle;
 }
 	
-	/**
-	 * Takes two vectors and returns vector to the target
-	 * @param referencePoint
-	 * @param targetPoint
-	 * @return
-	 */
 	public Vector3d getVector(NdPoint targetPoint, NdPoint referencePoint){
 		Vector3d targetVector = new Vector3d(targetPoint.getX(), targetPoint.getY(),0.0);
 		Vector3d referenceVector = new Vector3d(referencePoint.getX(), referencePoint.getY(),0.0);
@@ -112,5 +106,64 @@ public class Utils {
 		vectorToTarget.sub(targetVector, referenceVector);
 		return vectorToTarget;
 	}
+	
+	/**
+	 * Takes in an angle in radians and a distance before giving back the vector
+	 * @param angle - absolute angle to target in radians
+	 * @param hypotenuse - the distance to the target
+	 * @return - an absolute vector 
+	 */
+	public Vector3d getVector(double angle, double hypotenuse){
+		Vector3d vector = new Vector3d();
 		
+		//The x and y values of the future vector
+		double x;
+		double y;
+		
+		//The opposite and adjacent angles of the triangle
+		double opp;
+		double adj;
+		
+		double theAngle = angle;
+		while(theAngle>Math.PI*.5){
+			theAngle = theAngle - Math.PI*.5;
+		}
+		opp = Math.sin(theAngle)*hypotenuse;
+		adj = Math.cos(theAngle)*hypotenuse;
+		
+		if(angle==0||angle==2*Math.PI){
+			x = hypotenuse;
+			y=0;
+		} else if(Math.PI*.5>angle&&angle>0){
+			x = adj;
+			y = opp;
+		} else if(angle==Math.PI*.5){
+			x = 0;
+			y = hypotenuse;
+			
+		} else if(Math.PI>angle&&angle>Math.PI*.5){
+			x = -opp;
+			y = adj;
+		} else if(angle==Math.PI){
+			x = -hypotenuse;
+			y=0;
+		} else if(Math.PI*1.5>angle&&angle>Math.PI){
+			x = -adj;
+			y = -opp;
+		} else if(angle==Math.PI*1.5){
+			x = 0;
+			y = -hypotenuse;
+			
+		} else if(Math.PI*2>angle&&angle>Math.PI*1.5){
+			x = opp;
+			y = -adj;
+		} else {
+			x=0;
+			y=0;
+		}
+		vector.set(x,y,0.0);
+		return vector;
+		
+	}
+	
 }

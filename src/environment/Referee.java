@@ -16,14 +16,14 @@ import repast.simphony.space.grid.Grid;
 
 public class Referee {
 	
-	Context<Object> context;
-	ContinuousSpace<Object> space;
-	Grid<Object> grid;
-	Parameters params;
-	MessageBoard messageBoard;
-	Integer countDown;
-	boolean gameOn;
-	int standardCountDown = 500;
+	private Context<Object> context;
+	private ContinuousSpace<Object> space;
+	private Grid<Object> grid;
+	private Parameters params;
+	private MessageBoard messageBoard;
+	private Integer countDown;
+	private boolean gameOn;
+	private int standardCountDown = 500;
 	
 	Referee(Context<Object> context){
 		this.context = context;
@@ -34,11 +34,11 @@ public class Referee {
 		this.messageBoard = (MessageBoard) iter.next();
 	}
 	
-	public void init(){
+	void init(){
 		startGame();
 	}
 
-	public void step(){
+	void step(){
 		checkGame();
 		checkGameOver();
 	}
@@ -46,7 +46,7 @@ public class Referee {
 	/**
 	 * Checks the countdown variable and reduces it or ends the game based on its value
 	 */
-	public void checkGameOver(){
+	void checkGameOver(){
 		if(countDown!=null){
 			if(countDown==0){
 				endGame();
@@ -57,7 +57,7 @@ public class Referee {
 	/**
 	 * If the gameOn bool is true, performs the various gameplay checks
 	 */
-	public void checkGame(){
+	void checkGame(){
 		if(gameOn){
 			checkOut();
 			checkTouch();
@@ -69,18 +69,18 @@ public class Referee {
 	/**
 	 * Checks if the ball has travelled forward
 	 */
-	public void checkForward(){
+	void checkForward(){
 		
 		//Get the ball
 		Iterator<Object> it = context.getObjects(Ball.class).iterator();
 		Ball ball = (Ball)it.next();
 		
 		//If the ball does not have a player
-		if(ball.player!=null){
+		if(ball.getPlayer()!=null){
 		} else {
 			
 			//If the balls velocity is negative on the xaxis, call forward
-			if(ball.velocity.getX()<0){
+			if(ball.getVelocity().getX()<0){
 				makeCall("Forward!");
 			}
 		}
@@ -89,7 +89,7 @@ public class Referee {
 	/**
 	 * Checks if the ball carrier or the ball has gone out
 	 */
-	public void checkOut(){
+	void checkOut(){
 		
 		//Get the ball
 		Iterator<Object> it = context.getObjects(Ball.class).iterator();
@@ -104,11 +104,11 @@ public class Referee {
 				
 				
 				//If the ball has a player
-				if(ball.player!=null){
+				if(ball.getPlayer()!=null){
 					//Define the attackers upper and lower reaches
-					Attacker attacker = (Attacker)ball.player;
-					double attackerUpperEdge = attacker.positionPoint.getY()+(Integer)params.getValue("body_radius");
-					double attackerLowerEdge = attacker.positionPoint.getY()-(Integer)params.getValue("body_radius");
+					Attacker attacker = (Attacker)ball.getPlayer();
+					double attackerUpperEdge = attacker.getPositionPoint().getY()+(Integer)params.getValue("body_radius");
+					double attackerLowerEdge = attacker.getPositionPoint().getY()-(Integer)params.getValue("body_radius");
 					
 					//If the attacker crosses the sideline, ball is out
 					if(attackerUpperEdge>=upperEdge||attackerLowerEdge<=lowerEdge){
@@ -117,10 +117,10 @@ public class Referee {
 				}
 				
 				//If the ball has a player
-				if(!(ball.player!=null)){
+				if(!(ball.getPlayer()!=null)){
 					//Define the balls upper and lower reaches
-					double ballUpperEdge = ball.positionPoint.getY()+(Integer)params.getValue("ball_radius");
-					double ballLowerEdge = ball.positionPoint.getY()-(Integer)params.getValue("ball_radius");
+					double ballUpperEdge = ball.getPositionPoint().getY()+(Integer)params.getValue("ball_radius");
+					double ballLowerEdge = ball.getPositionPoint().getY()-(Integer)params.getValue("ball_radius");
 						
 					//If the ball crosses the sideline, ball is out
 					if(ballUpperEdge>=upperEdge||ballLowerEdge<=lowerEdge){
@@ -133,7 +133,7 @@ public class Referee {
 	/**
 	 * Checks if the player with the ball has reached the tryline
 	 */
-	public void checkTry(){
+	void checkTry(){
 		
 		//Find the x value of the tryline
 		int tryPoint = (Integer)params.getValue("fieldInset") + (Integer)params.getValue("fieldIncrement");
@@ -144,8 +144,8 @@ public class Referee {
 		Ball ball = (Ball)it.next();
 		
 		//If the ball has a player, check if the ball has touched the tryline
-		if(ball.player!=null){
-			double ballEdge = ball.positionPoint.getX()-(Integer)params.getValue("ball_radius");
+		if(ball.getPlayer()!=null){
+			double ballEdge = ball.getPositionPoint().getX()-(Integer)params.getValue("ball_radius");
 				if(ballEdge<=tryEdge){
 					
 					makeCall("Try!");
@@ -156,15 +156,15 @@ public class Referee {
 	/**
 	 * Checks if the player with the ball was touched by a defender
 	 */
-	public void checkTouch(){
+	void checkTouch(){
 		
 		//Get the ball object
 		Iterator<Object> it = context.getObjects(Ball.class).iterator();
 		Ball ball = (Ball)it.next();
 		
 		//If the balls player is not null, get the player
-		if(ball.player!=null){
-				Player ballHandler = ball.player;
+		if(ball.getPlayer()!=null){
+				Player ballHandler = ball.getPlayer();
 				
 				//Iterate through the defenders
 				Iterator<Object> iter = context.getObjects(Defender.class).iterator();
@@ -183,7 +183,7 @@ public class Referee {
 	/**
 	 * Sets the gameOn variable to true and sends a message
 	 */
-	public void startGame(){
+	void startGame(){
 		gameOn = true;
 		messageBoard.addMessage(this, "Begin!");
 	}
@@ -191,7 +191,7 @@ public class Referee {
 	/**
 	 * Ends the current simulation
 	 */
-	public void endGame(){
+	void endGame(){
 		RunEnvironment.getInstance().endRun();
 	}
 	
@@ -199,7 +199,7 @@ public class Referee {
 	 * Send a message, turn the gameOn variable off and begin a countdown to end the game
 	 * @param call - the call and message to be sent
 	 */
-	public void makeCall(String call){
+	void makeCall(String call){
 		messageBoard.addMessage(this, call);
 		gameOn = false;
 		countDown = standardCountDown;

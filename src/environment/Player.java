@@ -12,13 +12,13 @@ import repast.simphony.context.Context;
 
 public class Player extends MovingAgent {
 
-	protected Brain brain;
-	protected Senses senses;
-	protected Reflexes reflexes;
-	protected PlayerMovement movement;
-	protected Head head;
-	protected int number;
-	protected MessageBoard messageBoard;
+	private Brain brain;
+	private Senses senses;
+	private Reflexes reflexes;
+	private PlayerMovement movement;
+	private Head head;
+	private int number;
+	private MessageBoard messageBoard;
 	
 	/**
 	 * The constructor for the Player
@@ -38,20 +38,44 @@ public class Player extends MovingAgent {
 		this.messageBoard = (MessageBoard) iter.next();
 	}
 	
-	protected void init(){	
+	void init(){	
 		senses.init();
 		brain.init();
 		reflexes.init();
 	}
 	
-	protected void step() {
+	void step() {
 		senses.step();
 		brain.step();
 		reflexes.step();
 	}
 	
-	protected Brain getBrain(){
+	Brain getBrain(){
 		return brain;
+	}
+	
+	Senses getSenses(){
+		return senses;
+	}
+	
+	Reflexes getReflexes(){
+		return reflexes;
+	}
+	
+	Head getHead(){
+		return head;
+	}
+	
+	PlayerMovement getMovement(){
+		return movement;
+	}
+	
+	int getNumber(){
+		return number;
+	}
+	
+	MessageBoard getMessageBoard(){
+		return messageBoard;
 	}
 	
 }

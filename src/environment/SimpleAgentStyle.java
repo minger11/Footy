@@ -13,13 +13,13 @@ import saf.v3d.scene.VSpatial;
  */
 public class SimpleAgentStyle extends DefaultStyleOGL2D{
 
-	protected ShapeFactory2D factory;
+	private ShapeFactory2D factory;
 	
 	//The scales of the various images
-	protected float playerScale = 0.3f;
-	protected float fieldScale = 1f;
-	protected float headScale = 0.3f;
-	protected float ballScale = 0.1f;
+	private float playerScale = 0.3f;
+	private float fieldScale = 1f;
+	private float headScale = 0.3f;
+	private float ballScale = 0.1f;
 	
 	/**
 	 * Creates the shapefactory to be used to create shapes
@@ -92,17 +92,17 @@ public class SimpleAgentStyle extends DefaultStyleOGL2D{
 	@Override
 	public float getRotation(Object o) {
 		if (o instanceof Player){
-			double angle = ((Player) o).rotation;
+			double angle = ((Player) o).getRotation();
 			float heading = 360-(float)(angle*57.2958);
 			return heading;
 		}
 		if (o instanceof Head){
-			double angle = ((Head) o).rotation;
+			double angle = ((Head) o).getRotation();
 			float heading = 360-(float)(angle*57.2958);
 			return heading;
 		}
 		if (o instanceof Ball){
-			double angle = ((Ball) o).rotation;
+			double angle = ((Ball) o).getRotation();
 			float heading = 360-(float)(angle*57.2958);
 			return heading;
 		}

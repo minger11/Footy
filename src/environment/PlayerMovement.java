@@ -2,8 +2,6 @@ package environment;
 
 import javax.vecmath.Vector3d;
 
-import repast.simphony.context.Context;
-
 /**
  * Movement is concerned with taking the reflex desires, 
  * running them through the appropriate physics methods 
@@ -14,79 +12,85 @@ import repast.simphony.context.Context;
 
 public class PlayerMovement{
 	
+	Utils utils = new Utils();
+	
 	//Current Player
-	protected Player player;
+	private Player player;
 	
-	//Relevant positional and velocity vectors
-	protected Vector3d bodyVelocity; 
+	//Absolute effort vectors
+	private Vector3d passEffort;
+	private Vector3d effort;
 	
-	//Desired ball position
-	protected Vector3d ballVelocity;
+	//Absolute rotational angles (radians not degrees)
+	private double headTurn;
+	private double armsTurn;
+	private double turn;
 	
-	//Rotational angles (radians not degrees)
-	protected double desiredHeadAngle;
-	protected double desiredBodyAngle;	
-	
-	protected Physics physics;
+	private String message;
 	
 	PlayerMovement(Player player){
 		this.player = player;
-		bodyVelocity = new Vector3d();
-		ballVelocity = new Vector3d();
+		effort = new Vector3d();
+		passEffort = new Vector3d();
 	}
 	
-	protected void init(){
-		player.head.rotation = desiredHeadAngle;
-		player.rotation = desiredBodyAngle;
+	//------------SETTERS-------------------------------------------------------------//	
+	
+	void setBodyTurn(double angle){
+		double absoluteAngle = utils.RelativeToAbsolute(angle, player.getHead().getRotation());
+		turn=absoluteAngle;
 	}
 	
-	protected void step(){
-		getPhysics();
-		updateVelocity();
-		updateRotation();
-	}
-	
-	protected void getPhysics(){
-		physics = new Physics(player, player.positionVector, bodyVelocity, ballVelocity, player.velocity);
-	}
-	
-	/**
-	 * passes the current and intended motion vectors to the physics engine updates the current motion with output
-	 */
-	protected void updateVelocity(){
-		player.velocity = physics.getUpdatedVelocity();
-		player.head.velocity = player.velocity;
-	}
-	
-	/**
-	 * Updates the rotation of both the head and player
-	 */
-	protected void updateRotation(){
-		player.head.rotation = desiredHeadAngle;
-		player.rotation = desiredBodyAngle;
-	}
-	
-	//------------SETTERS AND GETTERS---------------//
-	
-	protected void setDesiredPosition(Vector3d position){
-		this.bodyVelocity = position;
-	}		
-	
-	protected void setDesiredBodyAngle(double angle){
-		desiredBodyAngle = angle;
-	}
-	
-	protected void setDesiredHeadAngle(double angle){
-		desiredHeadAngle = angle;
+	void setHeadTurn(double angle){
+		double absoluteAngle = utils.RelativeToAbsolute(angle, player.getHead().getRotation());
+		headTurn = absoluteAngle;
 	}
 		
-	protected void setDesiredBallVelocity(Vector3d x){
-			ballVelocity = x;
+	void setPassEffort(double direction, double distance){
+		double absoluteDirection = utils.RelativeToAbsolute(direction, player.getHead().getRotation());
+		passEffort = utils.getVector(absoluteDirection, distance);
 	}
 	
-	protected void setDesiredBodyVelocity(Vector3d x){
-			bodyVelocity = x;
+	void setEffort(double direction, double distance){
+		double absoluteDirection = utils.RelativeToAbsolute(direction, player.getHead().getRotation());
+		effort = utils.getVector(absoluteDirection, distance);
 	}
+	
+	void setArmsTurn(double angle){
+		double absoluteAngle = utils.RelativeToAbsolute(angle, player.getHead().getRotation());
+		armsTurn = absoluteAngle;
+	}
+	
+	void setMessage(String x){
+		message = x;
+	}	
+	
+	//------------GETTERS-------------------------------------------------//	
+	
+	double getHeadTurn(){
+		return headTurn;
+	}
+		
+	Vector3d getPassEffort(){
+		return passEffort;
+	}
+	
+	double getArmsTurn(){
+		return armsTurn;
+	}
+	
+	String getMessage(){
+		return message;
+	}
+
+	double getTurn(){
+		return turn;
+	}
+	
+	Vector3d getEffort(){
+		return effort;
+	}
+	
 }
 
 

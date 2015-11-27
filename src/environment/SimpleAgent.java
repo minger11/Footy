@@ -11,12 +11,12 @@ import repast.simphony.space.grid.Grid;
 
 public class SimpleAgent {
 
-	protected NdPoint positionPoint;
-	protected Grid<Object> grid;
-	protected ContinuousSpace<Object> space;
-	protected Context<Object> context;
-	protected Parameters params;
-	protected Vector3d positionVector;
+	private NdPoint positionPoint;
+	private Grid<Object> grid;
+	private ContinuousSpace<Object> space;
+	private Context<Object> context;
+	private Parameters params;
+	private Vector3d positionVector;
 	
 	SimpleAgent(Context context, int x, int y) {
 		context.add(this);
@@ -28,12 +28,16 @@ public class SimpleAgent {
 		params = RunEnvironment.getInstance().getParameters();
 	}
 	
-	protected Context<Object> getContext(){
+	Context<Object> getContext(){
 		return context;
 	}
 	
-	protected ContinuousSpace<Object> getSpace() {
+	ContinuousSpace<Object> getSpace() {
 		return space;
+	}
+	
+	Grid<Object> getGrid(){
+		return grid;
 	}
 	
 	/**
@@ -58,11 +62,11 @@ public class SimpleAgent {
 		positionVector = vector;
 	}
 	
-	protected NdPoint getPositionPoint(){
+	NdPoint getPositionPoint(){
 		return positionPoint;
 	}
 	
-	protected void setPositionPoint(NdPoint x){
+	void setPositionPoint(NdPoint x){
 		positionPoint = x;
 	}
 	

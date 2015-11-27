@@ -13,9 +13,9 @@ import repast.simphony.engine.environment.RunEnvironment;
 
 public class MovingAgent extends SimpleAgent{
 
-	protected Vector3d velocity;
-	protected double rotation;
-	protected double mass;
+	private Vector3d velocity;
+	private double rotation;
+	private double mass;
 	
 	MovingAgent(Context context, int x, int y) {
 		super(context, x, y);
@@ -26,6 +26,26 @@ public class MovingAgent extends SimpleAgent{
 		} else if(this instanceof Ball){
 			mass = (Integer)RunEnvironment.getInstance().getParameters().getValue("ball_weight");
 		}
+	}
+	
+	void setVelocity(Vector3d x){
+		velocity = x;
+	}
+	
+	Vector3d getVelocity(){
+		return velocity;
+	}
+	
+	void setRotation(double x){
+		rotation = x;
+	}
+	
+	double getRotation(){
+		return rotation;
+	}
+	
+	double getMass(){
+		return mass;
 	}
 	
 }

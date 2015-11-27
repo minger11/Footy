@@ -5,69 +5,33 @@ import javax.vecmath.Vector3d;
 public class BallMovement{
 	
 	//Positional and velocity vectors
-	protected Vector3d desiredPosition; 
+	private Vector3d effort; 
 	
 	//Rotational angles (in radians)
-	protected double desiredAngle;
-	
-	//Current ball
-	protected Ball ball;
-	
-	protected Physics physics;
+	private double turn;
 	
 	/**
 	 * Creates the balls movement
 	 * @param ball
 	 */
-	BallMovement(Ball ball){
-		this.ball = ball;
-		desiredAngle = 0.0;
-	}
-	
-	/**
-	 * Initializes the currentPosition vector to be equal to the current position
-	 */
-	protected void init(){
-		desiredPosition = ball.positionVector;
-	}
-	
-	/**
-	 * Updates the current Position vector and physically moves the ball
-	 */
-	protected void step(){
-		getPhysics();
-		updateVelocity();
-		updateRotation();
-	}
-	
-	public void getPhysics(){
-		//Creates a new physics
-		physics = new Physics(ball, ball.positionVector, desiredPosition, ball.velocity);
-	}
-	
-	/**
-	 * Handles all changes to the ball velocity and positional vectors as well as angles
-	 */
-	public void updateVelocity(){
-		//Sets the current velocity to the return from physics
-		ball.velocity = physics.getUpdatedVelocity();
-	}
-	
-	/**
-	 * Handles all changes to the rotation of the ball
-	 */
-	public void updateRotation(){
-		//Calls the angular manipulation method in physics
-		physics.ballAngularManipulation();
+	BallMovement(){
 	}
 	
 	//------SETTERS AND GETTERS -------------------
 	
-	protected void setDesiredAngle(double angle){
-		this.desiredAngle = angle;
+	void setTurn(double angle){
+		this.turn = angle;
 	}
 	
-	protected void setDesiredPosition(Vector3d position){
-		this.desiredPosition = position;
-	}		
+	void setEffort(Vector3d position){
+		this.effort = position;
+	}	
+	
+	double getTurn(){
+		return turn;
+	}
+	
+	Vector3d getEffort(){
+		return effort;
+	}	
 }

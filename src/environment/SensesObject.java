@@ -13,27 +13,23 @@ import repast.simphony.space.continuous.NdPoint;
  */
 public class SensesObject{
 	
-		Utils utils = new Utils();
-		Object simpleAgent;
+	private Utils utils = new Utils();
+	private Object simpleAgent;
 	
 		//Within depthvision
-		boolean withinDepth;
+	private boolean withinDepth;
 			
 		//--------withinDepth = TRUE------------------------------------------//		
 		//For agents that are within depth
-		Vector3d relativeVector;
 		
 		//For agents that are players and who are within depth
-		double headRotation;
-		double bodyRotation;
+	private double headRotation;
+	private double bodyRotation;
 			
 		//--------WITHINDEPTH = FALSE------------------------------------------//		
 		//For agents that are not within depth and whose distance is not know
-		double relativeAngle;
-		
-		
-		
-
+	private double relativeAngle;
+	private double distance;
 		
 		/**
 		 * Creates a new sensesObject with a static Vector3d that cannot change with the player
@@ -47,14 +43,15 @@ public class SensesObject{
 			
 			this.withinDepth = withinDepth;
 			
-			relativeAngle = utils.absoluteToRelative(utils.getAngle(vector), player.head.rotation);
+			relativeAngle = utils.absoluteToRelative(utils.getAngle(vector), player.getHead().getRotation());
 			
 			if(this.withinDepth){
-				relativeVector = vector;
+				distance = vector.length();
+				
 				
 				if(simpleAgent instanceof Player){
-					headRotation = utils.absoluteToRelative(((Player)simpleAgent).head.rotation, player.head.rotation);
-					bodyRotation = utils.absoluteToRelative(((Player)simpleAgent).rotation, player.head.rotation);
+					headRotation = utils.absoluteToRelative(((Player)simpleAgent).getHead().getRotation(), player.getHead().getRotation());
+					bodyRotation = utils.absoluteToRelative(((Player)simpleAgent).getRotation(), player.getHead().getRotation());
 				}
 			}
 		}
@@ -69,7 +66,7 @@ public class SensesObject{
 			simpleAgent = agent;
 				
 			withinDepth = false;
-			relativeAngle = utils.absoluteToRelative(angle, player.head.rotation);
+			relativeAngle = utils.absoluteToRelative(angle, player.getHead().getRotation());
 		}
 		
 		SensesObject(Object agent){
@@ -78,9 +75,8 @@ public class SensesObject{
 		
 		
 		//---------------SETTERS AND GETTERS -----------------------//
-		
-		public Vector3d getRelativeVector(){
-			return relativeVector;
+		public double getDistance(){
+			return distance;
 		}
 			
 		public Object getSimpleAgent(){

@@ -14,13 +14,13 @@ import repast.simphony.context.Context;
 public class Ball extends MovingAgent{
 	
 	//Ball movement
-	protected BallMovement movement;
+	private BallMovement movement;
 	
 	//Balls current handler
-	protected Player player;
+	private Player player;
 	
 	//A list of all ball handlers who touch the ball
-	protected List<Player> players;
+	private List<Player> players;
 	
 	/**
 	 * Creates the ball
@@ -30,30 +30,17 @@ public class Ball extends MovingAgent{
 	 */
 	Ball(Context context, int x, int y){
 		super(context, x, y);
-		movement = new BallMovement(this);
+		movement = new BallMovement();
+		movement.setTurn(0.0);
 		player = null;
 		players = new ArrayList<Player>();
-	}
-	
-	/**
-	 * Calls init on the balls movement
-	 */
-	public void init(){
-		movement.init();
-	}
-	
-	/**
-	 * Calls step on the balls movement
-	 */
-	public void step(){
-		movement.step();
 	}
 	
 	/**
 	 * Returns the last player who touched the ball
 	 * @return
 	 */
-	public Player getLastPlayer(){
+	Player getLastPlayer(){
 		int size = players.size();
 		if(size>0){
 			Player player = players.get(size-1);
@@ -62,12 +49,21 @@ public class Ball extends MovingAgent{
 		return null;
 	}
 	
+	Player getPlayer(){
+		return player;
+	}
+	
+	BallMovement getMovement(){
+		return movement;
+	}
+	
 	/**
-	 * Sets the player currently possessing the ball
+	 * Sets the player currently possessing the ball and adds to the players list
 	 * @param x
 	 */
-	public void setPlayer(Player x){
+	void setPlayer(Player x){
 		player = x;
+		players.add(x);
 	}
 
 }

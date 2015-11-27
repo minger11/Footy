@@ -29,7 +29,6 @@ public class Scheduler {
 		Iterator<Object> itra = context.getObjects(Ball.class).iterator();
 		while(itra.hasNext()){
 			Ball ball = (Ball)itra.next();
-			ball.init();
 		}
 		Iterator<Object> iterz = context.getObjects(Mover.class).iterator();
 		while(iterz.hasNext()){
@@ -54,11 +53,12 @@ public class Scheduler {
 		while(it.hasNext()){
 			Player player = (Player)it.next();
 			player.step();
+			Physics physics = new Physics(player);
 		}
 		Iterator<Object> itra = context.getObjects(Ball.class).iterator();
 		while(itra.hasNext()){
 			Ball ball = (Ball)itra.next();
-			ball.step();
+			Physics physics = new Physics(ball);
 		}
 		Iterator<Object> iterz = context.getObjects(Mover.class).iterator();
 		while(iterz.hasNext()){

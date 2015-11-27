@@ -12,11 +12,14 @@ import repast.simphony.space.grid.Grid;
 
 public class Head extends MovingAgent{
 
-	Player player;
+	private Player player;
 	
 	Head(Context context, int x, int y, Player player){
 		super(context, x, y);	
 		this.player = player;
 	}
 
+	Player getPlayer(){
+		return player;
+	}
 }

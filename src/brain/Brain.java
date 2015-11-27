@@ -36,26 +36,34 @@ public class Brain {
 	private List<SensesObject> players;
 	private boolean hasBall;
 	
-	//Processed
+	//Derived
 	private SensesObject targetObject;
+	
+	//Sent
 	private String newMessage;
-	private Vector3d ballVelocity;
-	private Vector3d bodyVelocity;
-	private double desiredBodyAngle;
-	private double desiredHeadAngle;
+	//private Vector3d passEffort;
+	//private Vector3d effort;
+	private double turn;
+	private double headTurn;
+	private double armsTurn;
+	
+	private double moveDirection;
+	private double moveEnergy;
+	private double passDirection;
+	private double passEnergy;
 	
 	public Brain(){
 		tryline = new ArrayList<SensesObject>();
 		players = new ArrayList<SensesObject>();
-		bodyVelocity = new Vector3d();
-		ballVelocity = new Vector3d();
+		//effort = new Vector3d();
+		//passEffort = new Vector3d();
 	}
 	
 	public void init(){
 		mapSurroundings();
 		setTarget();
 		if(player instanceof Attacker){
-			desiredHeadAngle = desiredBodyAngle = Math.PI;
+			headTurn = turn = Math.PI;
 		}
 	}
 	
@@ -65,7 +73,7 @@ public class Brain {
 		if(hasBall) {
 			moveBall();
 		}
-		else ballVelocity=null;
+		else passEnergy=0;
 	}
 
 	/**
@@ -76,9 +84,12 @@ public class Brain {
 			int randomNumber = RandomHelper.nextIntFromTo(0, tryline.size()-1);
 		try {
 				targetObject = tryline.get(randomNumber);
-				bodyVelocity = targetObject.getRelativeVector();
+				moveEnergy = targetObject.getDistance();
+				moveDirection = targetObject.getRelativeAngle();
+				//effort = targetObject.getRelativeVector();
 			} catch (Exception e){
 			}
+		Vector3d vec = new Vector3d();
 		}
 		else 
 		if(player instanceof Defender) {
@@ -88,17 +99,19 @@ public class Brain {
 				if(it.next().getSimpleAgent() instanceof Attacker){
 					//SensesObject y = players.iterator().next();
 					targetObject = players.iterator().next();
-					bodyVelocity = targetObject.getRelativeVector();
+					//effort = targetObject.getRelativeVector();
+					moveEnergy = targetObject.getDistance();
+					moveDirection = targetObject.getRelativeAngle();
 				}
 			}
 		}
 		try{
 			if(targetObject.isWithinDepth()){
-				desiredHeadAngle = targetObject.getRelativeAngle();
+				headTurn = targetObject.getRelativeAngle();
 			} else {
-				desiredHeadAngle = targetObject.getRelativeAngle();
+				headTurn = targetObject.getRelativeAngle();
 			}
-			desiredBodyAngle = desiredHeadAngle;
+			turn = headTurn;
 		} catch (Exception e) {
 		}
 	}
@@ -109,8 +122,9 @@ public class Brain {
 		//	speed = maxSpeed;
 		//}
 		//if (bodyVelocity.length() > speed ){
-			bodyVelocity.normalize();
-			bodyVelocity.scale(speed);
+			//effort.normalize();
+			//effort.scale(speed);
+			moveEnergy = speed;
 		//}
 	}
 	
@@ -128,14 +142,16 @@ public class Brain {
 		
 		if(targetObject!=null){
 			if(targetObject.isWithinDepth()){
-				bodyVelocity = targetObject.getRelativeVector();
+				//effort = targetObject.getRelativeVector();
+				moveEnergy = targetObject.getDistance();
+				moveDirection = targetObject.getRelativeAngle();
 
-				desiredHeadAngle = targetObject.getRelativeAngle();
-				desiredBodyAngle = desiredHeadAngle;
+				headTurn = targetObject.getRelativeAngle();
+				turn = headTurn;
 			}
 			else {
-				desiredHeadAngle = targetObject.getRelativeAngle();
-				desiredBodyAngle = desiredHeadAngle;
+				headTurn = targetObject.getRelativeAngle();
+				turn = headTurn;
 			}
 		}
 		if(targetObject==null){
@@ -159,7 +175,9 @@ public class Brain {
 	
 	public void moveBall(){
 		//if(currentPosition.getX()>=640||currentPosition.getX()<=630){
-			ballVelocity = bodyVelocity;
+			//passEffort = effort;
+			passEnergy = moveEnergy;
+			passDirection = moveDirection;
 		//} else {
 			//pass ball
 			//ballVelocity.set(50.0, 2000.0, 0.0);
@@ -281,25 +299,45 @@ public class Brain {
 	
 	//--------------------------------NECK----------------------------------------//
 	
-	public double getDesiredHeadAngle(){
-		return desiredHeadAngle;
+	public double getHeadTurn(){
+		return headTurn;
 	}
 	
 	//-------------------------------ARMS---------------------------------------------//
 	
-	public Vector3d getBallVelocity(){
-		return ballVelocity;
+	//public Vector3d getPassEffort(){
+		//return passEffort;
+	//}
+	
+	public double getPassDirection(){
+		return passDirection;
+	}
+	
+	public double getPassEnergy(){
+		return passEnergy;
+	}
+	
+	public double getArmsTurn(){
+		return armsTurn;
 	}
 	
 	//--------------------------------BODY-------------------------------------------//
 	
-	public double getDesiredBodyAngle(){
-		return desiredBodyAngle;
+	public double getTurn(){
+		return turn;
 	}
 	
 	//--------------------------------LEGS--------------------------------------------//
 	
-	public Vector3d getBodyVelocity(){
-		return bodyVelocity;
+	//public Vector3d getEffort(){
+	//	return effort;
+	//}
+	
+	public double getMoveEnergy(){
+		return moveEnergy;
+	}
+	
+	public double getMoveDirection(){
+		return moveDirection;
 	}
 }

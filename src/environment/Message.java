@@ -8,11 +8,11 @@ package environment;
 
 public class Message {
 	
-	protected Object sender;
-	protected String message;
-	protected Long time;
-	protected boolean official;
-	protected Double angle;
+	private Object sender;
+	private String message;
+	private Long time;
+	private boolean official;
+	private Double angle;
 	
 	/**
 	 * The message constructor used when adding messages to the messageboard
@@ -42,29 +42,28 @@ public class Message {
 	 * @param angle
 	 */
 	Message(boolean official, String message, Double angle){
-		this.time = System.currentTimeMillis();
 		this.message = message;
 		this.angle = angle;
 		this.official = official;
 	}
 	
-	public Object getSender(){
+	Object getSender(){
 		return sender;
 	}
 	
-	public Double getAngle(){
+	Double getAngle(){
 		return angle;
 	}
 	
-	public Boolean isOfficial(){
+	Boolean getOfficial(){
 		return official;
 	}
 	
-	public Long getTime(){
+	Long getTime(){
 		return time;
 	}
 	
-	public String getMessage(){
+	String getMessage(){
 		return message;
 	}
 }
