@@ -1,5 +1,8 @@
 package environment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import repast.simphony.context.Context;
 
 /**
@@ -16,6 +19,9 @@ public class Ball extends MovingAgent{
 	//Balls current handler
 	protected Player player;
 	
+	//A list of all ball handlers who touch the ball
+	protected List<Player> players;
+	
 	/**
 	 * Creates the ball
 	 * @param context
@@ -25,6 +31,8 @@ public class Ball extends MovingAgent{
 	Ball(Context context, int x, int y){
 		super(context, x, y);
 		movement = new BallMovement(this);
+		player = null;
+		players = new ArrayList<Player>();
 	}
 	
 	/**
@@ -39,6 +47,19 @@ public class Ball extends MovingAgent{
 	 */
 	public void step(){
 		movement.step();
+	}
+	
+	/**
+	 * Returns the last player who touched the ball
+	 * @return
+	 */
+	public Player getLastPlayer(){
+		int size = players.size();
+		if(size>0){
+			Player player = players.get(size-1);
+			return player;
+		} 
+		return null;
 	}
 	
 	/**

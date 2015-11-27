@@ -18,3 +18,5 @@ initial_head_angle;lineRadius;int;0;FALSE;repast.simphony.parameter.StringConver
 ball_start_y;ball_start_y;int;390;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
 ball_start_x;ball_start_x;int;635;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
 ball_radius;ball_radius;int;3;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
+ball_weight;ball_radius;int;500;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
+body_weight;ball_radius;int;8000;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter

@@ -15,8 +15,6 @@ import environment.Defender;
 import environment.Message;
 import environment.Player;
 import environment.SensesObject;
-import environment.SimpleAgent;
-import environment.TryPoint;
 
 /**
  * Hub of all actions of the player
@@ -28,32 +26,29 @@ import environment.TryPoint;
 
 public class Brain {
 
-	private SimpleAgent target;
-	private SensesObject targetObject;
-	private Vector3d desiredPosition;
 	private Player player;
-	private double speed;
-	private double desiredBodyAngle;
-	private double desiredHeadAngle;
-	private NdPoint currentPosition;
-	private NdPoint targetPosition;
-	private ContinuousSpace<Object> space;
+	
+	private double maxSpeed;
+	
+	//Received
+	private SensesObject message;
 	private List<SensesObject> tryline;
 	private List<SensesObject> players;
-	private List<SensesObject> sidelines;
-	private List<SensesObject> balls;
-	private int maxSpeed;
 	private boolean hasBall;
-	private Vector3d desiredBallPosition;
-	private Message lastMessage;
-	private String newMessage;
 	
+	//Processed
+	private SensesObject targetObject;
+	private String newMessage;
+	private Vector3d ballVelocity;
+	private Vector3d bodyVelocity;
+	private double desiredBodyAngle;
+	private double desiredHeadAngle;
 	
 	public Brain(){
 		tryline = new ArrayList<SensesObject>();
 		players = new ArrayList<SensesObject>();
-		desiredBallPosition = new Vector3d();
-		desiredPosition = new Vector3d();
+		bodyVelocity = new Vector3d();
+		ballVelocity = new Vector3d();
 	}
 	
 	public void init(){
@@ -70,7 +65,7 @@ public class Brain {
 		if(hasBall) {
 			moveBall();
 		}
-		else desiredBallPosition=null;
+		else ballVelocity=null;
 	}
 
 	/**
@@ -80,9 +75,8 @@ public class Brain {
 		if(player instanceof Attacker) {
 			int randomNumber = RandomHelper.nextIntFromTo(0, tryline.size()-1);
 		try {
-				SensesObject x = tryline.get(randomNumber);
-				target = (TryPoint)x.getSimpleAgent();
-				targetObject = x;
+				targetObject = tryline.get(randomNumber);
+				bodyVelocity = targetObject.getRelativeVector();
 			} catch (Exception e){
 			}
 		}
@@ -92,23 +86,34 @@ public class Brain {
 			Iterator<SensesObject> it = players.iterator();
 			while(it.hasNext()){
 				if(it.next().getSimpleAgent() instanceof Attacker){
-					SensesObject y = players.iterator().next();
-					target = (Player)y.getSimpleAgent();
-					targetObject = y;
+					//SensesObject y = players.iterator().next();
+					targetObject = players.iterator().next();
+					bodyVelocity = targetObject.getRelativeVector();
 				}
 			}
 		}
 		try{
 			if(targetObject.isWithinDepth()){
-				desiredHeadAngle = SpatialMath.calcAngleFor2DMovement(space, currentPosition, targetPosition);
+				desiredHeadAngle = targetObject.getRelativeAngle();
 			} else {
-				desiredHeadAngle = targetObject.getAgentAngle();
+				desiredHeadAngle = targetObject.getRelativeAngle();
 			}
 			desiredBodyAngle = desiredHeadAngle;
 		} catch (Exception e) {
 		}
 	}
 
+	public void run(double speed){
+		
+		//if(speed>maxSpeed){
+		//	speed = maxSpeed;
+		//}
+		//if (bodyVelocity.length() > speed ){
+			bodyVelocity.normalize();
+			bodyVelocity.scale(speed);
+		//}
+	}
+	
 	/**
 	 * Sets both the speed and angle based on a given target
 	*/
@@ -117,20 +122,24 @@ public class Brain {
 		if(currentPosition.getX()<=650&&currentPosition.getX()>=200){
 			//setTarget();
 		}*/
-		if(target!=null){
+		if(targetObject!=null){
 			if(targetObject.isWithinDepth()){
-				desiredPosition.set(targetObject.getX(),targetObject.getY(),0.0);
-				desiredHeadAngle = SpatialMath.calcAngleFor2DMovement(space, currentPosition, targetObject.getPosition());
+				bodyVelocity = targetObject.getRelativeVector();
+
+				desiredHeadAngle = targetObject.getRelativeAngle();
 				desiredBodyAngle = desiredHeadAngle;
 			}
 			else {
-				desiredHeadAngle = targetObject.getAgentAngle();
+				desiredHeadAngle = targetObject.getRelativeAngle();
 				desiredBodyAngle = desiredHeadAngle;
 			}
 		}
-		if(target==null){
+		if(targetObject==null){
 			setTarget();
 		}
+		if(targetObject.getRelativeVector().length()>200){
+			run(1000);
+		}else run(100);
 		/**
 		if(target==null){
 		//Random spin mode
@@ -148,11 +157,11 @@ public class Brain {
 	}
 	
 	public void moveBall(){
-		//if(currentPosition.getX()>=450){
-			desiredBallPosition.set(currentPosition.getX(),currentPosition.getY(),0.0);
+		//if(currentPosition.getX()>=640||currentPosition.getX()<=630){
+			ballVelocity = bodyVelocity;
 		//} else {
 			//pass ball
-		//	desiredBallPosition.set(currentPosition.getX()+80, currentPosition.getY()+50, 0.0);
+		//	desiredBallPosition.set(currentPosition.getX()-50, currentPosition.getY()+200, 0.0);
 		//}
 	}
 	
@@ -170,9 +179,13 @@ public class Brain {
 	public void mapTryline(){
 		Iterator<SensesObject> it = tryline.iterator();
 		while(it.hasNext()){
-			SensesObject tryobject = it.next();
-			if(tryobject.getPosition()!=null){
-				space.moveTo(tryobject.getSimpleAgent(),tryobject.getPosition().getX(),tryobject.getPosition().getY());
+			SensesObject tryPoint = it.next();
+			try{
+				if(tryPoint.getSimpleAgent().equals(targetObject.getSimpleAgent())){
+					targetObject = tryPoint;
+				}
+			}catch(Exception e){
+				
 			}
 		}
 	}
@@ -185,16 +198,12 @@ public class Brain {
 		Iterator<SensesObject> it = players.iterator();
 		while(it.hasNext()){
 			SensesObject player = it.next();
-			if(player.getSimpleAgent().equals(target)){
-				targetObject = player;
-			}
-			if(player.isWithinDepth()){
-				space.moveTo(player.getSimpleAgent(),player.getPosition().getX(),player.getPosition().getY());
-			}
-			if(player.getSimpleAgent() instanceof Attacker){
-				/**if(player.isWithinDepth()){
-					System.out.println("depth");
-				} else System.out.println("side");*/
+			try{
+				if(player.getSimpleAgent().equals(targetObject.getSimpleAgent())){
+					targetObject = player;
+				}
+			}catch(Exception e){
+				
 			}
 		}
 	}
@@ -202,24 +211,32 @@ public class Brain {
 	
 	/**
 	 * -----------------BEGIN SETTERS AND GETTERS--------------------
+	 * These are the only way the model will interact with the brain
 	 * 
 	 */
 	
-	//Simple getters and setters
-	public void setLastMessage(Message message){
-		lastMessage = message;
-		if(message.isOfficial()){
-			System.out.println("Official: "+message.getMessage());
-		} else {
-			System.out.println(player.getClass()+": "+message.getAngle()+": "+message.getMessage());
+	//--------------------------------SENSES-----------------------------------------------------------------------------------//
+	//----------The following are incoming messages to the brain---------------------------------------------------------------//
+	
+	
+	//-----------------------------------INFO--------------------------------------//
+	//---------------------Sent once, at the start of the game---------------------//
+	
+		public void setMaxSpeed(int x){
+		
 		}
-	}
-	public void setMaxSpeed(int x){
-		maxSpeed = x;
-	}
-	public void setPlayer(Player x){
-		player = x;
-	}
+		
+		public void setSpace(ContinuousSpace<Object> x){
+			
+		}	
+		
+		public void setPlayer(Player x){
+			player = x;
+		}	
+	
+	//---------------------------------------EYES-----------------------------------//
+	//------------------Received every timestep------------------------------------//
+			
 	public void setPlayers(List<SensesObject> x){
 		players = x;
 	}
@@ -227,41 +244,61 @@ public class Brain {
 		tryline = x;
 	}
 	public void setBalls(List<SensesObject> x){
-		balls = x;
+		//balls = x;
 	}
 	public void setSidelines(List<SensesObject> x){
-		sidelines = x;
+		//sidelines = x;
 	}	
-	public void setSpace(ContinuousSpace<Object> x){
-		space = x;
-	}	
+	
+	//--------------------------------------EARS--------------------------------------//
+	//---------------------Only received when heard-----------------------------------//
+	
+	public void setMessage(SensesObject message){
+		this.message = message;
+	}
+	
+	//----------------------------------TOUCH--------------------------------------//
+	//--------------------------Each time step-------------------------------------//
+		
+	public void setHasBall(boolean x){
+		hasBall = x;
+	}
+		
+	
+	
+	
+	//-----------------------------REFLEXES---------------------------------------------------------------------------------//
+	//---------------Drawn from the model each time step---------------------------------------------------------------------//
+	
+	//-------------------------------MOUTH--------------------------------------//
+	
 	public String getNewMessage(){
 		String text = newMessage;
 		newMessage = null;
 		return text;
 	}
-	public void setPosition(NdPoint x){
-		currentPosition = x;
-	}	
-	public SimpleAgent getTarget(){
-		return target;
-	}	
-	public Vector3d getDesiredPosition(){
-		return desiredPosition;
-	}
-	public double getSpeed(){
-		return speed;
-	}	
+	
+	//--------------------------------NECK----------------------------------------//
+	
 	public double getDesiredHeadAngle(){
 		return desiredHeadAngle;
 	}
+	
+	//-------------------------------ARMS---------------------------------------------//
+	
+	public Vector3d getBallVelocity(){
+		return ballVelocity;
+	}
+	
+	//--------------------------------BODY-------------------------------------------//
+	
 	public double getDesiredBodyAngle(){
 		return desiredBodyAngle;
 	}
-	public void setHasBall(boolean x){
-		hasBall = x;
-	}
-	public Vector3d getDesiredBallPosition(){
-		return desiredBallPosition;
+	
+	//--------------------------------LEGS--------------------------------------------//
+	
+	public Vector3d getBodyVelocity(){
+		return bodyVelocity;
 	}
 }

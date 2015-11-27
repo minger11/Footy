@@ -20,4 +20,6 @@
 <parameter name="ball_start_y" displayName="ball_start_y" type="int" defaultValue="390" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
 <parameter name="ball_start_x" displayName="ball_start_x" type="int" defaultValue="635" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
 <parameter name="ball_radius" displayName="ball_radius" type="int" defaultValue="3" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="ball_weight" displayName="ball_radius" type="int" defaultValue="500" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="body_weight" displayName="ball_radius" type="int" defaultValue="8000" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
 </parameters>

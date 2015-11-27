@@ -93,36 +93,41 @@ public class Referee {
 		
 		//Get the ball
 		Iterator<Object> it = context.getObjects(Ball.class).iterator();
-		Ball ball = (Ball)it.next();
-		
-		//If the ball has a player
-		if(ball.player!=null){
-			
-			//Define the sidelines
-			int upperSideline = (Integer)params.getValue("display_height")-(Integer)params.getValue("fieldInset");
-			int upperEdge = upperSideline - (Integer)params.getValue("lineRadius");
-			int lowerSideline = (Integer)params.getValue("fieldInset");
-			int lowerEdge = lowerSideline + (Integer)params.getValue("lineRadius");
-			
-			//Define the attackers upper and lower reaches
-			Attacker attacker = (Attacker)ball.player;
-			double attackerUpperEdge = attacker.positionPoint.getY()+(Integer)params.getValue("body_radius");
-			double attackerLowerEdge = attacker.positionPoint.getY()-(Integer)params.getValue("body_radius");
-			
-			//Define the balls upper and lower reaches
-			double ballUpperEdge = ball.positionPoint.getY()+(Integer)params.getValue("ball_radius");
-			double ballLowerEdge = ball.positionPoint.getY()-(Integer)params.getValue("ball_radius");
+		while(it.hasNext()){
+			Ball ball = (Ball)it.next();
 				
-				//If the attacker crosses the sideline, ball is out
-				if(attackerUpperEdge>=upperEdge||attackerLowerEdge<=lowerEdge){
-					makeCall("Out!");
+				//Define the sidelines
+				int upperSideline = (Integer)params.getValue("display_height")-(Integer)params.getValue("fieldInset");
+				int upperEdge = upperSideline - (Integer)params.getValue("lineRadius");
+				int lowerSideline = (Integer)params.getValue("fieldInset");
+				int lowerEdge = lowerSideline + (Integer)params.getValue("lineRadius");
+				
+				
+				//If the ball has a player
+				if(ball.player!=null){
+					//Define the attackers upper and lower reaches
+					Attacker attacker = (Attacker)ball.player;
+					double attackerUpperEdge = attacker.positionPoint.getY()+(Integer)params.getValue("body_radius");
+					double attackerLowerEdge = attacker.positionPoint.getY()-(Integer)params.getValue("body_radius");
+					
+					//If the attacker crosses the sideline, ball is out
+					if(attackerUpperEdge>=upperEdge||attackerLowerEdge<=lowerEdge){
+						makeCall("Out!");
+					}
 				}
 				
-				//If the ball crosses the sideline, ball is out
-				if(ballUpperEdge>=upperEdge||ballLowerEdge<=lowerEdge){
-					makeCall("Out!");
+				//If the ball has a player
+				if(!(ball.player!=null)){
+					//Define the balls upper and lower reaches
+					double ballUpperEdge = ball.positionPoint.getY()+(Integer)params.getValue("ball_radius");
+					double ballLowerEdge = ball.positionPoint.getY()-(Integer)params.getValue("ball_radius");
+						
+					//If the ball crosses the sideline, ball is out
+					if(ballUpperEdge>=upperEdge||ballLowerEdge<=lowerEdge){
+						makeCall("Out!");
+					}
 				}
-			}
+		}
 	}
 	
 	/**

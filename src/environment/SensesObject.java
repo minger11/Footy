@@ -1,70 +1,123 @@
 package environment;
 
+import javax.vecmath.Vector3d;
 import repast.simphony.space.continuous.NdPoint;
 
 /**
- * PlayerObject to be used for sending players from the senses to internal projections in the brain
+ * used for sending players from the senses to the brain - Breaks NdPoints into Vectors
  * Separates a Player from his dynamically changing position
- * The resulting player object contains the player and a static NdPoint
+ * The resulting player object contains the player and a static Vector3d
  * It is built this way to ensure that the brain cannot access dynamically changing values in the Players real positional NdPoint
  * @author user
  *
  */
 public class SensesObject{
 	
-		double x;
-		double y;
-		NdPoint staticPosition;
-		SimpleAgent simpleAgent;
-		double agentAngle;
-		boolean withinDepth = false;
-		boolean withinSide = false;
+		Utils utils = new Utils();
+		Object simpleAgent;
+	
+		boolean withinDepth;
+			
+		//--------withinDepth = TRUE------------------------------------------//		
+		//For agents that are within depth
+		Vector3d relativeVector;
+		
+		//For agents that are players and who are within depth
+		double headRotation;
+		double bodyRotation;
+			
+		//--------WITHINDEPTH = FALSE------------------------------------------//		
+		//For agents that are not within depth and whose distance is not know
+		double relativeAngle;
+		
+		
 		
 		/**
-		 * Creates a new playerObject with a static NdPoint that cannot change with the player
+		 * Creates a new sensesObject with a static Vector3d that cannot change with the player
+		 * By first breaking the NdPoint parameter into doubles, we can then create a new point that wont move with the player
+		 * This is the place to add any sense noise to the model, scale the vectors!
+		 * @param t
+		 * @param p
+		 */
+		SensesObject(Object agent, NdPoint point){
+			
+			simpleAgent = agent;
+			
+			withinDepth = true;
+			
+			relativeVector = new Vector3d(point.getX(), point.getY(),0.0);
+			
+			if(simpleAgent instanceof Player){
+				headRotation = ((Player)simpleAgent).head.rotation;
+				bodyRotation = ((Player)simpleAgent).rotation;
+			}
+		}
+		
+		/**
+		 * Creates a new sensesObject with a static Vector3d that cannot change with the player
 		 * By first breaking the NdPoint parameter into doubles, we can then create a new point that wont move with the player
 		 * @param t
 		 * @param p
 		 */
-		SensesObject(SimpleAgent agent, NdPoint point){
+		SensesObject(Object agent, Vector3d vector, Player player, boolean withinDepth){
+			
 			simpleAgent = agent;
-			NdPoint dynamicPoint = point;
-			double xPosition = dynamicPoint.getX();
-			double yPosition = dynamicPoint.getY();
-			staticPosition = new NdPoint(xPosition,yPosition);
-			x = staticPosition.getX();
-			y = staticPosition.getY();
-			withinDepth = true;
+			
+			this.withinDepth = withinDepth;
+			
+			relativeAngle = utils.absoluteToRelative(utils.getAngle(vector), player.head.rotation);
+			
+			if(this.withinDepth){
+				relativeVector = vector;
+				
+				if(simpleAgent instanceof Player){
+					headRotation = utils.absoluteToRelative(((Player)simpleAgent).head.rotation, player.head.rotation);
+					bodyRotation = utils.absoluteToRelative(((Player)simpleAgent).rotation, player.head.rotation);
+				}
+			}
 		}
 		
-		SensesObject(SimpleAgent agent, Double angle){
+		/**
+		 * Creates a new 
+		 * @param agent - the agent being viewed
+		 * @param angle - the relative angle from the current player and the agent
+		 */
+		SensesObject(Object agent, Player player, Double angle){
+		
 			simpleAgent = agent;
-			agentAngle = angle;
+				
+			withinDepth = false;
+			relativeAngle = utils.absoluteToRelative(angle, player.head.rotation);
 		}
+		
+		SensesObject(Object agent){
+			simpleAgent = agent;
+		}
+		
 		
 		//---------------SETTERS AND GETTERS -----------------------//
 		
-		public NdPoint getPosition(){
-			return staticPosition;
+		public Vector3d getRelativeVector(){
+			return relativeVector;
 		}
-		
-		public SimpleAgent getSimpleAgent(){
+			
+		public Object getSimpleAgent(){
 			return simpleAgent;
 		}
-		
-		public double getX(){
-			return x;
-		}
-		
+			
 		public boolean isWithinDepth(){
 			return withinDepth;
 		}
-		
-		public double getY(){
-			return y;
+
+		public double getRelativeAngle(){
+			return relativeAngle;
 		}
 		
-		public double getAgentAngle(){
-			return agentAngle;
+		public double getRelativeBodyRotation(){
+			return bodyRotation;
+		}
+		
+		public double getRelativeHeadRotation(){
+			return headRotation;
 		}
 }

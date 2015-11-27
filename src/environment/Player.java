@@ -32,8 +32,8 @@ public class Player extends MovingAgent {
 		senses = new Senses(this);
 		reflexes = new Reflexes(this);
 		movement = new PlayerMovement(this);
-		this.number = number;
 		head = new Head(context, x, y, this);
+		this.number = number;
 		Iterator<Object> iter = context.getObjects(MessageBoard.class).iterator();
 		this.messageBoard = (MessageBoard) iter.next();
 	}

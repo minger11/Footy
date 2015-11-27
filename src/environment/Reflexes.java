@@ -15,6 +15,8 @@ import repast.simphony.context.Context;
 
 public class Reflexes {
 	
+	Utils utils = new Utils();
+	
 	Player player;
 	
 	Reflexes(Player player){
@@ -23,7 +25,7 @@ public class Reflexes {
 	
 	protected void init(){
 		mouth();
-		head();
+		neck();
 		body();
 		arms();
 		legs();
@@ -32,15 +34,15 @@ public class Reflexes {
 	
 	protected void step(){
 		mouth();
-		head();
+		neck();
 		body();
 		arms();
 		legs();
 		player.movement.step();
 	}
 	
-	public void head(){
-		player.movement.setDesiredHeadAngle(getDesiredHeadAngle());
+	public void neck(){
+		player.movement.setDesiredHeadAngle(getTurnHead());
 	}
 	
 	public void mouth(){
@@ -48,15 +50,17 @@ public class Reflexes {
 	}
 	
 	public void body(){
-		player.movement.setDesiredBodyAngle(getDesiredBodyAngle());
+		player.movement.setDesiredBodyAngle(getTurnBody());
 	}
 	
 	public void legs(){
-		player.movement.setDesiredPosition(getDesiredPosition());
+		//player.movement.setDesiredPosition(getDesiredPosition());
+		player.movement.setDesiredBodyVelocity(getBodyVelocity());
 	}
 	
 	public void arms(){
-		player.movement.setDesiredBallPosition(getDesiredBallPosition());
+		//player.movement.setDesiredBallPosition(getDesiredBallPosition());
+		player.movement.setDesiredBallVelocity(getBallVelocity());
 	}
 	
 	/**
@@ -85,26 +89,31 @@ public class Reflexes {
 		}
 	}
 	
-	public String getMessage(){
+
+	//-------------REAL GETTERS-------------------------//
+	
+	protected String getMessage(){
 		return player.brain.getNewMessage();
 	}
-	/**
-	 * Gets the intended movement angle and speed from the brain
-	 * @return
-	 */
-	protected Vector3d getDesiredPosition(){
-		return player.brain.getDesiredPosition();
+	
+	protected Vector3d getBallVelocity(){
+		return player.brain.getBallVelocity();
 	}
 	
-	protected double getDesiredBodyAngle(){
-		return player.brain.getDesiredBodyAngle();
+	protected Vector3d getBodyVelocity(){
+		return player.brain.getBodyVelocity();
 	}
 	
-	protected double getDesiredHeadAngle(){
-		return player.brain.getDesiredHeadAngle();
+	protected double getTurnBody(){
+		return utils.RelativeToAbsolute(player.brain.getDesiredBodyAngle(), player.head.rotation);
 	}
 	
-	protected Vector3d getDesiredBallPosition(){
-		return player.brain.getDesiredBallPosition();
+	protected double getTurnHead(){
+		return utils.RelativeToAbsolute(player.brain.getDesiredHeadAngle(), player.head.rotation);
+	}
+	
+	protected double getTurnArm(){
+		double d=0;
+		return d;
 	}
 }

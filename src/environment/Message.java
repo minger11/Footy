@@ -31,7 +31,6 @@ public class Message {
 	 * @param message
 	 */
 	Message(boolean official, String message){
-		this.time = System.currentTimeMillis();
 		this.message = message;
 		this.official = official;
 	}

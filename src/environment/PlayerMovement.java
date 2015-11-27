@@ -18,10 +18,10 @@ public class PlayerMovement{
 	protected Player player;
 	
 	//Relevant positional and velocity vectors
-	protected Vector3d desiredPosition; 
+	protected Vector3d bodyVelocity; 
 	
 	//Desired ball position
-	protected Vector3d desiredBallPosition;
+	protected Vector3d ballVelocity;
 	
 	//Rotational angles (radians not degrees)
 	protected double desiredHeadAngle;
@@ -31,7 +31,8 @@ public class PlayerMovement{
 	
 	PlayerMovement(Player player){
 		this.player = player;
-		desiredPosition = new Vector3d();
+		bodyVelocity = new Vector3d();
+		ballVelocity = new Vector3d();
 	}
 	
 	protected void init(){
@@ -43,11 +44,10 @@ public class PlayerMovement{
 		getPhysics();
 		updateVelocity();
 		updateRotation();
-		updatePositionVector();
 	}
 	
 	protected void getPhysics(){
-		physics = new Physics(player, player.positionVector, desiredPosition, desiredBallPosition, player.velocity);
+		physics = new Physics(player, player.positionVector, bodyVelocity, ballVelocity, player.velocity);
 	}
 	
 	/**
@@ -58,20 +58,18 @@ public class PlayerMovement{
 		player.head.velocity = player.velocity;
 	}
 	
+	/**
+	 * Updates the rotation of both the head and player
+	 */
 	protected void updateRotation(){
 		player.head.rotation = desiredHeadAngle;
 		player.rotation = desiredBodyAngle;
 	}
 	
-	protected void updatePositionVector(){
-		player.positionVector.add(player.velocity);
-		player.head.positionVector = player.positionVector;
-	}
-	
 	//------------SETTERS AND GETTERS---------------//
 	
 	protected void setDesiredPosition(Vector3d position){
-		this.desiredPosition = position;
+		this.bodyVelocity = position;
 	}		
 	
 	protected void setDesiredBodyAngle(double angle){
@@ -81,9 +79,13 @@ public class PlayerMovement{
 	protected void setDesiredHeadAngle(double angle){
 		desiredHeadAngle = angle;
 	}
+		
+	protected void setDesiredBallVelocity(Vector3d x){
+			ballVelocity = x;
+	}
 	
-	protected void setDesiredBallPosition(Vector3d x){
-		this.desiredBallPosition = x;
+	protected void setDesiredBodyVelocity(Vector3d x){
+			bodyVelocity = x;
 	}
 }
 

@@ -82,6 +82,9 @@ public class ModelBuilder implements ContextBuilder<Object> {
 		context.add(mb);
 	}
 	
+	/**
+	 * Creates a mover that moves all movable objects at the end of each step and checks for collisions
+	 */
 	public void createMover(){
 		Mover mover = new Mover(context);
 		context.add(mover);
@@ -179,9 +182,18 @@ public class ModelBuilder implements ContextBuilder<Object> {
 			// Retrieve the starting positions from the runtime environment
 			int attackerStartX = (Integer)params.getValue("attacker_start_x");
 			int attackerStartY = (Integer)params.getValue("attacker_start_y");
+			int sideLine = (Integer)params.getValue("fieldInset");
+			int fieldWidth = (Integer)params.getValue("display_height")-(2*(sideLine));
+			
+			int y;
+			if(attackerCount==1){
+				y = attackerStartY;
+			} else {
+				y = sideLine+((i+1)*(fieldWidth/(attackerCount+1)));
+			}
 			
 			//create a new attacker for each iteration
-			new Attacker(context, attackerStartX, attackerStartY, i+1);
+			new Attacker(context, attackerStartX, y, i+1);
 		}
 
 	}

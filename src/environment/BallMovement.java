@@ -38,7 +38,6 @@ public class BallMovement{
 		getPhysics();
 		updateVelocity();
 		updateRotation();
-		updatePositionVector();
 	}
 	
 	public void getPhysics(){
@@ -54,14 +53,12 @@ public class BallMovement{
 		ball.velocity = physics.getUpdatedVelocity();
 	}
 	
+	/**
+	 * Handles all changes to the rotation of the ball
+	 */
 	public void updateRotation(){
 		//Calls the angular manipulation method in physics
 		physics.ballAngularManipulation();
-	}
-	
-	public void updatePositionVector(){
-		//Adds the current velocity to the current position
-		ball.positionVector.add(ball.velocity);	
 	}
 	
 	//------SETTERS AND GETTERS -------------------
