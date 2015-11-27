@@ -122,6 +122,10 @@ public class Brain {
 		if(currentPosition.getX()<=650&&currentPosition.getX()>=200){
 			//setTarget();
 		}*/
+		
+		//Run right
+		//bodyVelocity = new Vector3d(10000,0,0);
+		
 		if(targetObject!=null){
 			if(targetObject.isWithinDepth()){
 				bodyVelocity = targetObject.getRelativeVector();
@@ -137,9 +141,6 @@ public class Brain {
 		if(targetObject==null){
 			setTarget();
 		}
-		if(targetObject.getRelativeVector().length()>200){
-			run(1000);
-		}else run(100);
 		/**
 		if(target==null){
 		//Random spin mode
@@ -161,7 +162,7 @@ public class Brain {
 			ballVelocity = bodyVelocity;
 		//} else {
 			//pass ball
-		//	desiredBallPosition.set(currentPosition.getX()-50, currentPosition.getY()+200, 0.0);
+			//ballVelocity.set(50.0, 2000.0, 0.0);
 		//}
 	}
 	

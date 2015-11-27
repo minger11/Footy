@@ -16,6 +16,7 @@ public class SensesObject{
 		Utils utils = new Utils();
 		Object simpleAgent;
 	
+		//Within depthvision
 		boolean withinDepth;
 			
 		//--------withinDepth = TRUE------------------------------------------//		
@@ -32,26 +33,7 @@ public class SensesObject{
 		
 		
 		
-		/**
-		 * Creates a new sensesObject with a static Vector3d that cannot change with the player
-		 * By first breaking the NdPoint parameter into doubles, we can then create a new point that wont move with the player
-		 * This is the place to add any sense noise to the model, scale the vectors!
-		 * @param t
-		 * @param p
-		 */
-		SensesObject(Object agent, NdPoint point){
-			
-			simpleAgent = agent;
-			
-			withinDepth = true;
-			
-			relativeVector = new Vector3d(point.getX(), point.getY(),0.0);
-			
-			if(simpleAgent instanceof Player){
-				headRotation = ((Player)simpleAgent).head.rotation;
-				bodyRotation = ((Player)simpleAgent).rotation;
-			}
-		}
+
 		
 		/**
 		 * Creates a new sensesObject with a static Vector3d that cannot change with the player

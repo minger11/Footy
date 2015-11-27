@@ -1,11 +1,13 @@
 package environment;
 
 import javax.vecmath.Vector3d;
-
 import repast.simphony.space.continuous.NdPoint;
 
 public class Utils {
 
+	/**
+	 * A utility class. A toolbox for common operations across the model
+	 */
 	Utils(){
 		
 	}
@@ -61,7 +63,13 @@ public class Utils {
 		return heading;
 	}
 	
-public double absoluteToRelative(double absoluteTarget, double absoluteReference){
+	/**
+	 * Calculates the relative angle based on two absolute angles in radians
+	 * @param absoluteTarget - the targets angle in radians
+	 * @param absoluteReference - the reference angle in radians
+	 * @return - the relative angle in radians from the references perspective
+	 */
+	public double absoluteToRelative(double absoluteTarget, double absoluteReference){
 		double relativeAngle = absoluteTarget - absoluteReference;
 		//if got the long angle
 		if(relativeAngle>Math.PI){
@@ -73,7 +81,13 @@ public double absoluteToRelative(double absoluteTarget, double absoluteReference
 		return relativeAngle;
 	}
 
-public double RelativeToAbsolute(double relativeAngle, double absoluteReference){
+	/**
+	 * Calculates the absolute angle of a relative angle based on an absolute reference
+	 * @param relativeAngle - the relative angle from the reference angle in radians
+	 * @param absoluteReference - the absolute angle of the reference point viewing the relative angle in radians
+	 * @return the relative angle in radians
+	 */
+	public double RelativeToAbsolute(double relativeAngle, double absoluteReference){
 	double absoluteAngle = absoluteReference + relativeAngle;
 	//if got the long angle
 	if(absoluteAngle<0){
@@ -85,14 +99,18 @@ public double RelativeToAbsolute(double relativeAngle, double absoluteReference)
 	return absoluteAngle;
 }
 	
-public Vector3d getVector(NdPoint targetPoint, NdPoint referencePoint){
+	/**
+	 * Takes two vectors and returns vector to the target
+	 * @param referencePoint
+	 * @param targetPoint
+	 * @return
+	 */
+	public Vector3d getVector(NdPoint targetPoint, NdPoint referencePoint){
 		Vector3d targetVector = new Vector3d(targetPoint.getX(), targetPoint.getY(),0.0);
 		Vector3d referenceVector = new Vector3d(referencePoint.getX(), referencePoint.getY(),0.0);
 		Vector3d vectorToTarget = new Vector3d();
 		vectorToTarget.sub(targetVector, referenceVector);
 		return vectorToTarget;
 	}
-	
-
-	
+		
 }
