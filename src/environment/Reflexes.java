@@ -10,57 +10,53 @@ import javax.vecmath.Vector3d;
  *
  */
 
-public class Reflexes {
+public final class Reflexes {
 	
-	private Player player;
-	
-	Reflexes(Player player){
-		this.player = player;
+	private Reflexes(){
 	}	
 	
-	void init(){
-		player.getMovement().setHeadTurn(getHeadTurn());
-		player.getMovement().setMessage(getMessage());
-		player.getMovement().setBodyTurn(getTurn());
-		player.getMovement().setEffort(getMoveDirection(), getMoveEnergy());
-		player.getMovement().setPassEffort(getPassDirection(), getPassEnergy());
-		player.getMovement().setArmsTurn(getArmsTurn());
+	public static void init(Player player){
+		player.getMovement().setHeadTurn(getHeadTurn(player));
+		player.getMovement().setMessage(getMessage(player));
+		player.getMovement().setBodyTurn(getTurn(player));
+		player.getMovement().setEffort(getMoveDirection(player), getMoveEnergy(player));
+		player.getMovement().setPassEffort(getPassDirection(player), getPassEnergy(player));
+		player.getMovement().setArmsTurn(getArmsTurn(player));
 	}
 	
-	void step(){
-		player.getMovement().setHeadTurn(getHeadTurn());
-		player.getMovement().setMessage(getMessage());
-		player.getMovement().setBodyTurn(getTurn());
-		player.getMovement().setEffort(getMoveDirection(), getMoveEnergy());
-		player.getMovement().setPassEffort(getPassDirection(), getPassEnergy());
-		player.getMovement().setArmsTurn(getArmsTurn());
+	public static void step(Player player){
+		player.getMovement().setHeadTurn(getHeadTurn(player));
+		player.getMovement().setMessage(getMessage(player));
+		player.getMovement().setBodyTurn(getTurn(player));
+		player.getMovement().setEffort(getMoveDirection(player), getMoveEnergy(player));
+		player.getMovement().setPassEffort(getPassDirection(player), getPassEnergy(player));
+		player.getMovement().setArmsTurn(getArmsTurn(player));
 	}
 
 	//-------------REAL GETTERS-------------------------//
 	
-	String getMessage(){
+	private static String getMessage(Player player){
 		return player.getBrain().getNewMessage();
 	}
-	
-	double getPassEnergy(){
+	private static double getPassEnergy(Player player){
 		return player.getBrain().getPassEnergy();
 	}
-	double getPassDirection(){
+	private static double getPassDirection(Player player){
 		return player.getBrain().getPassDirection();
 	}
-	double getMoveEnergy(){
+	private static double getMoveEnergy(Player player){
 		return player.getBrain().getMoveEnergy();
 	}
-	double getMoveDirection(){
+	private static double getMoveDirection(Player player){
 		return player.getBrain().getMoveDirection();
 	}	
-	double getTurn(){
+	private static double getTurn(Player player){
 		return player.getBrain().getTurn();
 	}	
-	protected double getHeadTurn(){
+	private static double getHeadTurn(Player player){
 		return player.getBrain().getHeadTurn();
 	}
-	protected double getArmsTurn(){
+	private static double getArmsTurn(Player player){
 		return player.getBrain().getArmsTurn();
 	}
 }

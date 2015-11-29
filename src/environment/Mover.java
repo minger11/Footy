@@ -10,19 +10,18 @@ import repast.simphony.context.Context;
  *
  */
 
-public class Mover {
+public final class Mover {
 
-	Context<Object> context;
+	private static Context<Object> context;
 	
-	Mover(Context context){
-		this.context = context;
+	private Mover(Context context){
 	}
 	
-	void init(){
-		
+	public static void init(Context c){
+		context = c;
 	}
 	
-	void step(){
+	public static void step(){
 		checkCollisions();
 		movePlayers();
 		moveBalls();	
@@ -31,7 +30,7 @@ public class Mover {
 	/**
 	 * Creates a new physics and send the entire context to physics to check for collisions
 	 */
-	void checkCollisions(){
+	private static void checkCollisions(){
 		Physics physics = new Physics(context);
 		physics.checkCollisions();
 	}
@@ -39,7 +38,7 @@ public class Mover {
 	/**
 	 * Iterates through all players and physically moves them and their heads based on their velocity
 	 */
-	void movePlayers(){
+	private static void movePlayers(){
 		
 		//Iterate through players
 		Iterator<Object> players = context.getObjects(Player.class).iterator();
@@ -60,7 +59,7 @@ public class Mover {
 	/**
 	 * Iterates through all balls and physically moves them based on their velocity
 	 */
-	void moveBalls(){
+	private static void moveBalls(){
 		
 		//Iterate through balls
 		Iterator<Object> balls = context.getObjects(Ball.class).iterator();

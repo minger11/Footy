@@ -11,9 +11,7 @@ import javax.vecmath.Vector3d;
  */
 
 public class PlayerMovement{
-	
-	Utils utils = new Utils();
-	
+		
 	//Current Player
 	private Player player;
 	
@@ -37,27 +35,27 @@ public class PlayerMovement{
 	//------------SETTERS-------------------------------------------------------------//	
 	
 	void setBodyTurn(double angle){
-		double absoluteAngle = utils.RelativeToAbsolute(angle, player.getHead().getRotation());
+		double absoluteAngle = Utils.RelativeToAbsolute(angle, player.getHead().getRotation());
 		turn=absoluteAngle;
 	}
 	
 	void setHeadTurn(double angle){
-		double absoluteAngle = utils.RelativeToAbsolute(angle, player.getHead().getRotation());
+		double absoluteAngle = Utils.RelativeToAbsolute(angle, player.getHead().getRotation());
 		headTurn = absoluteAngle;
 	}
 		
 	void setPassEffort(double direction, double distance){
-		double absoluteDirection = utils.RelativeToAbsolute(direction, player.getHead().getRotation());
-		passEffort = utils.getVector(absoluteDirection, distance);
+		double absoluteDirection = Utils.RelativeToAbsolute(direction, player.getHead().getRotation());
+		passEffort = Utils.getVector(absoluteDirection, distance);
 	}
 	
 	void setEffort(double direction, double distance){
-		double absoluteDirection = utils.RelativeToAbsolute(direction, player.getHead().getRotation());
-		effort = utils.getVector(absoluteDirection, distance);
+		double absoluteDirection = Utils.RelativeToAbsolute(direction, player.getHead().getRotation());
+		effort = Utils.getVector(absoluteDirection, distance);
 	}
 	
 	void setArmsTurn(double angle){
-		double absoluteAngle = utils.RelativeToAbsolute(angle, player.getHead().getRotation());
+		double absoluteAngle = Utils.RelativeToAbsolute(angle, player.getHead().getRotation());
 		armsTurn = absoluteAngle;
 	}
 	

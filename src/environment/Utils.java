@@ -1,14 +1,17 @@
 package environment;
 
 import javax.vecmath.Vector3d;
+
+import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.parameter.Parameters;
 import repast.simphony.space.continuous.NdPoint;
 
-public class Utils {
+public final class Utils {
 
 	/**
 	 * A utility class. A toolbox for common operations across the model
 	 */
-	Utils(){
+	private Utils(){
 		
 	}
 	
@@ -17,7 +20,7 @@ public class Utils {
 	 * @param heading - the heading in radians (NOT degrees)
 	 * @return true if the heading is left(west) and false if the heading is right(east)
 	 */
-	public boolean headingWest(Double heading){
+	public static boolean headingWest(Double heading){
 		if(heading>=Math.PI*.5&&heading<=Math.PI*1.5){
 			return true;
 		}
@@ -29,7 +32,7 @@ public class Utils {
 	 * @param heading - the heading in radians (NOT degrees)
 	 * @return true if the heading is up(north) and false if the heading is down(south)
 	 */
-	public boolean headingNorth(Double heading){
+	public static boolean headingNorth(Double heading){
 		if(heading<Math.PI){
 			return true;
 		}
@@ -42,7 +45,7 @@ public class Utils {
 	 * @param targetPoint
 	 * @return
 	 */
-	public Vector3d getVector(Vector3d targetPoint, Vector3d referencePoint){
+	public static Vector3d getVector(Vector3d targetPoint, Vector3d referencePoint){
 		Vector3d vectorToTarget = new Vector3d();
 		vectorToTarget.sub(targetPoint, referencePoint);
 		return vectorToTarget;
@@ -54,7 +57,7 @@ public class Utils {
 	 * @param targetPoint
 	 * @return
 	 */
-	public Double getAngle(Vector3d vectorToTarget){
+	public static Double getAngle(Vector3d vectorToTarget){
 		Vector3d xAxis = new Vector3d(1.0,0.0,0.0);
 		double heading = xAxis.angle(vectorToTarget);
 		if(vectorToTarget.y<0){
@@ -69,7 +72,7 @@ public class Utils {
 	 * @param absoluteReference - the reference angle in radians
 	 * @return - the relative angle in radians from the references perspective
 	 */
-	public double absoluteToRelative(double absoluteTarget, double absoluteReference){
+	public static double absoluteToRelative(double absoluteTarget, double absoluteReference){
 		double relativeAngle = absoluteTarget - absoluteReference;
 		//if got the long angle
 		if(relativeAngle>Math.PI){
@@ -87,7 +90,7 @@ public class Utils {
 	 * @param absoluteReference - the absolute angle of the reference point viewing the relative angle in radians
 	 * @return the relative angle in radians
 	 */
-	public double RelativeToAbsolute(double relativeAngle, double absoluteReference){
+	public static double RelativeToAbsolute(double relativeAngle, double absoluteReference){
 	double absoluteAngle = absoluteReference + relativeAngle;
 	//if got the long angle
 	if(absoluteAngle<0){
@@ -99,12 +102,16 @@ public class Utils {
 	return absoluteAngle;
 }
 	
-	public Vector3d getVector(NdPoint targetPoint, NdPoint referencePoint){
+	public static Vector3d getVector(NdPoint targetPoint, NdPoint referencePoint){
 		Vector3d targetVector = new Vector3d(targetPoint.getX(), targetPoint.getY(),0.0);
 		Vector3d referenceVector = new Vector3d(referencePoint.getX(), referencePoint.getY(),0.0);
 		Vector3d vectorToTarget = new Vector3d();
 		vectorToTarget.sub(targetVector, referenceVector);
 		return vectorToTarget;
+	}
+	
+	public static Parameters getParams(){
+		return RunEnvironment.getInstance().getParameters();
 	}
 	
 	/**
@@ -113,7 +120,7 @@ public class Utils {
 	 * @param hypotenuse - the distance to the target
 	 * @return - an absolute vector 
 	 */
-	public Vector3d getVector(double angle, double hypotenuse){
+	public static Vector3d getVector(double angle, double hypotenuse){
 		Vector3d vector = new Vector3d();
 		
 		//The x and y values of the future vector

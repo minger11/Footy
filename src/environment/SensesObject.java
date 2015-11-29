@@ -13,7 +13,6 @@ import repast.simphony.space.continuous.NdPoint;
  */
 public class SensesObject{
 	
-	private Utils utils = new Utils();
 	private Object simpleAgent;
 	
 		//Within depthvision
@@ -43,15 +42,15 @@ public class SensesObject{
 			
 			this.withinDepth = withinDepth;
 			
-			relativeAngle = utils.absoluteToRelative(utils.getAngle(vector), player.getHead().getRotation());
+			relativeAngle = Utils.absoluteToRelative(Utils.getAngle(vector), player.getHead().getRotation());
 			
 			if(this.withinDepth){
 				distance = vector.length();
 				
 				
 				if(simpleAgent instanceof Player){
-					headRotation = utils.absoluteToRelative(((Player)simpleAgent).getHead().getRotation(), player.getHead().getRotation());
-					bodyRotation = utils.absoluteToRelative(((Player)simpleAgent).getRotation(), player.getHead().getRotation());
+					headRotation = Utils.absoluteToRelative(((Player)simpleAgent).getHead().getRotation(), player.getHead().getRotation());
+					bodyRotation = Utils.absoluteToRelative(((Player)simpleAgent).getRotation(), player.getHead().getRotation());
 				}
 			}
 		}
@@ -66,7 +65,7 @@ public class SensesObject{
 			simpleAgent = agent;
 				
 			withinDepth = false;
-			relativeAngle = utils.absoluteToRelative(angle, player.getHead().getRotation());
+			relativeAngle = Utils.absoluteToRelative(angle, player.getHead().getRotation());
 		}
 		
 		SensesObject(Object agent){

@@ -21,6 +21,7 @@ public class Scheduler {
 
 	@ScheduledMethod(start=0)
 	public void init(){
+		MessageBoard.init();
 		Iterator<Object> it = context.getObjects(Player.class).iterator();
 		while(it.hasNext()){
 			Player player = (Player)it.next();
@@ -30,25 +31,13 @@ public class Scheduler {
 		while(itra.hasNext()){
 			Ball ball = (Ball)itra.next();
 		}
-		Iterator<Object> iterz = context.getObjects(Mover.class).iterator();
-		while(iterz.hasNext()){
-			Mover mover = (Mover)iterz.next();
-			mover.init();
-		}
-		Iterator<Object> iter = context.getObjects(Referee.class).iterator();
-		while(iter.hasNext()){
-			Referee ref = (Referee)iter.next();
-			ref.init();
-		}
+		Mover.init(context);
+		Referee.init(context);
 	}
 	
 	@ScheduledMethod ( start = 1 , interval = 1)
 	public void step(){
-		Iterator<Object> itera = context.getObjects(MessageBoard.class).iterator();
-		while(itera.hasNext()){
-			MessageBoard mb = (MessageBoard)itera.next();
-			mb.step();
-		}
+		MessageBoard.step();
 		Iterator<Object> it = context.getObjects(Player.class).iterator();
 		while(it.hasNext()){
 			Player player = (Player)it.next();
@@ -60,15 +49,7 @@ public class Scheduler {
 			Ball ball = (Ball)itra.next();
 			Physics physics = new Physics(ball);
 		}
-		Iterator<Object> iterz = context.getObjects(Mover.class).iterator();
-		while(iterz.hasNext()){
-			Mover mover = (Mover)iterz.next();
-			mover.step();
-		}
-		Iterator<Object> iter = context.getObjects(Referee.class).iterator();
-		while(iter.hasNext()){
-			Referee ref = (Referee)iter.next();
-			ref.step();
-		}
+		Mover.step();
+		Referee.step();
 	}
 }

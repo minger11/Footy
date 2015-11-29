@@ -10,29 +10,34 @@ import java.util.List;
  *
  */
 
-public class MessageBoard {
+public final class MessageBoard {
 	
 	//The list of sent and pending messages
-	private List<Message> messageBoard;
-	private List<Message> pending;
+	private static List<Message> messageBoard;
+	private static List<Message> pending;
+	private static boolean newMessage;
 	
 	//The delay variables which determine how long a message remains pending
-	private int delayPerChar = 50;
-	private int fixedDelay = 100;
+	private static int delayPerChar = 50;
+	private static int fixedDelay = 100;
 	
-	MessageBoard(){
-		messageBoard = new ArrayList<Message>();
-		pending = new ArrayList<Message>();
+	private MessageBoard(){
 	}
 	
-	void step(){
+	public static void init(){
+		messageBoard = new ArrayList<Message>();
+		pending = new ArrayList<Message>();
+		newMessage = false;
+	}
+	
+	public static void step(){
 		updateMessageBoard();
 	}
 	
 	/**
 	 * Removes messages from the pending list and adds them to the messageboard list
 	 */
-	void updateMessageBoard(){
+	public static void updateMessageBoard(){
 		
 		//Iterate through the pending list
 		Iterator<Message> it = pending.iterator();
@@ -48,6 +53,9 @@ public class MessageBoard {
 				if(System.currentTimeMillis()>hearable){
 					it.remove();
 					messageBoard.add(mess);
+					newMessage = true;
+				} else {
+					newMessage = false;
 				}
 		}
 	}
@@ -57,24 +65,38 @@ public class MessageBoard {
 	 * @param sender
 	 * @param text
 	 */
-	void addMessage(Object sender, String text){
+	public static void addMessage(Object sender, String text){
 		Message message = new Message(sender, text);
 		pending.add(message);
 	}
 	
-	List<Message> getMessages(){
+	/**
+	 * For official messages only
+	 * @param sender
+	 * @param text
+	 */
+	public static void addMessage(String text){
+		Message message = new Message(text);
+		messageBoard.add(message);
+		newMessage = true;
+	}
+	
+	public static List<Message> getMessages(){
 		return messageBoard;
 	}
 	
-	List<Message> getPending(){
+	public static List<Message> getPending(){
 		return pending;
+	}
+	public static boolean getNewMessage(){
+		return newMessage;
 	}
 	
 	/**
 	 * Returns the last message on the messageboard list
 	 * @return
 	 */
-	Message getLastMessage(){
+	public static Message getLastMessage(){
 		if(messageBoard.size()>0){
 			return messageBoard.get(messageBoard.size()-1);
 		} 

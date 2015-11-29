@@ -3,14 +3,11 @@ package environment;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+
 import javax.vecmath.Vector3d;
-import org.apache.commons.lang3.RandomStringUtils;
-import repast.simphony.context.space.continuous.ContinuousSpaceFactory;
-import repast.simphony.context.space.continuous.ContinuousSpaceFactoryFinder;
+
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.parameter.Parameters;
-import repast.simphony.space.continuous.ContinuousSpace;
-import repast.simphony.space.continuous.SimpleCartesianAdder;
 
 /**
  * Senses provide all the information about the model to the brain
@@ -19,35 +16,32 @@ import repast.simphony.space.continuous.SimpleCartesianAdder;
  *
  */
 
-public class Senses {
+public final class Senses {
 
-	private Parameters params = RunEnvironment.getInstance().getParameters();
+	private static Parameters params = Utils.getParams();
+	
 	//Current player
-	private Player player;
+	private static  Player player;
 	
 	//The full vision, central (depth perceiving) vision and sideVision angles (in degrees NOT radians)
-	private Double fullVision = 190.00;
-	private Double depthVision = 114.00;
-	private Double sideVision = (fullVision - depthVision)/2;
+	private static  Double fullVision = 190.00;
+	private static  Double depthVision = 114.00;
+	private static  Double sideVision = (fullVision - depthVision)/2;
 	
 	//The central headings of the depth vision, the left side vision and the right side vision
-	private Double noseHeading;
-	private Double leftSideVisionHeading;
-	private Double rightSideVisionHeading;
+	private static  Double noseHeading;
+	private static  Double leftSideVisionHeading;
+	private static  Double rightSideVisionHeading;
 
-	private Message lastMessage;
-	private double hearingRadius = 300;
-	
-	private Utils utils;
+	private static  double hearingRadius = 300;
 	
 	
-	Senses(Player player){
-		this.player = player; 
-		utils = new Utils();
+	private Senses(){
 	}
 	
 	
-	void init(){
+	public static void init(Player p){
+		player = p;
 		info();
 		eyes();
 		ears();
@@ -55,7 +49,8 @@ public class Senses {
 	}
 	
 	
-	void step(){
+	public static void step(Player p){
+		player = p;
 		eyes();
 		ears();
 		touch();
@@ -67,8 +62,7 @@ public class Senses {
 		/**
 	 * Everything to do with inherent knowledge
 	 */
-	void info(){
-		player.getBrain().setSpace(makeSpace());
+	private static void info(){
 		player.getBrain().setPlayer(player);
 		player.getBrain().setMaxSpeed(getMaxSpeed());
 		//energy
@@ -77,24 +71,8 @@ public class Senses {
 		//how many balls
 		//etc
 	}
-	
-	/**
-	* Creates the internal projection space to be used by the brain
-	 * @return
-	 */
-	ContinuousSpace<Object> makeSpace(){
-		String random = RandomStringUtils.randomAlphanumeric(17).toUpperCase();
-		ContinuousSpaceFactory spaceFactory = 
-				ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null);
-		ContinuousSpace<Object> space = 
-				spaceFactory.createContinuousSpace(random, player.getContext(), 
-						new SimpleCartesianAdder<Object>(), 
-						new repast.simphony.space.continuous.StrictBorders(),
-						(Integer)params.getValue("display_width"), (Integer)params.getValue("display_height"));
-		return space;
-	}
 		
-	int getMaxSpeed(){
+	private static int getMaxSpeed(){
 			if(player instanceof Attacker){
 				return (Integer)params.getValue("attacker_speed");
 			}
@@ -111,7 +89,7 @@ public class Senses {
 	/**
 	 * Everything to do with vision
 	 */
-	void eyes(){
+	private static void eyes(){
 		setHeadings();
 		sendView();
 	}
@@ -119,7 +97,7 @@ public class Senses {
 	/**
 	 * Sets the respective vision heading variables. Based on the current heading, full vision angle and depth vision angle
 	 */
-	void setHeadings(){
+	private static void setHeadings(){
 		//The central headings of the respective visions
 		noseHeading = player.getHead().getRotation();
 		if(noseHeading>2*Math.PI) noseHeading=noseHeading-2*Math.PI;
@@ -133,7 +111,7 @@ public class Senses {
 	/**
 	 * Sends the various object lists to the brain
 	 */
-	void sendView(){
+	private static void sendView(){
 		player.getBrain().setTryline(getObjectsInView(TryPoint.class));
 		player.getBrain().setPlayers(getObjectsInView(Player.class));
 		//player.brain.setSidelines(getObjectsInView(SidePoint.class));
@@ -145,7 +123,7 @@ public class Senses {
 	 * @param a - is the class of agent. All agents of this class within view will be returned
 	 * @return arraylist of senses objects.
 	 */
-	List<SensesObject> getObjectsInView(Class a){
+	private static List<SensesObject> getObjectsInView(Class a){
 		List<SensesObject> fresh = new ArrayList<>();
 		
 		//Iterate through each object
@@ -165,7 +143,7 @@ public class Senses {
 	 * @param o - the simpleagent being viewed
 	 * @param list - the list of senses objects of the same agent class
 	 */
-	void createView(Object o, List<SensesObject> list){
+	private static void createView(Object o, List<SensesObject> list){
 		
 		//Convert the simple agent to the relevant agent type
 		SimpleAgent agent;
@@ -185,7 +163,7 @@ public class Senses {
 				if(inView(agent, depthVision, noseHeading)){
 					
 					//Create depth Senses object
-					list.add(new SensesObject(agent,utils.getVector(agent.getPositionPoint(), player.getPositionPoint()), player, true));
+					list.add(new SensesObject(agent,Utils.getVector(agent.getPositionPoint(), player.getPositionPoint()), player, true));
 				}
 				
 				//if the agent to be seen is within the right side vision field of the player
@@ -208,7 +186,7 @@ public class Senses {
 	 * @param agent - the agent to be viewed
 	 * @return true if obstructed and false if not obstructed
 	 */
-	boolean isObstructed(SimpleAgent agent){
+	private static boolean isObstructed(SimpleAgent agent){
 		//Iterate through potential obstructors in the environment (the players)
 		Iterator<Object> it = player.getContext().getObjects(Player.class).iterator();
 		while(it.hasNext()){
@@ -226,7 +204,7 @@ public class Senses {
 				
 				//Obtain the angle in radians from the player to the obstruction
 				Vector3d xAxis = new Vector3d(1.0,0.0,0.0);
-				Vector3d vectorToObstruction = utils.getVector(obstructor.getPositionPoint(), player.getPositionPoint());
+				Vector3d vectorToObstruction = Utils.getVector(obstructor.getPositionPoint(), player.getPositionPoint());
 				double heading = xAxis.angle(vectorToObstruction);
 				if(vectorToObstruction.y<0){
 					heading = 2*Math.PI - heading;
@@ -254,7 +232,7 @@ public class Senses {
 	 * @param heading - the direction (centre line) of the view (in radians NOT degrees)
 	 * @return true if the agent is within the player view, false if not
 	 */
-	boolean inView(SimpleAgent agent, Double angle, Double heading){
+	private static boolean inView(SimpleAgent agent, Double angle, Double heading){
 		
 		//Total vision angle
 		double fieldOfVisionAngle = angle;
@@ -287,7 +265,7 @@ public class Senses {
 		
 		//Used to return agents within views of ranges between 90 and 180 degrees
 		if(fieldOfVisionAngle>90&&fieldOfVisionAngle<=180){
-			if(utils.headingNorth(heading)){
+			if(Utils.headingNorth(heading)){
 				if(leftSlope<=0&&rightSlope>=0){
 					if(agentY>=rightLineY&&agentY>=leftLineY){
 						return true;
@@ -301,7 +279,7 @@ public class Senses {
 						return true;
 					}
 				} else {
-					if(utils.headingWest(heading)){
+					if(Utils.headingWest(heading)){
 						if(agentY<=rightLineY&&agentY>=leftLineY){
 							return true;
 						}
@@ -325,7 +303,7 @@ public class Senses {
 						return true;
 					}
 				}else {
-					if(utils.headingWest(heading)){
+					if(Utils.headingWest(heading)){
 						if(agentY<=rightLineY&&agentY>=leftLineY){
 							return true;
 						}
@@ -338,7 +316,7 @@ public class Senses {
 			}
 			//Used to return agents within view within a range of 0 to 90 degrees
 		} else if(fieldOfVisionAngle>=0&&fieldOfVisionAngle<=90){
-			if(utils.headingNorth(heading)){
+			if(Utils.headingNorth(heading)){
 				if(leftSlope<=0&&rightSlope>=0){
 					if(agentY>=rightLineY&&agentY>=leftLineY){
 						return true;
@@ -352,7 +330,7 @@ public class Senses {
 						return true;
 					}
 				} else {
-					if(utils.headingWest(heading)){
+					if(Utils.headingWest(heading)){
 						if(agentY<=rightLineY&&agentY>=leftLineY){
 							return true;
 						}
@@ -376,7 +354,7 @@ public class Senses {
 						return true;
 					}
 				}else {
-					if(utils.headingWest(heading)){
+					if(Utils.headingWest(heading)){
 						if(agentY<=rightLineY&&agentY>=leftLineY){
 							return true;
 						}
@@ -390,7 +368,7 @@ public class Senses {
 			//Used to return all agents within viewing range of an angle between 180 and 270 degrees
 		} else if(fieldOfVisionAngle>180&&fieldOfVisionAngle<270){
 					if((leftSlope<=0&&rightSlope<=0)||(leftSlope>=0&&rightSlope>=0)){
-						if(utils.headingNorth(heading)){
+						if(Utils.headingNorth(heading)){
 							if(agentY>=rightLineY||agentY>=leftLineY){
 								return true;
 							}
@@ -401,7 +379,7 @@ public class Senses {
 						}
 					}
 					if((leftSlope<=0&&rightSlope>=0)||(leftSlope>=0&&rightSlope<=0)){
-						if(utils.headingWest(heading)){
+						if(Utils.headingWest(heading)){
 							if(agentY>=rightLineY||agentY<=leftLineY){
 								return true;
 							}
@@ -422,23 +400,22 @@ public class Senses {
 	/**
 	 * Everything to do with hearing
 	 */
-	void ears(){
+	private static void ears(){
 		hear();
 	}
 	
 	/**
 	 * Checks if new messages have hit the messageboard, recreates and sends the most recent message to the brain
 	 */
-	void hear(){
-		Message message = getMessage();
+	private static void hear(){
+		
 		//If the most recent messageboard message is not the same as the last one processed
-		if(getMessage()!=lastMessage){
+		if(MessageBoard.getNewMessage()){
 			
-			//Set the new message to be the last message received
-			lastMessage = message;
+			Message message = MessageBoard.getLastMessage();		
 			
 			//If the message is from the referee, create an official message
-			if(message.getSender() instanceof Referee){
+			if(message.getOfficial()){
 				Message mess = new Message(true, message.getMessage());
 				
 				//Put the message into a senses object
@@ -451,7 +428,7 @@ public class Senses {
 			} else {
 				Player sender = (Player)message.getSender();
 				if(sender!=player){
-					Vector3d vectorToMessage = utils.getVector(sender.getPositionPoint(), player.getPositionPoint());
+					Vector3d vectorToMessage = Utils.getVector(sender.getPositionPoint(), player.getPositionPoint());
 					
 					//If the length of the vector is less than the hearing radius
 					if(vectorToMessage.length()<=hearingRadius){
@@ -470,30 +447,13 @@ public class Senses {
 		}
 	}
 	
-	/**
-	 * Return the last message on the messageBoard
-	 * @return
-	 */
-	Message getMessage(){
-		Message message = lastMessage;
-			Iterator<Object> itera = player.getContext().getObjects(MessageBoard.class).iterator();
-			if(itera.hasNext()){
-				MessageBoard mb = (MessageBoard)itera.next();
-				if(mb.getLastMessage()!=null){
-					message = mb.getLastMessage();
-				}
-			}
-		return message;
-	}
-	
-	
 	
 	//-----------TOUCH--------------------------------------------------------------------------------//
 	
 	/**
 	 * Everything to do with touch
 	 */
-	void touch(){
+	private static void touch(){
 		player.getBrain().setHasBall(getHasBall());
 	}
 
@@ -501,13 +461,13 @@ public class Senses {
 	 * Checks if the current player has the ball
 	 * @return true if the player has the ball
 	 */
-	boolean getHasBall(){
+	private static boolean getHasBall(){
 		
 		//Iterate through the ball objects
 		Iterator<Object> it = player.getContext().getObjects(Ball.class).iterator();
 		while(it.hasNext()){
 			Ball ball = (Ball)it.next();
-			Vector3d vectorToBall = utils.getVector(ball.getPositionPoint(), player.getPositionPoint());
+			Vector3d vectorToBall = Utils.getVector(ball.getPositionPoint(), player.getPositionPoint());
 			
 			//If the absolute distance of the vector is less than the body radius and ball radius
 			if(Math.abs(vectorToBall.length())<=(Integer)params.getValue("body_radius")+(Integer)params.getValue("ball_radius")){

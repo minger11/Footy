@@ -14,31 +14,31 @@ import repast.simphony.space.grid.Grid;
  *
  */
 
-public class Referee {
+public final class Referee {
 	
-	private Context<Object> context;
-	private ContinuousSpace<Object> space;
-	private Grid<Object> grid;
-	private Parameters params;
-	private MessageBoard messageBoard;
-	private Integer countDown;
-	private boolean gameOn;
-	private int standardCountDown = 500;
+	private static  Context<Object> context;
+	private static  ContinuousSpace<Object> space;
+	private static  Grid<Object> grid;
+	private static  Parameters params;
+	private static  MessageBoard messageBoard;
+	private static  Integer countDown;
+	private static  boolean gameOn;
+	private static  int standardCountDown = 500;
 	
-	Referee(Context<Object> context){
-		this.context = context;
+	private Referee(){
+		
+	}
+	
+	public static void init(Context<Object> c){
+		context = c;
 		grid = (Grid)context.getProjection("grid");
 		space = (ContinuousSpace)context.getProjection("space");
 		params = RunEnvironment.getInstance().getParameters();
-		Iterator<Object> iter = context.getObjects(MessageBoard.class).iterator();
-		this.messageBoard = (MessageBoard) iter.next();
-	}
-	
-	void init(){
+		countDown = null;;
 		startGame();
 	}
 
-	void step(){
+	public static void step(){
 		checkGame();
 		checkGameOver();
 	}
@@ -46,7 +46,7 @@ public class Referee {
 	/**
 	 * Checks the countdown variable and reduces it or ends the game based on its value
 	 */
-	void checkGameOver(){
+	private static void checkGameOver(){
 		if(countDown!=null){
 			if(countDown==0){
 				endGame();
@@ -57,7 +57,7 @@ public class Referee {
 	/**
 	 * If the gameOn bool is true, performs the various gameplay checks
 	 */
-	void checkGame(){
+	private static void checkGame(){
 		if(gameOn){
 			checkOut();
 			checkTouch();
@@ -69,7 +69,7 @@ public class Referee {
 	/**
 	 * Checks if the ball has travelled forward
 	 */
-	void checkForward(){
+	private static void checkForward(){
 		
 		//Get the ball
 		Iterator<Object> it = context.getObjects(Ball.class).iterator();
@@ -89,7 +89,7 @@ public class Referee {
 	/**
 	 * Checks if the ball carrier or the ball has gone out
 	 */
-	void checkOut(){
+	private static void checkOut(){
 		
 		//Get the ball
 		Iterator<Object> it = context.getObjects(Ball.class).iterator();
@@ -133,7 +133,7 @@ public class Referee {
 	/**
 	 * Checks if the player with the ball has reached the tryline
 	 */
-	void checkTry(){
+	private static void checkTry(){
 		
 		//Find the x value of the tryline
 		int tryPoint = (Integer)params.getValue("fieldInset") + (Integer)params.getValue("fieldIncrement");
@@ -156,7 +156,7 @@ public class Referee {
 	/**
 	 * Checks if the player with the ball was touched by a defender
 	 */
-	void checkTouch(){
+	private static void checkTouch(){
 		
 		//Get the ball object
 		Iterator<Object> it = context.getObjects(Ball.class).iterator();
@@ -183,15 +183,15 @@ public class Referee {
 	/**
 	 * Sets the gameOn variable to true and sends a message
 	 */
-	void startGame(){
+	private static void startGame(){
 		gameOn = true;
-		messageBoard.addMessage(this, "Begin!");
+		messageBoard.addMessage("Begin!");
 	}
 	
 	/**
 	 * Ends the current simulation
 	 */
-	void endGame(){
+	private static void endGame(){
 		RunEnvironment.getInstance().endRun();
 	}
 	
@@ -199,8 +199,8 @@ public class Referee {
 	 * Send a message, turn the gameOn variable off and begin a countdown to end the game
 	 * @param call - the call and message to be sent
 	 */
-	void makeCall(String call){
-		messageBoard.addMessage(this, call);
+	private static void makeCall(String call){
+		messageBoard.addMessage(call);
 		gameOn = false;
 		countDown = standardCountDown;
 	}

@@ -24,7 +24,6 @@ import repast.simphony.parameter.Parameters;
 
 public class Physics {
 
-	private Utils utils = new Utils();
 	private Context context;
 	private double timeScale = .1;
 	private double acceleration = 1;
@@ -43,7 +42,7 @@ public class Physics {
 	
 	Physics(Ball ball){
 		ballPhysics(ball);
-		//ballAngularManipulation();
+		ballAngularManipulation(ball);
 	}
 	
 	Physics(Player player){
@@ -70,7 +69,7 @@ public class Physics {
 			boolean noPendingMessage = true;
 			
 			//Iterate through the pending messages on the messageboard
-			Iterator<Message> it = player.getMessageBoard().getPending().iterator();
+			Iterator<Message> it = MessageBoard.getPending().iterator();
 			while(it.hasNext()){
 				
 				//If the player has a pending message set the bool to false
@@ -80,7 +79,7 @@ public class Physics {
 			}
 			
 			//Add the message to the message board only if the player has no pending messages
-			if(noPendingMessage)player.getMessageBoard().addMessage(player, player.getMovement().getMessage());
+			if(noPendingMessage)MessageBoard.addMessage(player, player.getMovement().getMessage());
 		}
 	}
 	
@@ -193,7 +192,7 @@ public class Physics {
 			ball.setVelocity(ball.getPlayer().getVelocity());
 		} else {
 			// Vector which will modify the boids velocity vector
-			Vector3d velocity = utils.getVector(ball.getMovement().getEffort(), ball.getPositionVector());
+			Vector3d velocity = Utils.getVector(ball.getMovement().getEffort(), ball.getPositionVector());
 			//Represents the difference between the desired and current positions
 			//velocityUpdate.sub(desiredVelocity, currentPosition);
 
@@ -249,7 +248,7 @@ public class Physics {
 		Ball ball;
 		if(it.hasNext()){
 			ball = (Ball)it.next();
-				Vector3d vectorToBall = utils.getVector(ball.getPositionVector(), player.getPositionVector());
+				Vector3d vectorToBall = Utils.getVector(ball.getPositionVector(), player.getPositionVector());
 				//Player has ball
 				if((Math.abs(vectorToBall.length())<=((Integer)params.getValue("body_radius")+(Integer)params.getValue("ball_radius")))){
 					if((!(ball.getPlayer()!=null))||(ball.getPlayer().equals(player))){

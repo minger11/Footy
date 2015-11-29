@@ -26,6 +26,16 @@ public class Message {
 	}
 	
 	/**
+	 * The message constructor used when adding messages to the messageboard
+	 * @param sender
+	 * @param message
+	 */
+	Message(String message){
+		this.message = message;
+		this.official = true;
+	}
+	
+	/**
 	 * The constructor used when an official message (from the referee) is being heard and sent to the brain
 	 * @param official
 	 * @param message

@@ -70,24 +70,18 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	 * Creates a referee to adjudicate the game
 	 */
 	public void createReferee(){
-		Referee ref = new Referee(context);
-		context.add(ref);
 	}
 	
 	/**
 	 * Creates a messageboard for audio messages to be sent
 	 */
 	public void createMessageBoard(){
-		MessageBoard mb = new MessageBoard();
-		context.add(mb);
 	}
 	
 	/**
 	 * Creates a mover that moves all movable objects at the end of each step and checks for collisions
 	 */
 	public void createMover(){
-		Mover mover = new Mover(context);
-		context.add(mover);
 	}
 	
 	/**
