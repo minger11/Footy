@@ -20,9 +20,8 @@ public final class Referee {
 	private static  ContinuousSpace<Object> space;
 	private static  Grid<Object> grid;
 	private static  Parameters params;
-	private static  MessageBoard messageBoard;
 	private static  Integer countDown;
-	private static  boolean gameOn;
+	private static  boolean gameOn = false;
 	private static  int standardCountDown = 500;
 	
 	private Referee(){
@@ -78,10 +77,16 @@ public final class Referee {
 		//If the ball does not have a player
 		if(ball.getPlayer()!=null){
 		} else {
-			
-			//If the balls velocity is negative on the xaxis, call forward
-			if(ball.getVelocity().getX()<0){
-				makeCall("Forward!");
+			if(ball.getLastPlayer() instanceof Easterner){
+				//If the balls velocity is negative on the xaxis, call forward
+				if(ball.getVelocity().getX()<0){
+					makeCall("Forward by eastern team");
+				}
+			} else {
+				//If the balls velocity is positive on the xaxis, call forward
+				if(ball.getVelocity().getX()>0){
+					makeCall("Forward by western team");
+				}
 			}
 		}
 	}
@@ -105,18 +110,22 @@ public final class Referee {
 				
 				//If the ball has a player
 				if(ball.getPlayer()!=null){
-					//Define the attackers upper and lower reaches
-					Attacker attacker = (Attacker)ball.getPlayer();
-					double attackerUpperEdge = attacker.getPositionPoint().getY()+(Integer)params.getValue("body_radius");
-					double attackerLowerEdge = attacker.getPositionPoint().getY()-(Integer)params.getValue("body_radius");
+					//Define the players upper and lower reaches
+					Player easterner = (Player)ball.getPlayer();
+					double easternerUpperEdge = easterner.getPositionPoint().getY()+(Integer)params.getValue("body_radius");
+					double easternerLowerEdge = easterner.getPositionPoint().getY()-(Integer)params.getValue("body_radius");
 					
-					//If the attacker crosses the sideline, ball is out
-					if(attackerUpperEdge>=upperEdge||attackerLowerEdge<=lowerEdge){
-						makeCall("Out!");
+					//If the easterner crosses the sideline, ball is out
+					if(easternerUpperEdge>=upperEdge||easternerLowerEdge<=lowerEdge){
+						if(easterner instanceof Easterner){
+							makeCall("Out by eastern team");
+						} else {
+							makeCall("Out by western team");
+						}
 					}
 				}
 				
-				//If the ball has a player
+				//If the ball has no player
 				if(!(ball.getPlayer()!=null)){
 					//Define the balls upper and lower reaches
 					double ballUpperEdge = ball.getPositionPoint().getY()+(Integer)params.getValue("ball_radius");
@@ -124,7 +133,12 @@ public final class Referee {
 						
 					//If the ball crosses the sideline, ball is out
 					if(ballUpperEdge>=upperEdge||ballLowerEdge<=lowerEdge){
-						makeCall("Out!");
+						Player easterner = ball.getLastPlayer();
+						if(easterner instanceof Easterner){
+							makeCall("Out by eastern team");
+						} else {
+							makeCall("Out by western team");
+						}
 					}
 				}
 		}
@@ -136,8 +150,12 @@ public final class Referee {
 	private static void checkTry(){
 		
 		//Find the x value of the tryline
-		int tryPoint = (Integer)params.getValue("fieldInset") + (Integer)params.getValue("fieldIncrement");
-		int tryEdge = tryPoint + (Integer)params.getValue("lineRadius");
+		int westTryPoint = (Integer)params.getValue("fieldInset") + (Integer)params.getValue("fieldIncrement");
+		int westTryEdge = westTryPoint + (Integer)params.getValue("lineRadius");
+		
+		//Find the x value of the tryline
+			int eastTryPoint = (Integer)params.getValue("display_width") - (Integer)params.getValue("fieldInset") - (Integer)params.getValue("fieldIncrement");
+			int eastTryEdge = eastTryPoint + (Integer)params.getValue("lineRadius");
 		
 		//Get the ball
 		Iterator<Object> it = context.getObjects(Ball.class).iterator();
@@ -145,16 +163,24 @@ public final class Referee {
 		
 		//If the ball has a player, check if the ball has touched the tryline
 		if(ball.getPlayer()!=null){
+			if(ball.getPlayer() instanceof Easterner){
 			double ballEdge = ball.getPositionPoint().getX()-(Integer)params.getValue("ball_radius");
-				if(ballEdge<=tryEdge){
+				if(ballEdge<=westTryEdge){
 					
-					makeCall("Try!");
+					makeCall("Try to the easterners!");
 				}
+			} else {
+				double ballEdge = ball.getPositionPoint().getX()+(Integer)params.getValue("ball_radius");
+				if(ballEdge<=eastTryEdge){
+					
+					makeCall("Try to the westerners!");
+				}
+			}
 		}
 	}
 	
 	/**
-	 * Checks if the player with the ball was touched by a defender
+	 * Checks if the player with the ball was touched by a westerner
 	 */
 	private static void checkTouch(){
 		
@@ -166,15 +192,29 @@ public final class Referee {
 		if(ball.getPlayer()!=null){
 				Player ballHandler = ball.getPlayer();
 				
-				//Iterate through the defenders
-				Iterator<Object> iter = context.getObjects(Defender.class).iterator();
-				while(iter.hasNext()){
-					Defender defender = (Defender)iter.next();	
-					
-					//If the distance between the ball handler and the defender is less than 2 times body radius, the player is touched
-					if (space.getDistance(defender.getPositionPoint(), ballHandler.getPositionPoint())<(Integer)params.getValue("body_radius")*2){
+				if(ballHandler instanceof Easterner){
+					//Iterate through the westerners
+					Iterator<Object> iter = context.getObjects(Westerner.class).iterator();
+					while(iter.hasNext()){
+						Westerner westerner = (Westerner)iter.next();	
 						
-						makeCall("Touched!");
+						//If the distance between the ball handler and the westerner is less than 2 times body radius, the player is touched
+						if (space.getDistance(westerner.getPositionPoint(), ballHandler.getPositionPoint())<(Integer)params.getValue("body_radius")*2){
+							
+							makeCall("The easterner was touched by the westerner!");
+						}
+					}
+				} else {
+					//Iterate through the westerners
+					Iterator<Object> iter = context.getObjects(Easterner.class).iterator();
+					while(iter.hasNext()){
+						Easterner westerner = (Easterner)iter.next();	
+						
+						//If the distance between the ball handler and the westerner is less than 2 times body radius, the player is touched
+						if (space.getDistance(westerner.getPositionPoint(), ballHandler.getPositionPoint())<(Integer)params.getValue("body_radius")*2){
+							
+							makeCall("The westerner was touched by the easterner!");
+						}
 					}
 				}
 		}
@@ -185,7 +225,7 @@ public final class Referee {
 	 */
 	private static void startGame(){
 		gameOn = true;
-		messageBoard.addMessage("Begin!");
+		MessageBoard.addMessage("Begin!", gameOn);
 	}
 	
 	/**
@@ -200,8 +240,9 @@ public final class Referee {
 	 * @param call - the call and message to be sent
 	 */
 	private static void makeCall(String call){
-		messageBoard.addMessage(call);
 		gameOn = false;
+		MessageBoard.addMessage(call, gameOn);
+		System.out.println("Referee: "+call);
 		countDown = standardCountDown;
 	}
 }

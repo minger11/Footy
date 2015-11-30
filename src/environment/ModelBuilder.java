@@ -148,7 +148,7 @@ public class ModelBuilder implements ContextBuilder<Object> {
 					int defenderStartY = (Integer)params.getValue("defender_start_y");
 					
 					// Create a new defender for each iteration
-					new Defender(context, defenderStartX, defenderStartY, i+1);
+					new Westerner(context, defenderStartX, defenderStartY, i+1);
 				}
 	}
 	
@@ -187,7 +187,7 @@ public class ModelBuilder implements ContextBuilder<Object> {
 			}
 			
 			//create a new attacker for each iteration
-			new Attacker(context, attackerStartX, y, i+1);
+			new Easterner(context, attackerStartX, y, i+1);
 		}
 
 	}
@@ -220,18 +220,11 @@ public class ModelBuilder implements ContextBuilder<Object> {
 		int easternTryline = (Integer)params.getValue("display_width")-(Integer)params.getValue("fieldInset")-(Integer)params.getValue("fieldIncrement");
 		
 		//create horizontal sidelines
-		for (int i = westernTryline; i < easternTryline; i++) {
+		for (int i = westernTryline; i <= easternTryline; i=i+10) {
 			
 			//create upper and lower sidepoints
 			new SidePoint(context, i, southernSideline);
-			new SidePoint(context, i, northernSideline-1);
-		}
-		
-		//create opposing tryline (sideline for this instance)
-		for (int i = southernSideline; i < northernSideline; i++) {
-			
-			//create sidepoint
-			new SidePoint(context, easternTryline-1, i);
+			new SidePoint(context, i, northernSideline);
 		}
 	}
 	
@@ -241,10 +234,17 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	public void createTryline() {
 		int southernSideline = (Integer)params.getValue("fieldInset");
 		int northernSideline = (Integer)params.getValue("display_height")-(Integer)params.getValue("fieldInset");
-		int easternTryline = (Integer)params.getValue("fieldInset")+(Integer)params.getValue("fieldIncrement");
-		for (int i = southernSideline; i < northernSideline; i++) {
+		int easternTryline = (Integer)params.getValue("display_width")-(Integer)params.getValue("fieldInset")-(Integer)params.getValue("fieldIncrement");
+		int westernTryline = (Integer)params.getValue("fieldInset")+(Integer)params.getValue("fieldIncrement");
+		for (int i = southernSideline; i <= northernSideline; i=i+10) {
 			//create a new trypoint for each iteration
-			new TryPoint(context, easternTryline, i);
+			new WestTryPoint(context, westernTryline, i);
+		}
+		
+		//create opposing tryline (sideline for this instance)
+		for (int i = southernSideline; i <= northernSideline; i=i+10) {
+			//create sidepoint
+			new EastTryPoint(context, easternTryline, i);
 		}
 	}
 

@@ -38,7 +38,7 @@ public final class MessageBoard {
 	 * Removes messages from the pending list and adds them to the messageboard list
 	 */
 	public static void updateMessageBoard(){
-		
+		newMessage = false;
 		//Iterate through the pending list
 		Iterator<Message> it = pending.iterator();
 		while(it.hasNext()){
@@ -46,17 +46,20 @@ public final class MessageBoard {
 				
 				//Set a time that the messages should be heard, based on character length and variables
 				int chars = mess.getMessage().length();
-				long hearable = mess.getTime()+chars*delayPerChar+fixedDelay;
+				long hearable;
+				if(mess.getOfficial()){
+					hearable = System.currentTimeMillis();
+				} else {
+					hearable = mess.getTime()+chars*delayPerChar+fixedDelay;
+				}
 				
 				//If the required time has passed, remove the message from pending and add it to the messageboard
 				//The message will now be available to be heard by players
-				if(System.currentTimeMillis()>hearable){
+				if(System.currentTimeMillis()>=hearable){
 					it.remove();
 					messageBoard.add(mess);
 					newMessage = true;
-				} else {
-					newMessage = false;
-				}
+				} 
 		}
 	}
 	
@@ -75,10 +78,10 @@ public final class MessageBoard {
 	 * @param sender
 	 * @param text
 	 */
-	public static void addMessage(String text){
-		Message message = new Message(text);
-		messageBoard.add(message);
-		newMessage = true;
+	public static void addMessage(String text, boolean gameOn){
+		Message message;
+		message = new Message(text, gameOn);
+		pending.add(message);
 	}
 	
 	public static List<Message> getMessages(){

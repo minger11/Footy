@@ -4,17 +4,13 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
-import javax.vecmath.Vector3d;
-
 import repast.simphony.random.RandomHelper;
-import repast.simphony.space.SpatialMath;
 import repast.simphony.space.continuous.ContinuousSpace;
-import repast.simphony.space.continuous.NdPoint;
-import environment.Attacker;
-import environment.Defender;
+import environment.Easterner;
 import environment.Message;
 import environment.Player;
 import environment.SensesObject;
+import environment.Westerner;
 
 /**
  * Hub of all actions of the player
@@ -32,9 +28,11 @@ public class Brain {
 	
 	//Received
 	private SensesObject message;
-	private List<SensesObject> tryline;
+	private List<SensesObject> westTryline;
+	private List<SensesObject> eastTryline;
 	private List<SensesObject> players;
 	private boolean hasBall;
+	private boolean gameOn;
 	
 	//Derived
 	private SensesObject targetObject;
@@ -53,7 +51,8 @@ public class Brain {
 	private double passEnergy;
 	
 	public Brain(){
-		tryline = new ArrayList<SensesObject>();
+		westTryline = new ArrayList<SensesObject>();
+		eastTryline = new ArrayList<SensesObject>();
 		players = new ArrayList<SensesObject>();
 		//effort = new Vector3d();
 		//passEffort = new Vector3d();
@@ -62,57 +61,97 @@ public class Brain {
 	public void init(){
 		mapSurroundings();
 		setTarget();
-		if(player instanceof Attacker){
+		if(player instanceof Easterner){
 			headTurn = turn = Math.PI;
 		}
 	}
 	
 	public void step(){
 		mapSurroundings();
-		moveBody();
-		if(hasBall) {
-			moveBall();
+		if(gameOn){
+			moveBody();
+			if(hasBall) {
+				moveBall();
+			}
+			else passEnergy=0;
+		} else {
+			passEnergy = 0;
+			moveEnergy = 0;
 		}
-		else passEnergy=0;
 	}
 
 	/**
 	 * Sets both the SimleAgent target and NdPoint of the target
 	 */
 	public void setTarget() {
-		if(player instanceof Attacker) {
-			int randomNumber = RandomHelper.nextIntFromTo(0, tryline.size()-1);
-		try {
-				targetObject = tryline.get(randomNumber);
-				moveEnergy = targetObject.getDistance();
-				moveDirection = targetObject.getRelativeAngle();
-				//effort = targetObject.getRelativeVector();
-			} catch (Exception e){
-			}
-		Vector3d vec = new Vector3d();
-		}
-		else 
-		if(player instanceof Defender) {
-			int randomNumber = RandomHelper.nextIntFromTo(0, players.size()-1);
-			Iterator<SensesObject> it = players.iterator();
-			while(it.hasNext()){
-				if(it.next().getSimpleAgent() instanceof Attacker){
-					//SensesObject y = players.iterator().next();
-					targetObject = players.iterator().next();
-					//effort = targetObject.getRelativeVector();
+		if(hasBall){
+			if(player instanceof Easterner) {
+				int randomNumber = RandomHelper.nextIntFromTo(0, westTryline.size()-1);
+			try {
+					targetObject = westTryline.get(randomNumber);
 					moveEnergy = targetObject.getDistance();
 					moveDirection = targetObject.getRelativeAngle();
+					//effort = targetObject.getRelativeVector();
+				} catch (Exception e){
 				}
 			}
-		}
-		try{
-			if(targetObject.isWithinDepth()){
-				headTurn = targetObject.getRelativeAngle();
-			} else {
-				headTurn = targetObject.getRelativeAngle();
+			else 
+				if(player instanceof Westerner) {
+					int randomNumber = RandomHelper.nextIntFromTo(0, eastTryline.size()-1);
+				try {
+						targetObject = eastTryline.get(randomNumber);
+						moveEnergy = targetObject.getDistance();
+						moveDirection = targetObject.getRelativeAngle();
+						//effort = targetObject.getRelativeVector();
+					} catch (Exception e){
+					}
+				}
+			try{
+				if(targetObject.isWithinDepth()){
+					headTurn = targetObject.getRelativeAngle();
+				} else {
+					headTurn = targetObject.getRelativeAngle();
+				}
+				turn = headTurn;
+			} catch (Exception e) {
 			}
-			turn = headTurn;
-		} catch (Exception e) {
+		} else {
+			if(player instanceof Westerner) {
+				int randomNumber = RandomHelper.nextIntFromTo(0, players.size()-1);
+				Iterator<SensesObject> it = players.iterator();
+				while(it.hasNext()){
+					if(it.next().getSimpleAgent() instanceof Easterner){
+						//SensesObject y = players.iterator().next();
+						targetObject = players.iterator().next();
+						//effort = targetObject.getRelativeVector();
+						moveEnergy = targetObject.getDistance();
+						moveDirection = targetObject.getRelativeAngle();
+					}
+				}
+			}
+			else 
+			if(player instanceof Easterner) {
+				int randomNumber = RandomHelper.nextIntFromTo(0, players.size()-1);
+				Iterator<SensesObject> it = players.iterator();
+				while(it.hasNext()){
+					if(it.next().getSimpleAgent() instanceof Westerner){
+						//SensesObject y = players.iterator().next();
+						targetObject = players.iterator().next();
+						//effort = targetObject.getRelativeVector();
+						moveEnergy = targetObject.getDistance();
+						moveDirection = targetObject.getRelativeAngle();
+					}
+				}
+			}
+			try{
+				if(targetObject.isWithinDepth()){
+					headTurn = targetObject.getRelativeAngle();
+				} else {
+					headTurn = targetObject.getRelativeAngle();
+				}
+				turn = headTurn;
+			} catch (Exception e) {
+			}
 		}
 	}
 
@@ -143,7 +182,8 @@ public class Brain {
 		if(targetObject!=null){
 			if(targetObject.isWithinDepth()){
 				//effort = targetObject.getRelativeVector();
-				moveEnergy = targetObject.getDistance();
+				//moveEnergy = targetObject.getDistance();
+				run(1000);
 				moveDirection = targetObject.getRelativeAngle();
 
 				headTurn = targetObject.getRelativeAngle();
@@ -196,7 +236,12 @@ public class Brain {
 	 * Iterates through the tryline and moves each trypoint onto the internal projection space
 	 */
 	public void mapTryline(){
-		Iterator<SensesObject> it = tryline.iterator();
+		Iterator<SensesObject> it;
+		if(player instanceof Easterner){
+			it = westTryline.iterator();
+		} else {
+			it = eastTryline.iterator();
+		}
 		while(it.hasNext()){
 			SensesObject tryPoint = it.next();
 			try{
@@ -241,17 +286,17 @@ public class Brain {
 	//-----------------------------------INFO--------------------------------------//
 	//---------------------Sent once, at the start of the game---------------------//
 	
-		public void setMaxSpeed(int x){
+	public void setMaxSpeed(int x){
+	
+	}
+	
+	public void setSpace(ContinuousSpace<Object> x){
 		
-		}
-		
-		public void setSpace(ContinuousSpace<Object> x){
-			
-		}	
-		
-		public void setPlayer(Player x){
-			player = x;
-		}	
+	}	
+	
+	public void setPlayer(Player x){
+		player = x;
+	}	
 	
 	//---------------------------------------EYES-----------------------------------//
 	//------------------Received every timestep------------------------------------//
@@ -259,8 +304,11 @@ public class Brain {
 	public void setPlayers(List<SensesObject> x){
 		players = x;
 	}
-	public void setTryline(List<SensesObject> x){
-		tryline = x;
+	public void setWestTryline(List<SensesObject> x){
+		westTryline = x;
+	}
+	public void setEastTryline(List<SensesObject> x){
+		eastTryline = x;
 	}
 	public void setBalls(List<SensesObject> x){
 		//balls = x;
@@ -274,6 +322,10 @@ public class Brain {
 	
 	public void setMessage(SensesObject message){
 		this.message = message;
+		Message mess = (Message)message.getSimpleAgent();
+		if(mess.getOfficial()){
+			gameOn = mess.getGameOn();
+		}
 	}
 	
 	//----------------------------------TOUCH--------------------------------------//

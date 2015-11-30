@@ -3,11 +3,11 @@
   <type>2D</type>
   <styles>
     <entry>
-      <string>environment.Defender</string>
+      <string>environment.Ball</string>
       <string>environment.SimpleAgentStyle</string>
     </entry>
     <entry>
-      <string>environment.Ball</string>
+      <string>environment.Westerner</string>
       <string>environment.SimpleAgentStyle</string>
     </entry>
     <entry>
@@ -19,17 +19,17 @@
       <string>environment.SimpleAgentStyle</string>
     </entry>
     <entry>
-      <string>environment.Attacker</string>
+      <string>environment.Easterner</string>
       <string>environment.SimpleAgentStyle</string>
     </entry>
   </styles>
   <editedStyles>
     <entry>
-      <string>environment.Defender</string>
+      <string>environment.Ball</string>
       <null/>
     </entry>
     <entry>
-      <string>environment.Ball</string>
+      <string>environment.Westerner</string>
       <null/>
     </entry>
     <entry>
@@ -41,7 +41,7 @@
       <null/>
     </entry>
     <entry>
-      <string>environment.Attacker</string>
+      <string>environment.Easterner</string>
       <null/>
     </entry>
   </editedStyles>
@@ -55,19 +55,19 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>1213271894</hashCode>
+    <hashCode>869023759</hashCode>
   </schedParams>
   <layoutClassName>foo.bar.baz</layoutClassName>
   <layoutProjection>space</layoutProjection>
   <layoutInterval>0</layoutInterval>
   <layerOrder>
     <entry>
-      <string>environment.Defender</string>
-      <int>1</int>
-    </entry>
-    <entry>
       <string>environment.Ball</string>
       <int>3</int>
+    </entry>
+    <entry>
+      <string>environment.Westerner</string>
+      <int>1</int>
     </entry>
     <entry>
       <string>environment.Head</string>
@@ -78,7 +78,7 @@
       <int>0</int>
     </entry>
     <entry>
-      <string>environment.Attacker</string>
+      <string>environment.Easterner</string>
       <int>2</int>
     </entry>
   </layerOrder>

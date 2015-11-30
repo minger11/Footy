@@ -31,18 +31,6 @@ public class Player extends MovingAgent {
 		this.number = number;
 	}
 	
-	void init(){	
-		Senses.init(this);
-		brain.init();
-		Reflexes.init(this);
-	}
-	
-	void step() {
-		Senses.step(this);
-		brain.step();
-		Reflexes.step(this);
-	}
-	
 	Brain getBrain(){
 		return brain;
 	}

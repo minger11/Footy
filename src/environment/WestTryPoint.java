@@ -8,9 +8,9 @@ import repast.simphony.context.Context;
  *
  */
 
-public class TryPoint extends BoundaryPoint{
+public class WestTryPoint extends BoundaryPoint{
 	
-	TryPoint(Context context, int x, int y) {
+	WestTryPoint(Context context, int x, int y) {
 		super(context, x, y);
 	}
 }

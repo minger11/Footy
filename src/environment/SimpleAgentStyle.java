@@ -36,7 +36,7 @@ public class SimpleAgentStyle extends DefaultStyleOGL2D{
 	@Override
 	public VSpatial getVSpatial(Object o, saf.v3d.scene.VSpatial spatial) {
 		if(spatial == null){
-			if (o instanceof Attacker){
+			if (o instanceof Easterner){
 				try{
 					URL url = getClass().getResource("/maroon.png");
 					return(factory.createImage(url.getPath()));
@@ -45,7 +45,7 @@ public class SimpleAgentStyle extends DefaultStyleOGL2D{
 				    System.err.println("Couldnt get player images!");
 				}
 			}
-			if (o instanceof Defender){
+			if (o instanceof Westerner){
 				try{
 					URL url = getClass().getResource("/baby_blue.png");
 					return factory.createImage(url.getPath());

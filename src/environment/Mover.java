@@ -31,8 +31,7 @@ public final class Mover {
 	 * Creates a new physics and send the entire context to physics to check for collisions
 	 */
 	private static void checkCollisions(){
-		Physics physics = new Physics(context);
-		physics.checkCollisions();
+		Physics.update(context);
 	}
 	
 	/**

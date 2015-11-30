@@ -13,6 +13,7 @@ public class Message {
 	private Long time;
 	private boolean official;
 	private Double angle;
+	private boolean gameOn;
 	
 	/**
 	 * The message constructor used when adding messages to the messageboard
@@ -30,8 +31,9 @@ public class Message {
 	 * @param sender
 	 * @param message
 	 */
-	Message(String message){
+	Message(String message, boolean gameOn){
 		this.message = message;
+		this.gameOn = gameOn;
 		this.official = true;
 	}
 	
@@ -57,23 +59,27 @@ public class Message {
 		this.official = official;
 	}
 	
-	Object getSender(){
+	public Object getSender(){
 		return sender;
 	}
 	
-	Double getAngle(){
+	public Double getAngle(){
 		return angle;
 	}
 	
-	Boolean getOfficial(){
+	public boolean getOfficial(){
 		return official;
 	}
 	
-	Long getTime(){
+	public Long getTime(){
 		return time;
 	}
 	
-	String getMessage(){
+	public String getMessage(){
 		return message;
+	}
+	
+	public boolean getGameOn(){
+		return gameOn;
 	}
 }

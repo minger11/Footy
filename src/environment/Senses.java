@@ -73,10 +73,10 @@ public final class Senses {
 	}
 		
 	private static int getMaxSpeed(){
-			if(player instanceof Attacker){
+			if(player instanceof Easterner){
 				return (Integer)params.getValue("attacker_speed");
 			}
-			if(player instanceof Defender){
+			if(player instanceof Westerner){
 				return (Integer)params.getValue("defender_speed");
 			}
 			return 1;		
@@ -112,9 +112,10 @@ public final class Senses {
 	 * Sends the various object lists to the brain
 	 */
 	private static void sendView(){
-		player.getBrain().setTryline(getObjectsInView(TryPoint.class));
+		player.getBrain().setWestTryline(getObjectsInView(WestTryPoint.class));
+		player.getBrain().setEastTryline(getObjectsInView(EastTryPoint.class));
 		player.getBrain().setPlayers(getObjectsInView(Player.class));
-		//player.brain.setSidelines(getObjectsInView(SidePoint.class));
+		player.getBrain().setSidelines(getObjectsInView(SidePoint.class));
 		player.getBrain().setBalls(getObjectsInView(Ball.class));
 	}
 	
@@ -150,7 +151,8 @@ public final class Senses {
 		if(o instanceof Player)agent = (Player)o;
 		else if(o instanceof Ball)agent = (Ball)o;
 		else if(o instanceof SidePoint)agent = (SidePoint)o;
-		else if(o instanceof TryPoint)agent = (TryPoint)o;
+		else if(o instanceof WestTryPoint)agent = (WestTryPoint)o;
+		else if(o instanceof EastTryPoint)agent = (EastTryPoint)o;
 		else agent = null;
 		
 		//Ensure the agent is not the curent player
@@ -416,10 +418,9 @@ public final class Senses {
 			
 			//If the message is from the referee, create an official message
 			if(message.getOfficial()){
-				Message mess = new Message(true, message.getMessage());
 				
 				//Put the message into a senses object
-				SensesObject lastMess = new SensesObject(mess);
+				SensesObject lastMess = new SensesObject(message);
 				
 				//Send the sensesobject to the brain
 				player.getBrain().setMessage(lastMess);

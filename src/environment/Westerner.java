@@ -8,7 +8,7 @@ import repast.simphony.context.Context;
  *
  */
 
-public class Defender extends Player{
+public class Westerner extends Player{
 	
 	/**
 	 * Constructor for Defender
@@ -16,7 +16,7 @@ public class Defender extends Player{
 	 * @param space - the ContinuousSpace projection the defender will operate in
 	 * @param grid - the Grid projection the defender will operate in
 	 */
-	Defender(Context context, int x, int y, int number){
+	Westerner(Context context, int x, int y, int number){
 		super(context, x, y, number);
 	}
 

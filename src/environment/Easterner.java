@@ -8,7 +8,7 @@ import repast.simphony.context.Context;
  *
  */
 
-public class Attacker extends Player{
+public class Easterner extends Player{
 	
 	/**
 	 * The constructor for the Attacker
@@ -16,7 +16,7 @@ public class Attacker extends Player{
 	 * @param space - the space projection
 	 * @param grid - the grid projection
 	 */
-	Attacker(Context context, int x, int y, int number) {
+	Easterner(Context context, int x, int y, int number) {
 		super(context, x, y, number);
 	}
 	

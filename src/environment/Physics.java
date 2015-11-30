@@ -22,46 +22,47 @@ import repast.simphony.parameter.Parameters;
  *
  */
 
-public class Physics {
+public final class Physics {
 
-	private Context context;
-	private double timeScale = .1;
-	private double acceleration = 1;
-	private double maxForwardSpeed = 7;
-	private double maxBackwardSpeed = 5;
-	private double maxSideWaySpeed = 4;
-	private double ballMaxSpeed = 14;
-	Parameters params = RunEnvironment.getInstance().getParameters();
+	private static double timeScale = .1;
+	private static double acceleration = 1;
+	private static double maxForwardSpeed = 7;
+	private static double maxBackwardSpeed = 5;
+	private static double maxSideWaySpeed = 4;
+	private static double ballMaxSpeed = 14;
+	private static Parameters params = RunEnvironment.getInstance().getParameters();
 		
-	/*
-	 * The constructor for general simulation physics
-	 */
-	Physics(Context context){
-		this.context = context;
+		
+	private Physics(){
+		
 	}
 	
-	Physics(Ball ball){
+	public static void update(Context context){
+		checkCollisions(context);
+	}
+	
+	public static void update(Ball ball){
 		ballPhysics(ball);
 		ballAngularManipulation(ball);
 	}
 	
-	Physics(Player player){
+	public static void update(Player player){
 		//updateVelocity
-		//updateRotations
-		ballHandling(player);
-		if(player.getMovement().getEffort()!=null){
-			playerVelocity(player);
-		}
-		player.getHead().setRotation(player.getMovement().getHeadTurn());
-		player.setRotation(player.getMovement().getTurn());
-		sendMessage(player);
+				//updateRotations
+				ballHandling(player);
+				if(player.getMovement().getEffort()!=null){
+					playerVelocity(player);
+				}
+				player.getHead().setRotation(player.getMovement().getHeadTurn());
+				player.setRotation(player.getMovement().getTurn());
+				sendMessage(player);
 	}
 	
 	/**
 	 * Adds a string message to the messageBoard only if the current player has no pending messages
 	 * @param message - the string to be posted
 	 */
-	void sendMessage(Player player){
+	private static void sendMessage(Player player){
 		//If the current message is not null
 		if(player.getMovement().getMessage()!=null){
 			
@@ -91,7 +92,7 @@ public class Physics {
 	 * @param radius - the radius of the agent
 	 * @param collisionList - the list of collisions to add any collisions to
 	 */
-	void checkBoundaryCollision(MovingAgent agent, int radius, List<Collision> collisionList){
+	private static void checkBoundaryCollision(MovingAgent agent, int radius, List<Collision> collisionList){
 		if(agent.getPositionVector().y+radius>=(Integer)params.getValue("display_height")||
 				agent.getPositionVector().y-radius<=0||
 						agent.getPositionVector().x+radius>=(Integer)params.getValue("display_width")||
@@ -105,7 +106,7 @@ public class Physics {
 	/**
 	 * Checks for collisions in the model
 	 */
-	void checkCollisions(){
+	private static void checkCollisions(Context context){
 		
 		//Create a list of collisions
 		List<Collision> collisionList = new ArrayList<Collision>();
@@ -187,7 +188,7 @@ public class Physics {
 		}
 	}
 	
-	void ballPhysics(Ball ball){
+	private static void ballPhysics(Ball ball){
 		if(ball.getPlayer()!=null){
 			ball.setVelocity(ball.getPlayer().getVelocity());
 		} else {
@@ -217,7 +218,7 @@ public class Physics {
 	}
 		
 	
-	void playerVelocity(Player player){
+	private static void playerVelocity(Player player){
 		// Vector which will modify the boids velocity vector
 		Vector3d velocityUpdate = player.getMovement().getEffort();
 		//Represents the difference between the desired and current positions
@@ -226,24 +227,22 @@ public class Physics {
 		
 		//double predAcceleration = (Double)param.getValue("predAcceleration");
 		//double predMaxSpeed = (Double)param.getValue("predMaxSpeed");
-		
 		velocityUpdate.scale(acceleration * timeScale);
-
 		// Apply the update to the velocity
 		player.getVelocity().add(velocityUpdate);
-
+		
 		// If our velocity vector exceeds the max speed, throttle it back to the MAX_SPEED
 		if (player.getVelocity().length() > maxForwardSpeed ){
 			player.getVelocity().normalize();
 			player.getVelocity().scale(maxForwardSpeed);
+			player.getVelocity().scale(timeScale);
 		}
-		// Update the position of the boid
-		player.getVelocity().scale(timeScale);
+		
 		player.getHead().setVelocity(player.getVelocity());
 		
 	}
 	
-	void ballHandling(Player player){
+	private static void ballHandling(Player player){
 		Iterator<Object> it = player.getContext().getObjects(Ball.class).iterator();
 		Ball ball;
 		if(it.hasNext()){
@@ -273,7 +272,7 @@ public class Physics {
 	 * These angular changes (such as player body angle changes) can also affect the position of the ball.
 	 * This method handles such changes. 
 	 */
-	void ballAngularManipulation(Ball ball){
+	private static void ballAngularManipulation(Ball ball){
 		if(ball.getPlayer()!=null){
 			if(ball.getMovement().getTurn()!=ball.getRotation()){
 				double angleA = ball.getMovement().getTurn();
@@ -291,7 +290,7 @@ public class Physics {
 				ball.setRotation(ball.getMovement().getTurn());
 			}
 		} else {
-			Iterator<Object> iter = context.getObjects(Player.class).iterator();
+			Iterator<Object> iter = ball.getContext().getObjects(Player.class).iterator();
 			while(iter.hasNext()){
 				Player player = (Player) iter.next();
 				Vector3d vectorToBall = new Vector3d();
@@ -311,45 +310,6 @@ public class Physics {
 					ball.setRotation(ball.getMovement().getTurn());
 					}
 			}
-		}
-	}
-		
-	public class Collision{
-		
-		private MovingAgent agent1;
-		private MovingAgent agent2;
-		
-		Collision(MovingAgent agent1, MovingAgent agent2){
-			this.agent1 = agent1;
-			this.agent2 = agent2;
-			twoMovingParts();
-		}
-		
-		Collision(MovingAgent agent1){
-			this.agent1 = agent1;
-			oneMovingPart();
-		}
-		
-		void oneMovingPart(){
-			agent1.getVelocity().set(agent1.getVelocity().x*-1, agent1.getVelocity().y*-1,0.0);
-		}
-		
-		void twoMovingParts(){
-			//newVelX = (firstBall.speed.x * (firstBall.getMass() – secondBall.getMass()) + (2 * secondBall.getMass() * secondBall.speed.x)) / (firstBall.getMass() + secondBall.getMass());
-			double player1X = (agent1.getVelocity().x * (agent1.getMass() - agent2.getMass()) + (2 * agent2.getMass() * agent2.getVelocity().x)) / (agent1.getMass() + agent2.getMass());
-			double player1Y = (agent1.getVelocity().y * (agent1.getMass() - agent2.getMass()) + (2 * agent2.getMass() * agent2.getVelocity().y)) / (agent1.getMass() + agent2.getMass());
-			double player2X = (agent2.getVelocity().x * (agent2.getMass() - agent1.getMass()) + (2 * agent1.getMass() * agent1.getVelocity().x)) / (agent1.getMass() + agent2.getMass());
-			double player2Y = (agent2.getVelocity().y * (agent2.getMass() - agent1.getMass()) + (2 * agent1.getMass() * agent1.getVelocity().y)) / (agent1.getMass() + agent2.getMass());
-			agent1.getVelocity().set(player1X, player1Y, 0.0);
-			agent2.getVelocity().set(player2X, player2Y, 0.0);
-		}
-		
-		MovingAgent getAgent1(){
-			return agent1;
-		}
-		
-		MovingAgent getAgent2(){
-			return agent2;
 		}
 	}
 }
