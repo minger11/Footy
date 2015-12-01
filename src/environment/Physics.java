@@ -42,20 +42,16 @@ public final class Physics {
 	}
 	
 	public static void update(Ball ball){
-		ballPhysics(ball);
-		ballAngularManipulation(ball);
+		updateVelocity(ball);
+		updateRotation(ball);
 	}
 	
 	public static void update(Player player){
-		//updateVelocity
-				//updateRotations
-				ballHandling(player);
-				if(player.getMovement().getEffort()!=null){
-					playerVelocity(player);
-				}
-				player.getHead().setRotation(player.getMovement().getHeadTurn());
-				player.setRotation(player.getMovement().getTurn());
-				sendMessage(player);
+		sendMessage(player);
+		ballHandling(player);
+		
+		updateRotation(player);
+		updateVelocity(player);
 	}
 	
 	/**
@@ -84,6 +80,60 @@ public final class Physics {
 		}
 	}
 	
+	private static void ballHandling(Player player){
+		Iterator<Object> it = player.getContext().getObjects(Ball.class).iterator();
+		Ball ball;
+		if(it.hasNext()){
+			ball = (Ball)it.next();
+				Vector3d vectorToBall = Utils.getVector(ball.getPositionVector(), player.getPositionVector());
+				//Player has ball
+				if((Math.abs(vectorToBall.length())<=((Integer)params.getValue("body_radius")+(Integer)params.getValue("ball_radius")))){
+					if((!(ball.getPlayer()!=null))||(ball.getPlayer().equals(player))){
+							//Player wants to carry ball, balls player is current player
+							if(player.getMovement().getPassEffort().equals(player.getMovement().getEffort())){
+								ball.setPlayer(player);
+								ball.getMovement().setEffort(player.getMovement().getPassEffort());
+								ball.getMovement().setTurn(player.getRotation());
+							} 
+							//Player wants to move the ball, balls player is now null
+							else {
+								ball.setPlayer(null);
+								ball.getMovement().setEffort(player.getMovement().getPassEffort());
+							}
+					}
+				}
+		}
+	}
+	
+	private static void updateRotation(Player player){
+		player.getHead().setRotation(player.getMovement().getHeadTurn());
+		player.setRotation(player.getMovement().getTurn());
+	}
+	
+	private static void updateVelocity(Player player){
+		player.getVelocity().scale(.99);
+		// Vector which will modify the boids velocity vector
+		Vector3d velocityUpdate = player.getMovement().getEffort();
+		//Represents the difference between the desired and current positions
+		//velocityUpdate.sub(desiredPosition, currentPosition);
+
+		
+		//double predAcceleration = (Double)param.getValue("predAcceleration");
+		//double predMaxSpeed = (Double)param.getValue("predMaxSpeed");
+		velocityUpdate.scale(acceleration * timeScale);
+		// Apply the update to the velocity
+		player.getVelocity().add(velocityUpdate);
+		
+		// If our velocity vector exceeds the max speed, throttle it back to the MAX_SPEED
+		if (player.getVelocity().length() > maxForwardSpeed ){
+			player.getVelocity().normalize();
+			player.getVelocity().scale(maxForwardSpeed);
+			player.getVelocity().scale(timeScale);
+		}
+		
+		player.getHead().setVelocity(player.getVelocity());
+		
+	}
 	
 	/**
 	 * Checks for a boundary collision based on an agent, their radius
@@ -132,13 +182,15 @@ public final class Physics {
 				//If the distance is too short a collision has occurred
 				if(distance<((Integer)params.getValue("body_radius")+(Integer)params.getValue("ball_radius"))){
 					
+					/**
 					//If the ball has no current player, the ball has collided with the player
 					if(ball.getLastPlayer()!=null){
-						if((!(ball.getPlayer()!=null))&&(!(ball.getLastPlayer().equals(player1)))){
+						if(ball.getPlayer()==null&&ball.getLastPlayer()!=player1){
+							System.out.println("collision");
 							Collision collision = new Collision(player1, ball);
 							collisionList.add(collision);
 						}
-					}
+					}*/
 				}
 			}
 			
@@ -188,12 +240,12 @@ public final class Physics {
 		}
 	}
 	
-	private static void ballPhysics(Ball ball){
+	private static void updateVelocity(Ball ball){
 		if(ball.getPlayer()!=null){
 			ball.setVelocity(ball.getPlayer().getVelocity());
-		} else {
+		} else if(ball.getMovement().getEffort()!=null){
 			// Vector which will modify the boids velocity vector
-			Vector3d velocity = Utils.getVector(ball.getMovement().getEffort(), ball.getPositionVector());
+			Vector3d velocity = ball.getMovement().getEffort();
 			//Represents the difference between the desired and current positions
 			//velocityUpdate.sub(desiredVelocity, currentPosition);
 
@@ -209,70 +261,23 @@ public final class Physics {
 			if (velocity.length() > ballMaxSpeed ){
 				velocity.normalize();
 				velocity.scale(ballMaxSpeed);
+				velocity.scale(timeScale);
 			}
-			// Update the position of the boid
-			velocity.scale(timeScale);
+			
 			ball.setVelocity(velocity);
+			ball.getMovement().setEffort(null);
+			
 		}
 	
 	}
 		
-	
-	private static void playerVelocity(Player player){
-		// Vector which will modify the boids velocity vector
-		Vector3d velocityUpdate = player.getMovement().getEffort();
-		//Represents the difference between the desired and current positions
-		//velocityUpdate.sub(desiredPosition, currentPosition);
-
-		
-		//double predAcceleration = (Double)param.getValue("predAcceleration");
-		//double predMaxSpeed = (Double)param.getValue("predMaxSpeed");
-		velocityUpdate.scale(acceleration * timeScale);
-		// Apply the update to the velocity
-		player.getVelocity().add(velocityUpdate);
-		
-		// If our velocity vector exceeds the max speed, throttle it back to the MAX_SPEED
-		if (player.getVelocity().length() > maxForwardSpeed ){
-			player.getVelocity().normalize();
-			player.getVelocity().scale(maxForwardSpeed);
-			player.getVelocity().scale(timeScale);
-		}
-		
-		player.getHead().setVelocity(player.getVelocity());
-		
-	}
-	
-	private static void ballHandling(Player player){
-		Iterator<Object> it = player.getContext().getObjects(Ball.class).iterator();
-		Ball ball;
-		if(it.hasNext()){
-			ball = (Ball)it.next();
-				Vector3d vectorToBall = Utils.getVector(ball.getPositionVector(), player.getPositionVector());
-				//Player has ball
-				if((Math.abs(vectorToBall.length())<=((Integer)params.getValue("body_radius")+(Integer)params.getValue("ball_radius")))){
-					if((!(ball.getPlayer()!=null))||(ball.getPlayer().equals(player))){
-							//Player wants to carry ball, balls player is current player
-							if(player.getMovement().getPassEffort().equals(player.getMovement().getEffort())){
-								ball.setPlayer(player);
-								ball.getMovement().setEffort(player.getMovement().getPassEffort());
-								ball.getMovement().setTurn(player.getRotation());
-							} 
-							//Player wants to move the ball, balls player is now null
-							else {
-								ball.setPlayer(null);
-								ball.getMovement().setEffort(player.getMovement().getPassEffort());
-							}
-					}
-				}
-		}
-	}
 	/**
 	 * Handles positional and angular changes when balls desired angle does not equal current angle
 	 * When player holds ball, desiredangle is set through the physics engine. 
 	 * These angular changes (such as player body angle changes) can also affect the position of the ball.
 	 * This method handles such changes. 
 	 */
-	private static void ballAngularManipulation(Ball ball){
+	private static void updateRotation(Ball ball){
 		if(ball.getPlayer()!=null){
 			if(ball.getMovement().getTurn()!=ball.getRotation()){
 				double angleA = ball.getMovement().getTurn();

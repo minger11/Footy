@@ -82,7 +82,7 @@ public final class Referee {
 				if(ball.getVelocity().getX()<0){
 					makeCall("Forward by eastern team");
 				}
-			} else {
+			} else if (ball.getLastPlayer() instanceof Westerner){
 				//If the balls velocity is positive on the xaxis, call forward
 				if(ball.getVelocity().getX()>0){
 					makeCall("Forward by western team");
@@ -133,10 +133,10 @@ public final class Referee {
 						
 					//If the ball crosses the sideline, ball is out
 					if(ballUpperEdge>=upperEdge||ballLowerEdge<=lowerEdge){
-						Player easterner = ball.getLastPlayer();
-						if(easterner instanceof Easterner){
+						Player player = ball.getLastPlayer();
+						if(player instanceof Easterner){
 							makeCall("Out by eastern team");
-						} else {
+						} else if (player instanceof Westerner){
 							makeCall("Out by western team");
 						}
 					}

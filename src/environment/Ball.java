@@ -43,8 +43,8 @@ public class Ball extends MovingAgent{
 	Player getLastPlayer(){
 		int size = players.size();
 		if(size>0){
-			Player player = players.get(size-1);
-			return player;
+			Player play = players.get(size-1);
+			return play;
 		} 
 		return null;
 	}
@@ -63,7 +63,9 @@ public class Ball extends MovingAgent{
 	 */
 	void setPlayer(Player x){
 		player = x;
-		players.add(x);
+		if(player!=null){
+			players.add(x);
+		}
 	}
 
 }

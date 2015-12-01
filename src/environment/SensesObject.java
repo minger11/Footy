@@ -16,7 +16,7 @@ public class SensesObject{
 	private Object simpleAgent;
 	
 		//Within depthvision
-	private boolean withinDepth;
+	private boolean withinDepth = false;
 			
 		//--------withinDepth = TRUE------------------------------------------//		
 		//For agents that are within depth

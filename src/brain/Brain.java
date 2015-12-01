@@ -31,6 +31,7 @@ public class Brain {
 	private List<SensesObject> westTryline;
 	private List<SensesObject> eastTryline;
 	private List<SensesObject> players;
+	private List<SensesObject> balls;
 	private boolean hasBall;
 	private boolean gameOn;
 	
@@ -54,30 +55,57 @@ public class Brain {
 		westTryline = new ArrayList<SensesObject>();
 		eastTryline = new ArrayList<SensesObject>();
 		players = new ArrayList<SensesObject>();
-		//effort = new Vector3d();
-		//passEffort = new Vector3d();
 	}
 	
 	public void init(){
 		mapSurroundings();
-		setTarget();
-		if(player instanceof Easterner){
-			headTurn = turn = Math.PI;
-		}
+		//setTarget();
+		//if(player instanceof Easterner){
+		//	turn = headTurn = Math.PI;
+		//}
+		
 	}
 	
 	public void step(){
 		mapSurroundings();
 		if(gameOn){
-			moveBody();
+			//moveBody();
 			if(hasBall) {
 				moveBall();
 			}
-			else passEnergy=0;
+			else {
+				find();
+				passEnergy=0;
+			}
 		} else {
 			passEnergy = 0;
 			moveEnergy = 0;
 		}
+	}
+	
+	public SensesObject ballTarget;
+	
+	public void find(){
+		Iterator<SensesObject> it = balls.iterator();
+		while(it.hasNext()){
+			SensesObject o = it.next();
+			if(o.isWithinDepth()){
+				//SensesObject y = players.iterator().next();
+				ballTarget = o;
+				headTurn = o.getRelativeAngle();
+				turn = o.getRelativeAngle();
+				return;
+				//effort = targetObject.getRelativeVector();
+				//moveEnergy = targetObject.getDistance();
+				//moveDirection = targetObject.getRelativeAngle();
+				
+			} else {
+				headTurn = o.getRelativeAngle();
+				turn = o.getRelativeAngle();
+			}
+		}
+		headTurn = 2;
+		turn = 2;
 	}
 
 	/**
@@ -89,8 +117,8 @@ public class Brain {
 				int randomNumber = RandomHelper.nextIntFromTo(0, westTryline.size()-1);
 			try {
 					targetObject = westTryline.get(randomNumber);
-					moveEnergy = targetObject.getDistance();
-					moveDirection = targetObject.getRelativeAngle();
+					//moveEnergy = targetObject.getDistance();
+					//moveDirection = targetObject.getRelativeAngle();
 					//effort = targetObject.getRelativeVector();
 				} catch (Exception e){
 				}
@@ -100,8 +128,8 @@ public class Brain {
 					int randomNumber = RandomHelper.nextIntFromTo(0, eastTryline.size()-1);
 				try {
 						targetObject = eastTryline.get(randomNumber);
-						moveEnergy = targetObject.getDistance();
-						moveDirection = targetObject.getRelativeAngle();
+						//moveEnergy = targetObject.getDistance();
+						//moveDirection = targetObject.getRelativeAngle();
 						//effort = targetObject.getRelativeVector();
 					} catch (Exception e){
 					}
@@ -124,8 +152,8 @@ public class Brain {
 						//SensesObject y = players.iterator().next();
 						targetObject = players.iterator().next();
 						//effort = targetObject.getRelativeVector();
-						moveEnergy = targetObject.getDistance();
-						moveDirection = targetObject.getRelativeAngle();
+						//moveEnergy = targetObject.getDistance();
+						//moveDirection = targetObject.getRelativeAngle();
 					}
 				}
 			}
@@ -138,8 +166,8 @@ public class Brain {
 						//SensesObject y = players.iterator().next();
 						targetObject = players.iterator().next();
 						//effort = targetObject.getRelativeVector();
-						moveEnergy = targetObject.getDistance();
-						moveDirection = targetObject.getRelativeAngle();
+						//moveEnergy = targetObject.getDistance();
+						//moveDirection = targetObject.getRelativeAngle();
 					}
 				}
 			}
@@ -183,7 +211,7 @@ public class Brain {
 			if(targetObject.isWithinDepth()){
 				//effort = targetObject.getRelativeVector();
 				//moveEnergy = targetObject.getDistance();
-				run(1000);
+				//run(1000);
 				moveDirection = targetObject.getRelativeAngle();
 
 				headTurn = targetObject.getRelativeAngle();
@@ -213,15 +241,75 @@ public class Brain {
 		//}*/
 	}
 	
+	private int count = 100;
+	
 	public void moveBall(){
 		//if(currentPosition.getX()>=640||currentPosition.getX()<=630){
 			//passEffort = effort;
+		//wait 
+		if(count <= 0){
+			SensesObject mate = getMate();
+			if(mate!=null&&mate.isWithinDepth()){
+				
+				passEnergy = 100;
+				passDirection = mate.getRelativeAngle();
+				System.out.println("Passing!");
+			}
+		} else {
 			passEnergy = moveEnergy;
 			passDirection = moveDirection;
+		}
+		count--;
 		//} else {
 			//pass ball
 			//ballVelocity.set(50.0, 2000.0, 0.0);
 		//}
+	}
+	
+	public SensesObject getMate(){
+		SensesObject mate = findDepthMate();
+		if(mate!=null){
+			return mate;
+		} else {
+			mate=findMate();
+			turn = mate.getRelativeAngle();
+			headTurn = mate.getRelativeAngle();
+			return mate;
+		}
+	}
+	
+	public SensesObject findDepthMate(){
+		int randomNumber = RandomHelper.nextIntFromTo(0, players.size()-1);
+		Iterator<SensesObject> it = players.iterator();
+		while(it.hasNext()){
+			SensesObject p = it.next();
+			if(p.getSimpleAgent().getClass().equals(player.getClass())&&p.isWithinDepth()){
+				//SensesObject y = players.iterator().next();
+				return p;
+				//effort = targetObject.getRelativeVector();
+				//moveEnergy = targetObject.getDistance();
+				//moveDirection = targetObject.getRelativeAngle();
+			
+			}
+		}
+		return null;
+	}
+	
+	public SensesObject findMate(){
+			int randomNumber = RandomHelper.nextIntFromTo(0, players.size()-1);
+			Iterator<SensesObject> it = players.iterator();
+			while(it.hasNext()){
+				SensesObject p = it.next();
+				if(p.getSimpleAgent().getClass().equals(player.getClass())){
+					//SensesObject y = players.iterator().next();
+					return p;
+					//effort = targetObject.getRelativeVector();
+					//moveEnergy = targetObject.getDistance();
+					//moveDirection = targetObject.getRelativeAngle();
+				
+				}
+			}
+			return null;
 	}
 	
 	/**
@@ -230,6 +318,25 @@ public class Brain {
 	public void mapSurroundings(){
 		mapPlayers();
 		mapTryline();
+		mapBalls();
+	}
+	
+	/**
+	 * Iterates through the tryline and moves each trypoint onto the internal projection space
+	 */
+	public void mapBalls(){
+		Iterator<SensesObject> it;
+		it = balls.iterator();
+		while(it.hasNext()){
+			SensesObject ball = it.next();
+			try{
+				if(ball.getSimpleAgent().equals(ballTarget.getSimpleAgent())){
+					ballTarget = ball;
+				}
+			}catch(Exception e){
+				
+			}
+		}
 	}
 	
 	/**
@@ -311,7 +418,7 @@ public class Brain {
 		eastTryline = x;
 	}
 	public void setBalls(List<SensesObject> x){
-		//balls = x;
+		balls = x;
 	}
 	public void setSidelines(List<SensesObject> x){
 		//sidelines = x;
@@ -352,7 +459,9 @@ public class Brain {
 	//--------------------------------NECK----------------------------------------//
 	
 	public double getHeadTurn(){
-		return headTurn;
+		double angle = headTurn;
+		headTurn = 0.0;
+		return angle;
 	}
 	
 	//-------------------------------ARMS---------------------------------------------//
@@ -376,7 +485,9 @@ public class Brain {
 	//--------------------------------BODY-------------------------------------------//
 	
 	public double getTurn(){
-		return turn;
+		double angle = turn;
+		turn = 0.0;
+		return angle;
 	}
 	
 	//--------------------------------LEGS--------------------------------------------//
