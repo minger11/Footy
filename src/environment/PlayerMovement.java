@@ -18,6 +18,8 @@ public class PlayerMovement{
 	//Absolute effort vectors
 	private Vector3d passEffort;
 	private Vector3d effort;
+	private double moveDirection;
+	private double moveEnergy;
 	
 	//Absolute rotational angles (radians not degrees)
 	private double headTurn;
@@ -34,29 +36,27 @@ public class PlayerMovement{
 	
 	//------------SETTERS-------------------------------------------------------------//	
 	
-	void setBodyTurn(double angle){
-		double absoluteAngle = Utils.RelativeToAbsolute(angle, player.getHead().getRotation());
-		turn=absoluteAngle;
+	void setTurn(double angle){
+		turn=angle;
 	}
 	
 	void setHeadTurn(double angle){
-		double absoluteAngle = Utils.RelativeToAbsolute(angle, player.getHead().getRotation());
-		headTurn = absoluteAngle;
+		headTurn = angle;
 	}
 		
 	void setPassEffort(double direction, double distance){
 		double absoluteDirection = Utils.RelativeToAbsolute(direction, player.getHead().getRotation());
 		passEffort = Utils.getVector(absoluteDirection, distance);
 	}
-	
-	void setEffort(double direction, double distance){
-		double absoluteDirection = Utils.RelativeToAbsolute(direction, player.getHead().getRotation());
-		effort = Utils.getVector(absoluteDirection, distance);
+	void setMoveEnergy(double x){
+		moveEnergy = x;
+	}
+	void setMoveDirection(double x){
+		moveDirection = x;
 	}
 	
 	void setArmsTurn(double angle){
-		double absoluteAngle = Utils.RelativeToAbsolute(angle, player.getHead().getRotation());
-		armsTurn = absoluteAngle;
+		armsTurn = angle;
 	}
 	
 	void setMessage(String x){
@@ -65,15 +65,28 @@ public class PlayerMovement{
 	
 	//------------GETTERS-------------------------------------------------//	
 	
-	double getHeadTurn(){
+	double getRelativeHeadTurn(){
 		return headTurn;
 	}
-		
-	Vector3d getPassEffort(){
-		return passEffort;
+	
+	double getRelativeArmsTurn(){
+		return armsTurn;
 	}
 	
+	double getRelativeTurn(){
+		return turn;
+	}
+	
+	//--------------------------------------------------------------
+	
+	double getHeadTurn(){
+		double absoluteAngle = Utils.RelativeToAbsolute(headTurn, player.getHead().getRotation());
+		return absoluteAngle;
+	}
+
+	
 	double getArmsTurn(){
+		double absoluteAngle = Utils.RelativeToAbsolute(armsTurn, player.getHead().getRotation());
 		return armsTurn;
 	}
 	
@@ -82,11 +95,23 @@ public class PlayerMovement{
 	}
 
 	double getTurn(){
-		return turn;
+		double absoluteAngle = Utils.RelativeToAbsolute(turn, player.getRotation());
+		return absoluteAngle;
+	}
+	double getMoveEnergy(){
+		return moveEnergy;
+	}
+	double getMoveDirection(){
+		return moveDirection;
+	}
+	
+	Vector3d getPassEffort(){
+		return passEffort;
 	}
 	
 	Vector3d getEffort(){
-		return effort;
+		double absoluteDirection = Utils.RelativeToAbsolute(moveDirection, player.getHead().getRotation());
+		return Utils.getVector(absoluteDirection, moveEnergy);
 	}
 	
 }

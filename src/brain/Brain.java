@@ -10,6 +10,7 @@ import environment.Easterner;
 import environment.Message;
 import environment.Player;
 import environment.SensesObject;
+import environment.Utils;
 import environment.Westerner;
 
 /**
@@ -34,6 +35,8 @@ public class Brain {
 	private List<SensesObject> balls;
 	private boolean hasBall;
 	private boolean gameOn;
+	private double noseHeading;
+	private double bodyRotation;
 	
 	//Derived
 	private SensesObject targetObject;
@@ -70,16 +73,193 @@ public class Brain {
 		mapSurroundings();
 		if(gameOn){
 			//moveBody();
-			if(hasBall) {
-				moveBall();
-			}
-			else {
-				find();
-				passEnergy=0;
-			}
+			//if(hasBall) {
+				//moveBall();
+			//}
+			//else {
+				//find();
+				//passEnergy=0;
+			//}
+			//turnHeadSideToSide();
+			//turnBody();
+			//runSquare();
+			//runUpAndBack();
+			//strafeBox();
+			//runForward();
+			//longCircle();
+			runDiagLines();
+			//runBackAndForward();
 		} else {
 			passEnergy = 0;
 			moveEnergy = 0;
+		}
+	}
+	
+	public void runDiagLines(){
+		if(counter==400){
+			targetAbsAngle = Utils.RelativeToAbsolute(-Math.PI/2, noseHeading);
+			turnAndRun(100);
+			counter--;
+		} else if(counter==800){
+			targetAbsAngle = Utils.RelativeToAbsolute(Math.PI/4, noseHeading);
+			turnAndRun(20);
+			counter--;
+		} else if(0<counter&&counter<400){
+			counter--;
+			turnAndRun(100);
+		} else if(counter>400){
+			counter--;
+			turnAndRun(20);
+		} else if(counter==0){
+			targetAbsAngle = Utils.RelativeToAbsolute(Math.PI/2, noseHeading);
+			turnAndRun(100);
+			counter=799;
+		}
+	}
+	
+	public void runForward(){
+		moveEnergy=100;
+		moveDirection=0;
+	}
+	
+	public void runBackward(){
+		moveEnergy=100;
+		moveDirection=Math.PI;
+	}
+	public void strafeLeft(){
+		moveEnergy=100;
+		moveDirection=Math.PI/2;
+	}
+	public void strafeRight(){
+		moveEnergy=100;
+		moveDirection=-Math.PI/2;
+	}
+	
+	public void runBackAndForward(){
+		if(000<counter&&counter<450){
+			counter--;
+			runBackward();
+		} else if(counter>=450){
+			counter--;
+			runForward();
+		} else if(counter==0){
+			counter=800;
+		}
+	}
+	
+	public void strafeBox(){
+		if(400<=counter&&counter<600){
+			counter--;
+			strafeLeft();
+		} else if(200<=counter&&counter<400){
+			counter--;
+			runBackward();
+		} else if(0<counter&&counter<200){
+			counter--;
+			strafeRight();
+		} else if(counter>=600){
+			counter--;
+			runForward();
+		} else if(counter==0){
+			counter=800;
+		}
+	}
+	
+	public void longCircle(){
+		if(counter%2==0){
+			counter--;
+			turnEveryThing(.4);
+			run(100);
+		} else {
+			run(100);
+			counter--;
+		}
+	}
+	
+	public void turnHeadLeft(){
+		headTurn = 2;
+	}
+	
+	public void turnHeadRight(){
+		headTurn = -2;
+	}
+	
+	public void turnBody(){
+		turn = .2;
+	}
+	
+	public void turnEveryThing(double x){
+		turn = x;
+		moveDirection = x;
+	}
+	
+	private int counter = 800;
+	
+	public void turnHeadSideToSide(){
+		if(-300<counter&&counter<0){
+			counter--;
+			turnHeadRight();
+		} else if(counter>=0){
+			counter--;
+			turnHeadLeft();
+		} else if(counter==-300){
+			counter=300;
+		}
+	}
+	
+	private double targetAbsAngle;
+	
+	public void turnAndRun(double velocity){
+		double angle = 0.0;
+		System.out.println(noseHeading);
+		if(noseHeading!=targetAbsAngle){
+			angle = Utils.absoluteToRelative(targetAbsAngle, noseHeading);
+		}
+		turn = angle;
+		moveDirection = angle;
+		moveEnergy = velocity;
+	}
+	
+	public void runUpAndBack(){
+		if(counter==400){
+			targetAbsAngle = Utils.RelativeToAbsolute(Math.PI, noseHeading);
+			turnAndRun(100);
+			counter--;
+		} else if(0<counter&&counter<400){
+			counter--;
+			turnAndRun(100);
+		} else if(counter>400){
+			counter--;
+			turnAndRun(100);
+		} else if(counter==0){
+			targetAbsAngle = Utils.RelativeToAbsolute(Math.PI, noseHeading);
+			turnAndRun(100);
+			counter=800;
+		}
+	}
+	
+	public void runSquare(){
+		if(counter==600||counter==400||counter==200){
+			targetAbsAngle = Utils.RelativeToAbsolute(Math.PI/2, noseHeading);
+			turnAndRun(100);
+			counter--;
+		}
+		else if(400<counter&&counter<600){
+			counter--;
+			turnAndRun(100);
+		} else if(200<counter&&counter<400){
+			counter--;
+			turnAndRun(100);
+		} else if(0<counter&&counter<200){
+			counter--;
+			turnAndRun(100);
+		} else if(counter>600){
+			counter--;
+			turnAndRun(100);
+		} else if(counter==0){
+			targetAbsAngle = Utils.RelativeToAbsolute(Math.PI/2, noseHeading);
+			turnAndRun(100);
+			counter=800;
 		}
 	}
 	
@@ -423,6 +603,12 @@ public class Brain {
 	public void setSidelines(List<SensesObject> x){
 		//sidelines = x;
 	}	
+	public void setNoseHeading(double x){
+		noseHeading = x;
+	}
+	public void setBodyRotation(double x){
+		bodyRotation = x;
+	}
 	
 	//--------------------------------------EARS--------------------------------------//
 	//---------------------Only received when heard-----------------------------------//

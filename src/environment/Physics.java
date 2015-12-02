@@ -24,13 +24,19 @@ import repast.simphony.parameter.Parameters;
 
 public final class Physics {
 
-	private static double timeScale = .1;
-	private static double acceleration = 1;
-	private static double maxForwardSpeed = 7;
-	private static double maxBackwardSpeed = 5;
-	private static double maxSideWaySpeed = 4;
-	private static double ballMaxSpeed = 14;
+	private static double timeScale = 0.010;
+	private static double acceleration = 1.000;
+	private static double maxForwardSpeed = 100;
+	private static double maxBackwardSpeed = 50;
+	private static double maxSideWaySpeed = 40;
+	private static double ballMaxSpeed = 240;
 	private static Parameters params = RunEnvironment.getInstance().getParameters();
+	private static double maxHeadToBodyTurn = Math.PI/2;
+	private static double playerVelocityDecay = 0.99;
+	private static double maxHeadRotationSpeed = Math.PI/15;
+	private static double maxRotationSpeedAtRest = Math.PI/25;
+	private static double maxRotationSpeedAtMaxSpeed = Math.PI/45;
+	private static double maxMoveEnergy = 100;
 		
 		
 	private Physics(){
@@ -105,13 +111,77 @@ public final class Physics {
 		}
 	}
 	
+	private static double getHeadPlusBodyRotation(Player player){
+		return Utils.RelativeToAbsolute(player.getMovement().getRelativeHeadTurn()+player.getMovement().getRelativeTurn(), player.getHead().getRotation());
+	}
+	
+	private static void checkHeadToBodyRotation(Player player){
+		//gets the relative angle of the head in relation to the body
+		double diff = Utils.absoluteToRelative(getHeadPlusBodyRotation(player),player.getRotation());
+		
+		//ensures the head cannot go past a certain angle in relation to the body and if so limits the angle to this value
+		if(diff>=maxHeadToBodyTurn){
+			diff=maxHeadToBodyTurn;
+			player.getMovement().setHeadTurn(Utils.absoluteToRelative((Utils.RelativeToAbsolute(diff, player.getRotation())), player.getHead().getRotation()));
+		} else if(diff<=-maxHeadToBodyTurn){
+			diff=-maxHeadToBodyTurn;
+			player.getMovement().setHeadTurn(Utils.absoluteToRelative((Utils.RelativeToAbsolute(diff, player.getRotation())), player.getHead().getRotation()));
+		}
+	}
+	
+	private static void checkHeadRotationSpeed(Player player){
+		if(player.getMovement().getRelativeHeadTurn()>maxHeadRotationSpeed){
+			player.getMovement().setHeadTurn(maxHeadRotationSpeed);
+		} else if(player.getMovement().getRelativeHeadTurn()<-maxHeadRotationSpeed){
+			player.getMovement().setHeadTurn(-maxHeadRotationSpeed);
+		}
+	}
+	
+	private static void checkRotationSpeed(Player player){
+		
+		//rotationspeed = incloss*speed+max@max
+		double incrementalLoss = (maxRotationSpeedAtMaxSpeed-maxRotationSpeedAtRest)/maxForwardSpeed;
+		double maxRotationSpeed = ((incrementalLoss*player.getVelocity().length())/timeScale)+maxRotationSpeedAtRest;
+		if(player.getMovement().getRelativeTurn()>maxRotationSpeed){
+			player.getMovement().setTurn(maxRotationSpeed);
+		} else if(player.getMovement().getRelativeTurn()<-maxRotationSpeed){
+			player.getMovement().setTurn(-maxRotationSpeed);
+		}
+	}
+	
 	private static void updateRotation(Player player){
-		player.getHead().setRotation(player.getMovement().getHeadTurn());
+		checkHeadRotationSpeed(player);
+		checkRotationSpeed(player);
+		checkHeadToBodyRotation(player);
+		
+		//updates the true values
+		player.getHead().setRotation(getHeadPlusBodyRotation(player));
 		player.setRotation(player.getMovement().getTurn());
 	}
 	
+	private static double getMaxSpeed(Player player){
+		double velocityAngle = Utils.getAngle(player.getVelocity());
+		double velocityToBody = Utils.absoluteToRelative(velocityAngle, player.getRotation());
+		double maxSpeed;
+		if(velocityToBody<=Math.PI/4&&velocityToBody>=-Math.PI/4){
+			maxSpeed = maxForwardSpeed;
+		} else if(velocityToBody>=3*Math.PI/4||velocityToBody<=-3*Math.PI/4){
+			maxSpeed = maxBackwardSpeed;
+		} else {
+			maxSpeed = maxSideWaySpeed;
+		}
+		return maxSpeed;
+	}
+	
 	private static void updateVelocity(Player player){
-		player.getVelocity().scale(.99);
+		player.getVelocity().scale(playerVelocityDecay);
+		
+		//check energy
+		double moveEnergy = player.getMovement().getMoveEnergy();
+		if(moveEnergy > maxMoveEnergy){
+			player.getMovement().setMoveEnergy(maxMoveEnergy);
+		}
+		
 		// Vector which will modify the boids velocity vector
 		Vector3d velocityUpdate = player.getMovement().getEffort();
 		//Represents the difference between the desired and current positions
@@ -120,19 +190,21 @@ public final class Physics {
 		
 		//double predAcceleration = (Double)param.getValue("predAcceleration");
 		//double predMaxSpeed = (Double)param.getValue("predMaxSpeed");
-		velocityUpdate.scale(acceleration * timeScale);
+		velocityUpdate.normalize();
+		velocityUpdate.scale((acceleration * timeScale)*(moveEnergy * timeScale));
 		// Apply the update to the velocity
 		player.getVelocity().add(velocityUpdate);
 		
+		double maxSpeed = getMaxSpeed(player);
+		
 		// If our velocity vector exceeds the max speed, throttle it back to the MAX_SPEED
-		if (player.getVelocity().length() > maxForwardSpeed ){
+		if (player.getVelocity().length() > (maxSpeed*timeScale) ){
 			player.getVelocity().normalize();
-			player.getVelocity().scale(maxForwardSpeed);
-			player.getVelocity().scale(timeScale);
+			player.getVelocity().scale(maxSpeed*timeScale);
+			//player.getVelocity().scale(timeScale);
 		}
 		
 		player.getHead().setVelocity(player.getVelocity());
-		
 	}
 	
 	/**

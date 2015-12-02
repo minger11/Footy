@@ -18,8 +18,9 @@ public final class Reflexes {
 	public static void init(Player player){
 		player.getMovement().setHeadTurn(getHeadTurn(player));
 		player.getMovement().setMessage(getMessage(player));
-		player.getMovement().setBodyTurn(getTurn(player));
-		player.getMovement().setEffort(getMoveDirection(player), getMoveEnergy(player));
+		player.getMovement().setTurn(getTurn(player));
+		player.getMovement().setMoveDirection(getMoveDirection(player));
+		player.getMovement().setMoveEnergy(getMoveEnergy(player));
 		player.getMovement().setPassEffort(getPassDirection(player), getPassEnergy(player));
 		player.getMovement().setArmsTurn(getArmsTurn(player));
 	}
@@ -27,8 +28,9 @@ public final class Reflexes {
 	public static void step(Player player){
 		player.getMovement().setHeadTurn(getHeadTurn(player));
 		player.getMovement().setMessage(getMessage(player));
-		player.getMovement().setBodyTurn(getTurn(player));
-		player.getMovement().setEffort(getMoveDirection(player), getMoveEnergy(player));
+		player.getMovement().setTurn(getTurn(player));
+		player.getMovement().setMoveDirection(getMoveDirection(player));
+		player.getMovement().setMoveEnergy(getMoveEnergy(player));
 		player.getMovement().setPassEffort(getPassDirection(player), getPassEnergy(player));
 		player.getMovement().setArmsTurn(getArmsTurn(player));
 	}

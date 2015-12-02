@@ -92,6 +92,12 @@ public final class Senses {
 	private static void eyes(){
 		setHeadings();
 		sendView();
+		sendRotations();
+	}
+	
+	private static void sendRotations(){
+		player.getBrain().setNoseHeading(noseHeading);
+		player.getBrain().setBodyRotation(Utils.absoluteToRelative(player.getRotation(), noseHeading));
 	}
 	
 	/**
