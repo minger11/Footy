@@ -60,13 +60,7 @@ public final class Senses {
 	}
 		
 	private static double getMaxSpeed(){
-			if(player instanceof Easterner){
-				return Sim.easternerSpeed;
-			}
-			if(player instanceof Westerner){
-				return Sim.westernerSpeed;
-			}
-			return 1;		
+			return Sim.maxForwardSpeed;		
 		}
 
 		
@@ -190,7 +184,7 @@ public final class Senses {
 			
 			//If the player is not the current player
 			if(obstructor!=player){
-				double obstructorRadius = Sim.bodyRadius;
+				double obstructorRadius = Sim.playerRadius;
 				double distToObstructor = Math.abs(Sim.space.getDistance(player.getPositionPoint(), obstructor.getPositionPoint()));
 				
 				//Use the length to and radius of the obstruction to derive the obstruction angle in degrees of the object from the player

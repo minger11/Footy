@@ -17,16 +17,8 @@ public final class Mover {
 	}
 	
 	public static void step(){
-			checkCollisions();
 			movePlayers();
 			moveBalls();	
-	}
-	
-	/**
-	 * Creates a new physics and send the entire context to physics to check for collisions
-	 */
-	private static void checkCollisions(){
-		Physics.update(Sim.context);
 	}
 	
 	/**

@@ -1,15 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <parameters>
-<parameter name="westernerStartX" displayName="westernerStartX" type="double" defaultValue="150" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
-<parameter name="westernerStartY" displayName="westernerStartY" type="double" defaultValue="390" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
-<parameter name="easternerStartX" displayName="easternerStartX" type="double" defaultValue="650" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
-<parameter name="easternerStartY" displayName="easternerStartY" type="double" defaultValue="390" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="westernerStartX" displayName="westernerStartX" type="double" defaultValue="0" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="westernerStartY" displayName="westernerStartY" type="double" defaultValue="34" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="easternerStartX" displayName="easternerStartX" type="double" defaultValue="50" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="easternerStartY" displayName="easternerStartY" type="double" defaultValue="34" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
 <parameter name="westernerCount" displayName="westernerCount" type="int" defaultValue="1" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
 <parameter name="easternerCount" displayName="easternerCount" type="int" defaultValue="1" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
-<parameter name="easternerSpeed" displayName="easternerSpeed" type="double" defaultValue="1" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
-<parameter name="westernerSpeed" displayName="westernerSpeed" type="double" defaultValue="1" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
-<parameter name="ballStartX" displayName="ballStartX" type="double" defaultValue="665" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
-<parameter name="ballStartY" displayName="ballStartY" type="double" defaultValue="390" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="ballStartX" displayName="ballStartX" type="double" defaultValue="51" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
+<parameter name="ballStartY" displayName="ballStartY" type="double" defaultValue="34" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
 <parameter name="ballCount" displayName="ballCount" type="int" defaultValue="1" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
 <parameter name="randomSeed" displayName="randomSeed" type="int" defaultValue="__NULL__" isReadOnly="FALSE" converter="repast.simphony.parameter.StringConverterFactory$IntConverter"/>
 </parameters>

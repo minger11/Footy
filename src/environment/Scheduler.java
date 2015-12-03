@@ -34,7 +34,7 @@ public class Scheduler {
 	
 	@ScheduledMethod ( start = 1 , interval = 1)
 	public void step(){
-		while(System.currentTimeMillis()<time+Sim.schedulerDelayInMilliseconds){
+		while(System.currentTimeMillis()<time+Sim.schedulerDelay){
 			//stall for ten thousandths of a second
 		}
 		time = System.currentTimeMillis();
@@ -52,6 +52,7 @@ public class Scheduler {
 			Ball ball = (Ball)itra.next();
 			Physics.update(ball);
 		}
+		Physics.update(Sim.context);
 		Mover.step();
 		Referee.step();
 	}

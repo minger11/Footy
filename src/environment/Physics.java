@@ -152,11 +152,12 @@ public final class Physics {
 		}
 	}
 	
-	private static void checkRotationSpeed(Player player){
-		
+	private static void checkRotationSpeed(Player player){	
 		//rotationspeed = incloss*speed+max@max
-		double incrementalLoss = (Sim.maxRotationSpeedAtMaxSpeed-Sim.maxRotationSpeedAtRest)/Sim.maxForwardSpeed;
-		double maxRotationSpeed = ((incrementalLoss*player.getVelocity().length())/Sim.timeScale)+Sim.maxRotationSpeedAtRest;
+		//a negative number that has been scaled up to a second on the denominator
+		double incrementalLoss = (Sim.maxRotationSpeedAtMaxSpeed-Sim.maxRotationSpeedAtRest)/(Sim.maxForwardSpeed);
+		
+		double maxRotationSpeed = ((incrementalLoss*player.getVelocity().length()))+Sim.maxRotationSpeedAtRest;
 		if(player.getMovement().getRelativeTurn()>maxRotationSpeed){
 			player.getMovement().setTurn(maxRotationSpeed);
 		} else if(player.getMovement().getRelativeTurn()<-maxRotationSpeed){
@@ -195,7 +196,7 @@ public final class Physics {
 		player.getVelocity().scale(Sim.playerVelocityDecay);
 		
 		//check energy
-		double moveEnergy = player.getMovement().getMoveEnergy();
+		double moveEnergy = player.getMovement().getMoveEnergy() * Sim.timeScale;
 		if(moveEnergy > Sim.maxMoveEnergy){
 			player.getMovement().setMoveEnergy(Sim.maxMoveEnergy);
 		}
@@ -209,16 +210,16 @@ public final class Physics {
 			//double predAcceleration = (Double)param.getValue("predAcceleration");
 			//double predMaxSpeed = (Double)param.getValue("predMaxSpeed");
 			velocityUpdate.normalize();
-			velocityUpdate.scale((Sim.acceleration * Sim.timeScale)*(moveEnergy * Sim.timeScale));
+			velocityUpdate.scale((Sim.playerAcceleration)*moveEnergy);
 			// Apply the update to the velocity
 			player.getVelocity().add(velocityUpdate);
 			
 			double maxSpeed = getMaxSpeed(player);
 			
 			// If our velocity vector exceeds the max speed, throttle it back to the MAX_SPEED
-			if (player.getVelocity().length() > (maxSpeed*Sim.timeScale) ){
+			if (player.getVelocity().length() > (maxSpeed) ){
 				player.getVelocity().normalize();
-				player.getVelocity().scale(maxSpeed*Sim.timeScale);
+				player.getVelocity().scale(maxSpeed);
 				//player.getVelocity().scale(timeScale);
 			}
 			
@@ -258,7 +259,7 @@ public final class Physics {
 			Player player1 = (Player)players1.next();
 			
 			//Check collisions with the boundary
-			checkBoundaryCollision(player1, Sim.bodyRadius, collisionList);
+			checkBoundaryCollision(player1, Sim.playerRadius, collisionList);
 		
 			//Iterate through the balls
 			Iterator<Object> balls = context.getObjects(Ball.class).iterator();
@@ -271,7 +272,7 @@ public final class Physics {
 				double distance = Math.abs(vector.length());
 				
 				//If the distance is too short a collision has occurred
-				if(distance<(Sim.bodyRadius-.01)){
+				if(distance<(Sim.playerRadius-.01)){
 					
 					//If the ball has no current player, the ball has collided with the player
 					if(ball.getPlayer()==null){
@@ -313,7 +314,7 @@ public final class Physics {
 						double distance = Math.abs(vector.length());
 						
 						//If the distance is too short a collision has occurred
-						if(distance<(2*Sim.bodyRadius)){
+						if(distance<(2*Sim.playerRadius)){
 							Collision collision = new Collision(player1, player2);
 							collisionList.add(collision);
 						}
@@ -328,7 +329,7 @@ public final class Physics {
 			Ball ball = (Ball)balls.next();
 			
 			//Check if the ball has collided with the boundary
-			checkBoundaryCollision(ball, Sim.bodyRadius, collisionList);
+			checkBoundaryCollision(ball, Sim.playerRadius, collisionList);
 		}
 	}
 	
@@ -350,9 +351,9 @@ public final class Physics {
 			//velocity.add(velocityUpdate);
 			//velocity = velocityUpdate;
 			// If our velocity vector exceeds the max speed, throttle it back to the MAX_SPEED
-			if (velocity.length() > (Sim.ballMaxSpeed*Sim.timeScale) ){
+			if (velocity.length() > Sim.ballMaxSpeed){
 				velocity.normalize();
-				velocity.scale(Sim.ballMaxSpeed*Sim.timeScale);
+				velocity.scale(Sim.ballMaxSpeed);
 				//velocity.scale(timeScale);
 			}
 			
@@ -389,7 +390,7 @@ public final class Physics {
 				ball.setRotation(ball.getMovement().getTurn());
 				*/
 				Vector3d newPosition = new Vector3d();
-				newPosition.add(ball.getPlayer().getPositionVector(), Utils.getVector(ball.getPlayer().getArms().getRotation(), Sim.bodyRadius));
+				newPosition.add(ball.getPlayer().getPositionVector(), Utils.getVector(ball.getPlayer().getArms().getRotation(), Sim.playerRadius));
 				ball.setPositionVector(newPosition);
 				ball.setRotation(ball.getPlayer().getRotation());
 			//}

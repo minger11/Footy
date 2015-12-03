@@ -98,8 +98,8 @@ public final class Referee {
 				if(ball.getPlayer()!=null){
 					//Define the players upper and lower reaches
 					Player easterner = (Player)ball.getPlayer();
-					double easternerUpperEdge = easterner.getPositionPoint().getY()+Sim.bodyRadius;
-					double easternerLowerEdge = easterner.getPositionPoint().getY()-Sim.bodyRadius;
+					double easternerUpperEdge = easterner.getPositionPoint().getY()+Sim.playerRadius;
+					double easternerLowerEdge = easterner.getPositionPoint().getY()-Sim.playerRadius;
 					
 					//If the easterner crosses the sideline, ball is out
 					if(easternerUpperEdge>=upperEdge||easternerLowerEdge<=lowerEdge){
@@ -185,7 +185,7 @@ public final class Referee {
 						Westerner westerner = (Westerner)iter.next();	
 						
 						//If the distance between the ball handler and the westerner is less than 2 times body radius, the player is touched
-						if (Sim.space.getDistance(westerner.getPositionPoint(), ballHandler.getPositionPoint())<Sim.bodyRadius*2){
+						if (Sim.space.getDistance(westerner.getPositionPoint(), ballHandler.getPositionPoint())<Sim.playerRadius*2){
 							
 							makeCall("The easterner was touched by the westerner!");
 						}
@@ -197,7 +197,7 @@ public final class Referee {
 						Easterner westerner = (Easterner)iter.next();	
 						
 						//If the distance between the ball handler and the westerner is less than 2 times body radius, the player is touched
-						if (Sim.space.getDistance(westerner.getPositionPoint(), ballHandler.getPositionPoint())<Sim.bodyRadius*2){
+						if (Sim.space.getDistance(westerner.getPositionPoint(), ballHandler.getPositionPoint())<Sim.playerRadius*2){
 							
 							makeCall("The westerner was touched by the easterner!");
 						}

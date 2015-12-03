@@ -384,7 +384,7 @@ public final class Utils {
 			ball = (Ball)it.next();
 				Vector3d vectorToBall = Utils.getVector(ball.getPositionVector(), player.getPositionVector());
 				//Player has ball
-				if((Math.abs(vectorToBall.length())<=(Sim.bodyRadius+0.01))&&
+				if((Math.abs(vectorToBall.length())<=(Sim.playerRadius+0.01))&&
 						Utils.inView(ball, player, Sim.armsAngle, player.getArms().getRotation())){
 					if(ball.getPlayer()==null||ball.getPlayer().equals(player)){
 						return true;			
@@ -405,7 +405,7 @@ public final class Utils {
 			ball = (Ball)it.next();
 				Vector3d vectorToBall = Utils.getVector(ball.getPositionVector(), player.getPositionVector());
 				//Player has ball
-				if((Math.abs(vectorToBall.length())<=(Sim.bodyRadius+.01)&&
+				if((Math.abs(vectorToBall.length())<=(Sim.playerRadius+.01)&&
 						Utils.inView(ball, player, Sim.armsAngle, player.getArms().getRotation()))){
 					if(ball.getPlayer()==null||ball.getPlayer().equals(player)){
 						return ball;			

@@ -19,7 +19,7 @@ public class MovingAgent extends SimpleAgent{
 		velocity = new Vector3d(0.0,0.0,0.0);
 		rotation=.000;
 		if(this instanceof Player){
-			mass = Sim.bodyWeight;
+			mass = Sim.playerWeight;
 		} else if(this instanceof Ball){
 			mass = Sim.ballWeight;
 		}

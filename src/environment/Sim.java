@@ -6,67 +6,268 @@ import repast.simphony.space.continuous.ContinuousSpace;
 
 public class Sim {
 
-	static double 	timeScale = 0.010;
-	static double 	acceleration = 1.000;
-	static double 	maxForwardSpeed = 100;
-	static double 	maxBackwardSpeed = 50;
-	static double 	maxSideWaySpeed = 40;
-	static double 	ballMaxSpeed = 200;
-	static double 	maxHeadToBodyTurn = Math.PI/2;
-	static double 	maxArmsToBodyTurn = 2*Math.PI/3;
+	//----------Time----------Time----------Time----------Time----------Time----------Time----------Time----------Time----------Time----------//
+	
+	/**
+	 * The delay (in milliseconds) used by the scheduler before performing each step. 
+	 */
+	static int 		schedulerDelay	=	10;
+	/**
+	 * The scale of each time step (in seconds).
+	 */
+	static double 	timeScale 		= 	(double)1/(1000/schedulerDelay);
+	
+	
+	//---------Distance---------Distance---------Distance---------Distance---------Distance---------Distance---------Distance---------Distance---------//
+	
+	/**
+	 * The amount of measurement units (in pixels) per meter.
+	 */
+	static double 	distanceScale 	= 	10;
+	
+	
+	//----------Field----------Field----------Field----------Field----------Field----------Field----------Field----------Field----------Field----------//
+	
+	/**
+	 * The vertical height (in pixels) of the display - reflects true distance in meters before being multiplied by the distance scale.
+	 */
+	static double	displayHeight	=	78 
+			* distanceScale;
+	/**
+	 * The horizontal width (in pixels) of the display - reflects true distance in meters before being multiplied by the distance scale.
+	 */
+	static double	displayWidth	=	130 
+			* distanceScale;
+	/**
+	 * The inset distance (in pixels) of the field from the boundary of the display - reflects true distance in meters before being multiplied by the distance scale.
+	 */
+	static double	fieldInset		=	5 
+			* distanceScale;	
+	/**
+	 * The increment of each ten meter line (in pixels) of the field - reflects true distance in meters before being multiplied by the distance scale.
+	 */
+	static double	fieldIncrement	=	10 
+			* distanceScale;	
+	/**
+	 * The radius (in pixels) of the line - reflects true distance in meters before being multiplied by the distance scale.
+	 */
+	static double	lineRadius		=	.1 
+			* distanceScale;	
+	/**
+	 * The field's size relative to the size of the png image - field.png is 1300*780 pixels.
+	 */
+	static float 	fieldScale 		= 	(float)displayWidth/1300;
+	
+	
+	//----------Player----------Player----------Player----------Player----------Player----------Player----------Player----------Player----------//
+	
+	/**
+	 * The maximum displacement (in pixels) a player can travel forward in one time step - reflects true distance in meters (m/s) before being multiplied by the distance scale and time scale.
+	 */
+	static double 	maxForwardSpeed = 	10 
+			* distanceScale * timeScale;
+	/**
+	 * The maximum displacement (in pixels) a player can travel backwards in one time step - reflects true distance in meters (m/s) before being multiplied by the distance scale and time scale.
+	 */
+	static double 	maxBackwardSpeed = 	5 
+			* distanceScale * timeScale;
+	/**
+	 * The maximum displacement (in pixels) a player can travel sideways in one time step - reflects true distance in meters (m/s) before being multiplied by the distance scale and time scale.
+	 */
+	static double 	maxSideWaySpeed = 	4 
+			* distanceScale * timeScale;
+	/**
+	 * The radius (in pixels) a message may be heard within - reflects true distance in meters before being multiplied by the distance scale.
+	 */
+	static double 	hearingRadius 	= 	30 
+			* distanceScale;
+	/**
+	 * The radius (in pixels) of the player - reflects true distance in meters before being multiplied by the distance scale.
+	 */
+	static double	playerRadius	=	1 
+			* distanceScale;
+	/**
+	 * The player's size relative to the size of the png image - player.png is 100*100 pixels.
+	 */
+	static float 	playerScale 	= 	(float)(2*playerRadius)/100;
+	/**
+	 * The head's size relative to the size of the png image - head.png is 100*100 pixels.
+	 */
+	static float 	headScale 		= 	(float)(2*playerRadius)/100;
+	/**
+	 * The arm's size relative to the size of the png image - arms.png is 100*100 pixels.
+	 */
+	static float 	armsScale 		= 	(float)(2*playerRadius)/100;
+	/**
+	 * The maximum acceleration (pixels) a player can apply in one time step - reflects true distance in meters (m/s^2) before being multiplied by the distance scale and the time scale squared.
+	 */
+	static double 	playerAcceleration = 10 
+			* distanceScale * (Sim.timeScale*Sim.timeScale);
+	/**
+	 * The scaling applied to each player's velocity vector at each time step. Simulates natural energy loss, through forces such as friction and air resistance. 
+	 */
 	static double 	playerVelocityDecay = 0.99;
-	static double	maxHeadRotationSpeed = Math.PI/15;
-	static double 	maxArmsRotationSpeed = Math.PI/15;
-	static double 	maxRotationSpeedAtRest = Math.PI/25;
-	static double 	maxRotationSpeedAtMaxSpeed = Math.PI/45;
-	static double 	maxMoveEnergy = 100;
+	/**
+	 * The maximum amount of energy (per time step) that may be applied to a player move - reflects amount of energy that may be applied in one second before being multiplied by the time scale..
+	 */
+	static double 	maxMoveEnergy = 100
+			* Sim.timeScale;
+	/**
+	 * The maximum angle (in radians) that the head can be turned relative to the body. Ranges from negative to positive of this number.
+	 */
+	static double 	maxHeadToBodyTurn = Math.PI/2;
+	/**
+	 * The maximum angle (in radians) that the arms can be turned relative to the body. Ranges from negative to positive of this number.
+	 */
+	static double 	maxArmsToBodyTurn = 2*Math.PI/3;
+	/**
+	 * The maximum rotation (in radians) that the head can rotate in one timestep - reflects true radian angle per second before being multiplied by the time scale.
+	 */
+	static double	maxHeadRotationSpeed = 6.67*Math.PI
+			*timeScale;
+	/**
+	 * The maximum rotation (in radians) that the arms can rotate in one timestep - reflects true radian angle per second before being multiplied by the time scale.
+	 */
+	static double 	maxArmsRotationSpeed = 6.67*Math.PI
+			*timeScale;
+	/**
+	 * The maximum rotation (in radians) that a player can rotate in one timestep while at rest - reflects true radian angle per second before being multiplied by the time scale.
+	 */
+	static double 	maxRotationSpeedAtRest = 4*Math.PI
+			*timeScale;
+	/**
+	 * The maximum rotation (in radians) that a player can rotate in one timestep while travelling at maximum speed - reflects true radian angle per second before being multiplied by the time scale.
+	 */
+	static double 	maxRotationSpeedAtMaxSpeed = 2*Math.PI
+			*timeScale;
+	/**
+	 * The angle (in degrees) of the players arms. 
+	 */
 	static double 	armsAngle = 30;
-	//The scales of the various images
-	static float 	playerScale = 0.3f;
-	static float 	fieldScale = 1f;
-	static float 	headScale = 0.3f;
-	static float 	armsScale = 0.3f;
-	static float 	ballScale = 0.1f;
-	static double 	collisionEnergy = .2;
-	//The delay variables which determine how long a message remains pending
-	static int 		delayPerChar = 50;
-	static int 		fixedDelay = 100;
-	static int 		standardCountDown = 500;
-
-	static ContinuousSpace<Object> space;
-	static Context<Object> context;
-	static double 	hearingRadius = 300;
-	//The full vision, central (depth perceiving) vision and sideVision angles (in degrees NOT radians)
+	/**
+	 * The angle (in degrees) of the players full vision (including both side and depth vision).
+	 */
 	static double 	fullVision = 190.00;
+	/**
+	 * The angle (in degrees) of the players depth perceiving vision. That is, the area that can perceive depth.
+	 */
 	static double 	depthVision = 114.00;
+	/**
+	 * The angle (in degrees) of each of the players side visions. That is, the area that cannot perceive depth, but can perceive objects.
+	 */
 	static double 	sideVision = (fullVision - depthVision)/2;
+	/**
+	 * The weight of a player (in grams).
+	 */
+	static double	playerWeight	=	8000.00;
 	
 	
-	static int 		schedulerDelayInMilliseconds=10;
+	//----------Teams----------Teams----------Teams----------Teams----------Teams----------Teams----------Teams----------Teams----------Teams----------//
 	
-	static double	trylineWidth	=	180.00	;	//	tryline_width
-	static double	displayHeight	=	780.00	;	//	display_height
-	static double	displayWidth	=	1300.00	;	//	display_width
-	static double	bodyRadius	=	15.00	;	//	body_radius
-	static double	fieldInset	=	50.00	;	//	fieldInset
-	static double	fieldIncrement	=	100.00	;	//	fieldIncrement
-	static double	lineRadius	=	1.00	;	//	lineRadius
-	static double	initialHeadAngle	=	0.00	;	//	initial_head_angle
-	static double	ballRadius	=	3.00	;	//	ball_radius
-	static double	ballWeight	=	500.00	;	//	ball_weight
-	static double	bodyWeight	=	8000.00	;	//	body_weight
-
-	static double	westernerStartX	=	(double)RunEnvironment.getInstance().getParameters().getValue("westernerStartX");	
-	static double 	westernerStartY	=	(double)RunEnvironment.getInstance().getParameters().getValue("westernerStartY");
-	static double	easternerStartX	=	(double)RunEnvironment.getInstance().getParameters().getValue("easternerStartX");
-	static double	easternerStartY	=	(double)RunEnvironment.getInstance().getParameters().getValue("easternerStartY");
+	/**
+	 * The amount of westerners in the simulation.
+	 */
 	static int		westernerCount	=	(Integer)RunEnvironment.getInstance().getParameters().getValue("westernerCount");
+	/**
+	 * The amount of easterners in the simulation.
+	 */
 	static int		easternerCount	=	(Integer)RunEnvironment.getInstance().getParameters().getValue("easternerCount");
-	static double	easternerSpeed	=	(double)RunEnvironment.getInstance().getParameters().getValue("easternerSpeed");
-	static double	westernerSpeed	=	(double)RunEnvironment.getInstance().getParameters().getValue("westernerSpeed");
-	static double	ballStartX		=	(double)RunEnvironment.getInstance().getParameters().getValue("ballStartX");
-	static double	ballStartY		=	(double)RunEnvironment.getInstance().getParameters().getValue("ballStartY");
+	/**
+	 * The desired starting x position of the westerners team - reflects true distance in meters before being multiplied by the distance scale.
+	 */
+	static double	westernerStartX	=	((double)RunEnvironment.getInstance().getParameters().getValue("westernerStartX")*distanceScale)+fieldInset+fieldIncrement;	
+	/**
+	 * The desired starting y position of the westerners team - reflects true distance in meters before being multiplied by the distance scale.
+	 */
+	static double 	westernerStartY	=	((double)RunEnvironment.getInstance().getParameters().getValue("westernerStartY")*distanceScale)+fieldInset;
+	/**
+	 * The desired starting x position of the easterners team - reflects true distance in meters before being multiplied by the distance scale.
+	 */
+	static double	easternerStartX	=	((double)RunEnvironment.getInstance().getParameters().getValue("easternerStartX")*distanceScale)+fieldInset+fieldIncrement;
+	/**
+	 * The desired starting y position of the easterners team - reflects true distance in meters before being multiplied by the distance scale.
+	 */
+	static double	easternerStartY	=	((double)RunEnvironment.getInstance().getParameters().getValue("easternerStartY")*distanceScale)+fieldInset;
+	
+	
+	//----------Ball----------Ball----------Ball----------Ball----------Ball----------Ball----------Ball----------Ball----------Ball----------//
+	
+	/**
+	 * The radius (in pixels) of the ball - reflects true distance in meters before being multiplied by the distance scale.
+	 */
+	static double	ballRadius		=	.3 
+			* distanceScale;
+	/**
+	 * The ball's size relative to the size of the png image - ball.png is 100*100 pixels.
+	 */
+	static float 	ballScale = (float)(2*ballRadius)/100;
+	/**
+	 * The desired starting x position of the ball - reflects true distance in meters before being multiplied by the distance scale.
+	 */
+	static double	ballStartX		=	((double)RunEnvironment.getInstance().getParameters().getValue("ballStartX")*distanceScale)+fieldInset+fieldIncrement;
+	/**
+	 * The desired starting y position of the ball - reflects true distance in meters before being multiplied by the distance scale.
+	 */
+	static double	ballStartY		=	((double)RunEnvironment.getInstance().getParameters().getValue("ballStartY")*distanceScale)+fieldInset;
+	/**
+	 * The amount of balls in the simulation.
+	 */
 	static int		ballCount		=	(Integer)RunEnvironment.getInstance().getParameters().getValue("ballCount");
+	/**
+	 * The weight of the ball (in grams).
+	 */
+	static double	ballWeight	=	500.00;	
+	/**
+	 * The maximum displacement (in pixels) a ball can travel in one time step - reflects true distance in meters (m/s) before being multiplied by the distance scale and time scale.
+	 */
+	static double 	ballMaxSpeed 	= 	20 
+			* distanceScale * timeScale;
+	
+
+	//----------Physics----------Physics----------Physics----------Physics----------Physics----------Physics----------Physics----------Physics----------//
+
+	/**
+	 * The scaling applied to a velocity vector immediately proceeding a collision. Simulates energy loss during impact.
+	 */
+	static double 	collisionEnergy = .2;
+		
+	
+	//----------MessageBoard----------MessageBoard----------MessageBoard----------MessageBoard----------MessageBoard----------MessageBoard----------//
+	
+	/**
+	 * The delay for all unofficial messages (time steps) - the true value (in seconds) is divided by the timeScale.
+	 */
+	static int 		fixedDelay = (int)(.1
+			/timeScale);
+	/**
+	 * The addition delay per char (in time steps) for all unofficial messages - the true value (in seconds) is divided by the timeScale.	
+	 */
+	static int 		delayPerChar = (int)(.01
+			/timeScale);
+	
+	
+	//----------Referee-----------Referee-----------Referee-----------Referee-----------Referee-----------Referee-----------Referee-----------//
+	
+	/**
+	 * The amount of time (in steps) before the simulation stops after a referee has made a final decision - true value (in seconds) is divided by the timeScale.
+	 */
+	static int 		standardCountDown = (int)(2 
+			/timeScale);
+	
+	
+	//----------Environment----------Environment----------Environment----------Environment----------Environment----------Environment----------//
+	
+	/**
+	 * The projection used to place agents on a space continuum. Each agent occupies a point in space and moving agents will be moved about this space at each time step.
+	 */
+	static ContinuousSpace<Object> space;
+	/**
+	 * The context the simulation is performed in. All agents are added to this context at the start of the simulation.
+	 */
+	static Context<Object> context;
+	
+	
+	//---------------------------------------------------------------------------------------------------------------------------------------------------//
 	
 	private Sim(){
 	}
