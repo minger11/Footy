@@ -17,7 +17,6 @@ public class PlayerMovement{
 	
 	//Absolute effort vectors
 	private Vector3d passEffort;
-	private Vector3d effort;
 	private double moveDirection;
 	private double moveEnergy;
 	
@@ -30,7 +29,6 @@ public class PlayerMovement{
 	
 	PlayerMovement(Player player){
 		this.player = player;
-		effort = new Vector3d();
 		passEffort = new Vector3d();
 	}
 	
@@ -86,8 +84,8 @@ public class PlayerMovement{
 
 	
 	double getArmsTurn(){
-		double absoluteAngle = Utils.RelativeToAbsolute(armsTurn, player.getHead().getRotation());
-		return armsTurn;
+		double absoluteAngle = Utils.RelativeToAbsolute(armsTurn, player.getArms().getRotation());
+		return absoluteAngle;
 	}
 	
 	String getMessage(){

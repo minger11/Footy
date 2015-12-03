@@ -7,6 +7,10 @@
       <string>environment.SimpleAgentStyle</string>
     </entry>
     <entry>
+      <string>environment.Arms</string>
+      <string>environment.SimpleAgentStyle</string>
+    </entry>
+    <entry>
       <string>environment.Westerner</string>
       <string>environment.SimpleAgentStyle</string>
     </entry>
@@ -26,6 +30,10 @@
   <editedStyles>
     <entry>
       <string>environment.Ball</string>
+      <null/>
+    </entry>
+    <entry>
+      <string>environment.Arms</string>
       <null/>
     </entry>
     <entry>
@@ -55,7 +63,7 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>869023759</hashCode>
+    <hashCode>1380392319</hashCode>
   </schedParams>
   <layoutClassName>foo.bar.baz</layoutClassName>
   <layoutProjection>space</layoutProjection>
@@ -63,15 +71,19 @@
   <layerOrder>
     <entry>
       <string>environment.Ball</string>
+      <int>4</int>
+    </entry>
+    <entry>
+      <string>environment.Arms</string>
       <int>3</int>
+    </entry>
+    <entry>
+      <string>environment.Head</string>
+      <int>5</int>
     </entry>
     <entry>
       <string>environment.Westerner</string>
       <int>1</int>
-    </entry>
-    <entry>
-      <string>environment.Head</string>
-      <int>4</int>
     </entry>
     <entry>
       <string>environment.Field</string>

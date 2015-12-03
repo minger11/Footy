@@ -3,8 +3,6 @@ package environment;
 import java.util.ArrayList;
 import java.util.List;
 
-import repast.simphony.context.Context;
-
 /**
  * Controls the creation and movement of the ball
  * @author user
@@ -28,8 +26,8 @@ public class Ball extends MovingAgent{
 	 * @param x
 	 * @param y
 	 */
-	Ball(Context context, int x, int y){
-		super(context, x, y);
+	Ball(double x, double y){
+		super(x, y);
 		movement = new BallMovement();
 		movement.setTurn(0.0);
 		player = null;

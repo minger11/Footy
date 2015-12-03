@@ -1,6 +1,5 @@
 package environment;
 
-import javax.vecmath.Vector3d;
 
 /**
  * Gets intentions from the brain and updates the playerMovement object

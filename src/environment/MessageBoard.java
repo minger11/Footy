@@ -17,10 +17,6 @@ public final class MessageBoard {
 	private static List<Message> pending;
 	private static boolean newMessage;
 	
-	//The delay variables which determine how long a message remains pending
-	private static int delayPerChar = 50;
-	private static int fixedDelay = 100;
-	
 	private MessageBoard(){
 	}
 	
@@ -50,7 +46,7 @@ public final class MessageBoard {
 				if(mess.getOfficial()){
 					hearable = System.currentTimeMillis();
 				} else {
-					hearable = mess.getTime()+chars*delayPerChar+fixedDelay;
+					hearable = mess.getTime()+chars*Sim.delayPerChar+Sim.fixedDelay;
 				}
 				
 				//If the required time has passed, remove the message from pending and add it to the messageboard

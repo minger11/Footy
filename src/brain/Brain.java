@@ -37,6 +37,7 @@ public class Brain {
 	private boolean gameOn;
 	private double noseHeading;
 	private double bodyRotation;
+	private double armsRotation;
 	
 	//Derived
 	private SensesObject targetObject;
@@ -82,19 +83,65 @@ public class Brain {
 			//}
 			//turnHeadSideToSide();
 			//turnBody();
-			//runSquare();
+			runSquare();
+			moveArmsSideToSide();
+			//}
 			//runUpAndBack();
 			//strafeBox();
 			//runForward();
 			//longCircle();
-			runDiagLines();
+			//runDiagLines();
 			//runBackAndForward();
-		} else {
-			passEnergy = 0;
-			moveEnergy = 0;
-		}
+			//runForward();
+		} 
+		//else {
+			//passEnergy = 0;
+			//moveEnergy = 0;
+		//}
 	}
 	
+	private int newCount = 800;
+	public void moveArmsSideToSide(){
+		if(0<newCount&&newCount<=400){
+			newCount--;
+			//where are my arms relative to my body
+			//abs
+			double bodyAngle = Utils.RelativeToAbsolute(bodyRotation, noseHeading);
+			//abs
+			double armsAngle = Utils.RelativeToAbsolute(armsRotation, noseHeading);
+			//rel
+			double armsToBody = Utils.absoluteToRelative(armsAngle, bodyAngle);
+			//rel
+			double target = Math.PI/2;	
+			if(armsToBody>target){
+				//we know its a negative number
+				armsTurn = -armsToBody-target;
+			} else if(armsToBody<target){
+				armsTurn = target-armsToBody;
+			} else if(armsToBody==target){
+				armsTurn =0;
+			}
+			passEnergy = 100;
+			passDirection = target;
+			//System.out.println("bodyAngle: "+bodyAngle+", armsAngle: "+armsAngle+", armsToBody: "+armsToBody+", target: "+target+", armsTurn: "+armsTurn);
+		} else if(newCount>400){
+			newCount--;
+			//where are my arms relative to my body
+			double bodyAngle = Utils.RelativeToAbsolute(bodyRotation, noseHeading);
+			double armsAngle = Utils.RelativeToAbsolute(armsRotation, noseHeading);
+			double armsToBody = Utils.absoluteToRelative(armsAngle, bodyAngle);
+			double target = -Math.PI/2;
+			if(armsToBody>target){
+				armsTurn = target-armsToBody;
+			} else if(armsToBody<target){
+				armsTurn = target-armsToBody;
+			} else if(armsToBody==target){
+				armsTurn =0;
+			}
+		} else if(newCount==0){
+			newCount=800;
+		}
+	}
 	public void runDiagLines(){
 		if(counter==400){
 			targetAbsAngle = Utils.RelativeToAbsolute(-Math.PI/2, noseHeading);
@@ -195,15 +242,16 @@ public class Brain {
 	
 	private int counter = 800;
 	
+	private int newcounter = 300;
 	public void turnHeadSideToSide(){
-		if(-300<counter&&counter<0){
-			counter--;
+		if(-300<newcounter&&newcounter<0){
+			newcounter--;
 			turnHeadRight();
-		} else if(counter>=0){
-			counter--;
+		} else if(newcounter>=0){
+			newcounter--;
 			turnHeadLeft();
-		} else if(counter==-300){
-			counter=300;
+		} else if(newcounter==-300){
+			newcounter=300;
 		}
 	}
 	
@@ -573,8 +621,8 @@ public class Brain {
 	//-----------------------------------INFO--------------------------------------//
 	//---------------------Sent once, at the start of the game---------------------//
 	
-	public void setMaxSpeed(int x){
-	
+	public void setMaxSpeed(double x){
+		maxSpeed = x;
 	}
 	
 	public void setSpace(ContinuousSpace<Object> x){
@@ -608,6 +656,9 @@ public class Brain {
 	}
 	public void setBodyRotation(double x){
 		bodyRotation = x;
+	}
+	public void setArmsRotation(double x){
+		armsRotation = x;
 	}
 	
 	//--------------------------------------EARS--------------------------------------//

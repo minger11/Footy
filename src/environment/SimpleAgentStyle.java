@@ -15,12 +15,6 @@ public class SimpleAgentStyle extends DefaultStyleOGL2D{
 
 	private ShapeFactory2D factory;
 	
-	//The scales of the various images
-	private float playerScale = 0.3f;
-	private float fieldScale = 1f;
-	private float headScale = 0.3f;
-	private float ballScale = 0.1f;
-	
 	/**
 	 * Creates the shapefactory to be used to create shapes
 	 */
@@ -72,6 +66,15 @@ public class SimpleAgentStyle extends DefaultStyleOGL2D{
 				    System.err.println("Couldnt get head image!");
 				}
 			}
+			if (o instanceof Arms){
+				try{
+					URL	url = getClass().getResource("/arms.png");
+					return factory.createImage(url.getPath());
+				}
+				catch (IOException e) {
+				    System.err.println("Couldnt get head image!");
+				}
+			}
 			if (o instanceof Ball){
 				try{
 					URL	url = getClass().getResource("/ball.png");
@@ -101,6 +104,11 @@ public class SimpleAgentStyle extends DefaultStyleOGL2D{
 			float heading = 360-(float)(angle*57.2958);
 			return heading;
 		}
+		if (o instanceof Arms){
+			double angle = ((Arms) o).getRotation();
+			float heading = 360-(float)(angle*57.2958);
+			return heading;
+		}
 		if (o instanceof Ball){
 			double angle = ((Ball) o).getRotation();
 			float heading = 360-(float)(angle*57.2958);
@@ -115,13 +123,15 @@ public class SimpleAgentStyle extends DefaultStyleOGL2D{
 	@Override
 	public float getScale(Object o) {
 		if (o instanceof Player)
-			return playerScale;
+			return Sim.playerScale;
 		if (o instanceof Field)
-			return fieldScale;
+			return Sim.fieldScale;
 		if (o instanceof Head)
-			return headScale;
+			return Sim.headScale;
+		if (o instanceof Arms)
+			return Sim.headScale;
 		if (o instanceof Ball)
-			return ballScale;
+			return Sim.ballScale;
 		return 1f;
 	}
 }

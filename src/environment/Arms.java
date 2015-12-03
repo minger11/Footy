@@ -7,11 +7,11 @@ package environment;
  *
  */
 
-public class Head extends MovingAgent{
+public class Arms extends MovingAgent{
 
 	private Player player;
 	
-	Head(double x, double y, Player player){
+	Arms(double x, double y, Player player){
 		super(x, y);	
 		this.player = player;
 	}

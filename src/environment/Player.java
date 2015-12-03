@@ -1,8 +1,6 @@
 package environment;
 
-import java.util.Iterator;
 import brain.Brain;
-import repast.simphony.context.Context;
 
 /**
  * The main class for the players
@@ -15,6 +13,7 @@ public class Player extends MovingAgent {
 	private Brain brain;
 	private PlayerMovement movement;
 	private Head head;
+	private Arms arms;
 	private int number;
 	
 	/**
@@ -23,11 +22,12 @@ public class Player extends MovingAgent {
 	 * @param space - the space projection
 	 * @param grid - the grid projection
 	 */
-	Player(Context context, int x, int y, int number) {
-		super(context, x, y);
+	Player(double x, double y, int number) {
+		super(x, y);
 		brain = new Brain();
 		movement = new PlayerMovement(this);
-		head = new Head(context, x, y, this);
+		head = new Head(x, y, this);
+		arms = new Arms(x, y, this);
 		this.number = number;
 	}
 	
@@ -37,6 +37,10 @@ public class Player extends MovingAgent {
 	
 	Head getHead(){
 		return head;
+	}
+	
+	Arms getArms(){
+		return arms;
 	}
 	
 	PlayerMovement getMovement(){

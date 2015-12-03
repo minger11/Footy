@@ -1,6 +1,5 @@
 package environment;
 
-import repast.simphony.context.Context;
 
 /**
  * Trypoints identify points where attackers can score
@@ -10,7 +9,7 @@ import repast.simphony.context.Context;
 
 public class WestTryPoint extends BoundaryPoint{
 	
-	WestTryPoint(Context context, int x, int y) {
-		super(context, x, y);
+	WestTryPoint(double x, double y) {
+		super(x, y);
 	}
 }

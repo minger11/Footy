@@ -2,11 +2,7 @@ package environment;
 
 import java.util.Iterator;
 
-import repast.simphony.context.Context;
 import repast.simphony.engine.environment.RunEnvironment;
-import repast.simphony.parameter.Parameters;
-import repast.simphony.space.continuous.ContinuousSpace;
-import repast.simphony.space.grid.Grid;
 
 /**
  * Referee makes decisions and declarations about the simulation
@@ -16,23 +12,13 @@ import repast.simphony.space.grid.Grid;
 
 public final class Referee {
 	
-	private static  Context<Object> context;
-	private static  ContinuousSpace<Object> space;
-	private static  Grid<Object> grid;
-	private static  Parameters params;
 	private static  Integer countDown;
 	private static  boolean gameOn = false;
-	private static  int standardCountDown = 500;
 	
 	private Referee(){
-		
 	}
 	
-	public static void init(Context<Object> c){
-		context = c;
-		grid = (Grid)context.getProjection("grid");
-		space = (ContinuousSpace)context.getProjection("space");
-		params = RunEnvironment.getInstance().getParameters();
+	public static void init(){
 		countDown = null;;
 		startGame();
 	}
@@ -71,7 +57,7 @@ public final class Referee {
 	private static void checkForward(){
 		
 		//Get the ball
-		Iterator<Object> it = context.getObjects(Ball.class).iterator();
+		Iterator<Object> it = Sim.context.getObjects(Ball.class).iterator();
 		Ball ball = (Ball)it.next();
 		
 		//If the ball does not have a player
@@ -97,23 +83,23 @@ public final class Referee {
 	private static void checkOut(){
 		
 		//Get the ball
-		Iterator<Object> it = context.getObjects(Ball.class).iterator();
+		Iterator<Object> it = Sim.context.getObjects(Ball.class).iterator();
 		while(it.hasNext()){
 			Ball ball = (Ball)it.next();
 				
 				//Define the sidelines
-				int upperSideline = (Integer)params.getValue("display_height")-(Integer)params.getValue("fieldInset");
-				int upperEdge = upperSideline - (Integer)params.getValue("lineRadius");
-				int lowerSideline = (Integer)params.getValue("fieldInset");
-				int lowerEdge = lowerSideline + (Integer)params.getValue("lineRadius");
+				double upperSideline = Sim.displayHeight-Sim.fieldInset;
+				double upperEdge = upperSideline - Sim.lineRadius;
+				double lowerSideline = Sim.fieldInset;
+				double lowerEdge = lowerSideline + Sim.lineRadius;
 				
 				
 				//If the ball has a player
 				if(ball.getPlayer()!=null){
 					//Define the players upper and lower reaches
 					Player easterner = (Player)ball.getPlayer();
-					double easternerUpperEdge = easterner.getPositionPoint().getY()+(Integer)params.getValue("body_radius");
-					double easternerLowerEdge = easterner.getPositionPoint().getY()-(Integer)params.getValue("body_radius");
+					double easternerUpperEdge = easterner.getPositionPoint().getY()+Sim.bodyRadius;
+					double easternerLowerEdge = easterner.getPositionPoint().getY()-Sim.bodyRadius;
 					
 					//If the easterner crosses the sideline, ball is out
 					if(easternerUpperEdge>=upperEdge||easternerLowerEdge<=lowerEdge){
@@ -128,8 +114,8 @@ public final class Referee {
 				//If the ball has no player
 				if(!(ball.getPlayer()!=null)){
 					//Define the balls upper and lower reaches
-					double ballUpperEdge = ball.getPositionPoint().getY()+(Integer)params.getValue("ball_radius");
-					double ballLowerEdge = ball.getPositionPoint().getY()-(Integer)params.getValue("ball_radius");
+					double ballUpperEdge = ball.getPositionPoint().getY()+Sim.ballRadius;
+					double ballLowerEdge = ball.getPositionPoint().getY()-Sim.ballRadius;
 						
 					//If the ball crosses the sideline, ball is out
 					if(ballUpperEdge>=upperEdge||ballLowerEdge<=lowerEdge){
@@ -150,27 +136,27 @@ public final class Referee {
 	private static void checkTry(){
 		
 		//Find the x value of the tryline
-		int westTryPoint = (Integer)params.getValue("fieldInset") + (Integer)params.getValue("fieldIncrement");
-		int westTryEdge = westTryPoint + (Integer)params.getValue("lineRadius");
+		double westTryPoint = Sim.fieldInset + Sim.fieldIncrement;
+		double westTryEdge = westTryPoint + Sim.lineRadius;
 		
 		//Find the x value of the tryline
-			int eastTryPoint = (Integer)params.getValue("display_width") - (Integer)params.getValue("fieldInset") - (Integer)params.getValue("fieldIncrement");
-			int eastTryEdge = eastTryPoint + (Integer)params.getValue("lineRadius");
+			double eastTryPoint = Sim.displayWidth - Sim.fieldInset - Sim.fieldIncrement;
+			double eastTryEdge = eastTryPoint + Sim.lineRadius;
 		
 		//Get the ball
-		Iterator<Object> it = context.getObjects(Ball.class).iterator();
+		Iterator<Object> it = Sim.context.getObjects(Ball.class).iterator();
 		Ball ball = (Ball)it.next();
 		
 		//If the ball has a player, check if the ball has touched the tryline
 		if(ball.getPlayer()!=null){
 			if(ball.getPlayer() instanceof Easterner){
-			double ballEdge = ball.getPositionPoint().getX()-(Integer)params.getValue("ball_radius");
+			double ballEdge = ball.getPositionPoint().getX()-Sim.ballRadius;
 				if(ballEdge<=westTryEdge){
 					
 					makeCall("Try to the easterners!");
 				}
 			} else {
-				double ballEdge = ball.getPositionPoint().getX()+(Integer)params.getValue("ball_radius");
+				double ballEdge = ball.getPositionPoint().getX()+Sim.ballRadius;
 				if(ballEdge<=eastTryEdge){
 					
 					makeCall("Try to the westerners!");
@@ -185,7 +171,7 @@ public final class Referee {
 	private static void checkTouch(){
 		
 		//Get the ball object
-		Iterator<Object> it = context.getObjects(Ball.class).iterator();
+		Iterator<Object> it = Sim.context.getObjects(Ball.class).iterator();
 		Ball ball = (Ball)it.next();
 		
 		//If the balls player is not null, get the player
@@ -194,24 +180,24 @@ public final class Referee {
 				
 				if(ballHandler instanceof Easterner){
 					//Iterate through the westerners
-					Iterator<Object> iter = context.getObjects(Westerner.class).iterator();
+					Iterator<Object> iter = Sim.context.getObjects(Westerner.class).iterator();
 					while(iter.hasNext()){
 						Westerner westerner = (Westerner)iter.next();	
 						
 						//If the distance between the ball handler and the westerner is less than 2 times body radius, the player is touched
-						if (space.getDistance(westerner.getPositionPoint(), ballHandler.getPositionPoint())<(Integer)params.getValue("body_radius")*2){
+						if (Sim.space.getDistance(westerner.getPositionPoint(), ballHandler.getPositionPoint())<Sim.bodyRadius*2){
 							
 							makeCall("The easterner was touched by the westerner!");
 						}
 					}
 				} else {
 					//Iterate through the westerners
-					Iterator<Object> iter = context.getObjects(Easterner.class).iterator();
+					Iterator<Object> iter = Sim.context.getObjects(Easterner.class).iterator();
 					while(iter.hasNext()){
 						Easterner westerner = (Easterner)iter.next();	
 						
 						//If the distance between the ball handler and the westerner is less than 2 times body radius, the player is touched
-						if (space.getDistance(westerner.getPositionPoint(), ballHandler.getPositionPoint())<(Integer)params.getValue("body_radius")*2){
+						if (Sim.space.getDistance(westerner.getPositionPoint(), ballHandler.getPositionPoint())<Sim.bodyRadius*2){
 							
 							makeCall("The westerner was touched by the easterner!");
 						}
@@ -243,6 +229,6 @@ public final class Referee {
 		gameOn = false;
 		MessageBoard.addMessage(call, gameOn);
 		System.out.println("Referee: "+call);
-		countDown = standardCountDown;
+		countDown = Sim.standardCountDown;
 	}
 }

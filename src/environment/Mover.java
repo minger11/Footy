@@ -2,8 +2,6 @@ package environment;
 
 import java.util.Iterator;
 
-import repast.simphony.context.Context;
-
 /**
  * The mover physically moves movable objects in space after checking them for collisions
  * @author user
@@ -12,26 +10,23 @@ import repast.simphony.context.Context;
 
 public final class Mover {
 
-	private static Context<Object> context;
-	
-	private Mover(Context context){
+	private Mover(){
 	}
 	
-	public static void init(Context c){
-		context = c;
+	public static void init(){
 	}
 	
 	public static void step(){
-		checkCollisions();
-		movePlayers();
-		moveBalls();	
+			checkCollisions();
+			movePlayers();
+			moveBalls();	
 	}
 	
 	/**
 	 * Creates a new physics and send the entire context to physics to check for collisions
 	 */
 	private static void checkCollisions(){
-		Physics.update(context);
+		Physics.update(Sim.context);
 	}
 	
 	/**
@@ -40,18 +35,19 @@ public final class Mover {
 	private static void movePlayers(){
 		
 		//Iterate through players
-		Iterator<Object> players = context.getObjects(Player.class).iterator();
+		Iterator<Object> players = Sim.context.getObjects(Player.class).iterator();
 		while (players.hasNext()){
 			Player player = (Player)players.next();
-			
 			//Add the current velocity to the current positionVector
 			//Set the heads position Vector to equal the players
 			player.getPositionVector().add(player.getVelocity());
 			player.getHead().setPositionVector(player.getPositionVector());
+			player.getArms().setPositionVector(player.getPositionVector());
 			
 			//Move the player and head to their respective positionVectors
 			player.moveToVector();
 			player.getHead().moveToVector();
+			player.getArms().moveToVector();
 		}
 	}
 
@@ -61,7 +57,7 @@ public final class Mover {
 	private static void moveBalls(){
 		
 		//Iterate through balls
-		Iterator<Object> balls = context.getObjects(Ball.class).iterator();
+		Iterator<Object> balls = Sim.context.getObjects(Ball.class).iterator();
 		while (balls.hasNext()){
 			Ball ball = (Ball)balls.next();
 			

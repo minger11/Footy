@@ -1,6 +1,5 @@
 package environment;
 
-import repast.simphony.context.Context;
 
 /**
  * Sidepoints are used to identify the areas that mark the beginning of out of bounds
@@ -10,7 +9,7 @@ import repast.simphony.context.Context;
 
 public class SidePoint extends BoundaryPoint{
 	
-	SidePoint(Context context, int x, int y) {
-		super(context, x, y);
+	SidePoint(double x, double y) {
+		super(x, y);
 	}
 }

@@ -4,7 +4,6 @@ public class Collision{
 	
 	private MovingAgent agent1;
 	private MovingAgent agent2;
-	private double collisionEnergy = .2;
 	
 	Collision(MovingAgent agent1, MovingAgent agent2){
 		this.agent1 = agent1;
@@ -22,7 +21,7 @@ public class Collision{
 		//immediately move by this velocity
 		agent1.getPositionVector().add(agent1.getVelocity());
 		//significantly reduce the velocity to model energy loss during the collision
-		agent1.getVelocity().scale(collisionEnergy);
+		agent1.getVelocity().scale(Sim.collisionEnergy);
 	}
 	
 	void twoMovingParts(){
@@ -38,8 +37,8 @@ public class Collision{
 		agent1.getPositionVector().add(agent1.getVelocity());
 		agent2.getPositionVector().add(agent2.getVelocity());
 		//significantly reduce the velocity to model energy loss during the collision
-		agent1.getVelocity().scale(collisionEnergy);
-		agent2.getVelocity().scale(collisionEnergy);
+		agent1.getVelocity().scale(Sim.collisionEnergy);
+		agent2.getVelocity().scale(Sim.collisionEnergy);
 	}
 	
 	MovingAgent getAgent1(){

@@ -3,33 +3,23 @@ package environment;
 import repast.simphony.context.Context;
 import repast.simphony.context.space.continuous.ContinuousSpaceFactory;
 import repast.simphony.context.space.continuous.ContinuousSpaceFactoryFinder;
-import repast.simphony.context.space.grid.GridFactory;
-import repast.simphony.context.space.grid.GridFactoryFinder;
 import repast.simphony.dataLoader.ContextBuilder;
-import repast.simphony.engine.environment.RunEnvironment;
-import repast.simphony.parameter.Parameters;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.SimpleCartesianAdder;
-import repast.simphony.space.grid.Grid;
-import repast.simphony.space.grid.GridBuilderParameters;
-import repast.simphony.space.grid.SimpleGridAdder;
-import repast.simphony.space.grid.StrictBorders;
 
 public class ModelBuilder implements ContextBuilder<Object> {
 	
-	private Parameters params;
 	private Context<Object> context;
 	private ContinuousSpace<Object> space;
-	private Grid<Object> grid;
 
 	/**
 	 * Creates the context, init's variables, fills context with projections, objects, etc before returning the context
 	 */
 	@Override
-	public Context build(Context<Object> context) {
+	public Context<Object> build(Context<Object> context) {
 		createContext(context);
-		createParameters();
-		createProjections();
+		createProjections();	
+		createSimulation();
 		createScheduler();
 		createMessageBoard();
 		createField();
@@ -42,27 +32,34 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	}
 	
 	/**
+	 * Creates both the continuous space and grid style layouts for display
+	 */
+	public void createProjections() {
+		//Creates the space
+		ContinuousSpaceFactory spaceFactory = ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null);
+		space = spaceFactory.createContinuousSpace("space", context, 
+				new SimpleCartesianAdder<Object>(), 
+				new repast.simphony.space.continuous.StrictBorders(),
+				Sim.displayWidth, Sim.displayHeight);				
+	}
+	
+	public void createSimulation(){
+		Sim.makeSim(context, space);
+	}
+	
+	/**
 	 * Creates the context and sets the context id to Footy (should match context in XML file)
 	*/
 	public void createContext(Context<Object> context) {
 		this.context = context;
 		this.context.setId("Footy");
 	}
-
-	/**
-	 * Retrieves the parameters set by the user in the runtime environment
-	 * Sets these parameters to the local parameters
-	 */
-	public void createParameters() {
-		//takes the parameters from the runtime environment
-		this.params = RunEnvironment.getInstance().getParameters();
-	}
 	
 	/**
 	 * Creates a scheduler to tell each class when and what to do
 	 */
 	public void createScheduler() {
-		Scheduler sim = new Scheduler(context);
+		Scheduler sim = new Scheduler();
 		context.add(sim);
 	}
 	
@@ -85,30 +82,6 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	}
 	
 	/**
-	 * Creates both the continuous space and grid style layouts for display
-	 */
-	public void createProjections() {
-		
-		//sets the height and width of the boxed environment at runtime
-		int displayHeight = (Integer)params.getValue("display_height");
-		int displayWidth = (Integer)params.getValue("display_width");
-				
-		//Creates the space
-		ContinuousSpaceFactory spaceFactory = ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null);
-		space = spaceFactory.createContinuousSpace("space", context, 
-				new SimpleCartesianAdder<Object>(), 
-				new repast.simphony.space.continuous.StrictBorders(),
-				displayWidth, displayHeight);				
-		
-		//Creates the grid
-		GridFactory gridFactory = GridFactoryFinder.createGridFactory(null);
-		grid = gridFactory.createGrid("grid", context,
-				new GridBuilderParameters<Object>(new StrictBorders(),
-				new SimpleGridAdder<Object>(),
-				true, displayWidth, displayHeight));
-	}
-	
-	/**
 	 * Initiates both create attackers and create defenders
 	 */
 	public void createPlayers() {
@@ -120,9 +93,7 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	 * Creates the ball and adds it to the field at the position nominated in the parameters
 	 */
 	public void createBall(){
-		int ballStartX = (Integer)params.getValue("ball_start_x");
-		int ballStartY = (Integer)params.getValue("ball_start_y");
-		new Ball(context, ballStartX, ballStartY);
+		new Ball(Sim.ballStartX, Sim.ballStartY);
 	}
 	
 	/**
@@ -136,19 +107,12 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	 * So in this case, the Defenders are added to the space and grid using their Adders as described above. 
 	*/
 	public void createDefenders() {
-		
-		// Retrieve defender count from runtime environment
-				int defenderCount = (Integer)params.getValue("defender_count");
 				
 				// iterate through the count
-				for(int i = 0; i < defenderCount; i++) {
-					
-					// Retrieve the starting positions from the runtime environment
-					int defenderStartX = (Integer)params.getValue("defender_start_x");
-					int defenderStartY = (Integer)params.getValue("defender_start_y");
+				for(int i = 0; i < Sim.westernerCount; i++) {
 					
 					// Create a new defender for each iteration
-					new Westerner(context, defenderStartX, defenderStartY, i+1);
+					new Westerner(Sim.westernerStartX, Sim.westernerStartY, i+1);
 				}
 	}
 	
@@ -167,27 +131,18 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	*/
 	public void createAttackers() {
 		
-		// Retrieve the attacker count from the runtime environment
-		int attackerCount = (Integer)params.getValue("attacker_count");
-		
 		//iterate through the count
-		for (int i = 0; i < attackerCount; i++) {
+		for (int i = 0; i < Sim.easternerCount; i++) {
 			
-			// Retrieve the starting positions from the runtime environment
-			int attackerStartX = (Integer)params.getValue("attacker_start_x");
-			int attackerStartY = (Integer)params.getValue("attacker_start_y");
-			int sideLine = (Integer)params.getValue("fieldInset");
-			int fieldWidth = (Integer)params.getValue("display_height")-(2*(sideLine));
-			
-			int y;
-			if(attackerCount==1){
-				y = attackerStartY;
+			double y;
+			if(Sim.easternerCount==1){
+				y = Sim.easternerStartY;
 			} else {
-				y = sideLine+((i+1)*(fieldWidth/(attackerCount+1)));
+				y = Sim.fieldInset+((i+1)*(Sim.displayHeight/(Sim.easternerCount+1)));
 			}
 			
 			//create a new attacker for each iteration
-			new Easterner(context, attackerStartX, y, i+1);
+			new Easterner(Sim.easternerStartX, y, i+1);
 		}
 
 	}
@@ -196,9 +151,7 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	 * Creates the field agent and places it in the middle of the screen
 	 */
 	public void createField() {
-		int displayHeight = (Integer)params.getValue("display_height");
-		int displayWidth = (Integer)params.getValue("display_width");
-		new Field(context,displayWidth/2,displayHeight/2);
+		new Field(Sim.displayWidth/2,Sim.displayHeight/2);
 	}
 	
 	/**
@@ -214,17 +167,17 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	 */
 	public void createSidelines() {
 		
-		int southernSideline = (Integer)params.getValue("fieldInset");
-		int northernSideline = (Integer)params.getValue("display_height")-(Integer)params.getValue("fieldInset");
-		int westernTryline = (Integer)params.getValue("fieldInset")+(Integer)params.getValue("fieldIncrement");
-		int easternTryline = (Integer)params.getValue("display_width")-(Integer)params.getValue("fieldInset")-(Integer)params.getValue("fieldIncrement");
+		double southernSideline = Sim.fieldInset;
+		double northernSideline = Sim.displayHeight-Sim.fieldInset;
+		double westernTryline = Sim.fieldInset+Sim.fieldIncrement;
+		double easternTryline = Sim.displayWidth-Sim.fieldInset-Sim.fieldIncrement;
 		
 		//create horizontal sidelines
-		for (int i = westernTryline; i <= easternTryline; i=i+10) {
+		for (double i = westernTryline; i <= easternTryline; i=i+10) {
 			
 			//create upper and lower sidepoints
-			new SidePoint(context, i, southernSideline);
-			new SidePoint(context, i, northernSideline);
+			new SidePoint(i, southernSideline);
+			new SidePoint(i, northernSideline);
 		}
 	}
 	
@@ -232,19 +185,19 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	 * creates a new trypoint at each point along the left edge of the display
 	 */
 	public void createTryline() {
-		int southernSideline = (Integer)params.getValue("fieldInset");
-		int northernSideline = (Integer)params.getValue("display_height")-(Integer)params.getValue("fieldInset");
-		int easternTryline = (Integer)params.getValue("display_width")-(Integer)params.getValue("fieldInset")-(Integer)params.getValue("fieldIncrement");
-		int westernTryline = (Integer)params.getValue("fieldInset")+(Integer)params.getValue("fieldIncrement");
-		for (int i = southernSideline; i <= northernSideline; i=i+10) {
+		double southernSideline = Sim.fieldInset;
+		double northernSideline = Sim.displayHeight-Sim.fieldInset;
+		double westernTryline = Sim.fieldInset+Sim.fieldIncrement;
+		double easternTryline = Sim.displayWidth-Sim.fieldInset-Sim.fieldIncrement;
+		for (double i = southernSideline; i <= northernSideline; i=i+10) {
 			//create a new trypoint for each iteration
-			new WestTryPoint(context, westernTryline, i);
+			new WestTryPoint(westernTryline, i);
 		}
 		
 		//create opposing tryline (sideline for this instance)
-		for (int i = southernSideline; i <= northernSideline; i=i+10) {
+		for (double i = southernSideline; i <= northernSideline; i=i+10) {
 			//create sidepoint
-			new EastTryPoint(context, easternTryline, i);
+			new EastTryPoint(easternTryline, i);
 		}
 	}
 

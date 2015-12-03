@@ -1,9 +1,9 @@
 package environment;
 
+import java.util.Iterator;
+
 import javax.vecmath.Vector3d;
 
-import repast.simphony.engine.environment.RunEnvironment;
-import repast.simphony.parameter.Parameters;
 import repast.simphony.space.continuous.NdPoint;
 
 public final class Utils {
@@ -110,10 +110,6 @@ public final class Utils {
 		return vectorToTarget;
 	}
 	
-	public static Parameters getParams(){
-		return RunEnvironment.getInstance().getParameters();
-	}
-	
 	/**
 	 * Takes in an angle in radians and a distance before giving back the vector
 	 * @param angle - absolute angle to target in radians
@@ -173,4 +169,249 @@ public final class Utils {
 		
 	}
 	
+	/**
+	 * Checks if an agent is within a viewing angle based on the viewing heading and the current players position
+	 * @param agent - the agent to be viewed
+	 * @param angle - the viewing angle (in degrees NOT radians)
+	 * @param heading - the direction (centre line) of the view (in radians NOT degrees)
+	 * @return true if the agent is within the player view, false if not
+	 */
+	public static boolean inView(SimpleAgent agent, Player player, Double angle, Double heading){
+		
+		//Total vision angle
+		double fieldOfVisionAngle = angle;
+		double halfVision = fieldOfVisionAngle/2;
+		
+		//Half vision in radians
+		double headToVisionDiff = halfVision*0.0174533;
+		
+		//Normalizes a radian angle for the right side of vision based on the head angle
+		double rightSide = heading-headToVisionDiff;
+		if(rightSide<0) rightSide=2*Math.PI+rightSide;
+		//Normalizes a radian angle for the left side of vision based on the head angle
+		double leftSide = heading+headToVisionDiff;
+		if(leftSide>2*Math.PI) leftSide=leftSide-2*Math.PI;
+		
+		//Converts the radian angles to gradients
+		double rightSlope = Math.tan(rightSide);
+		double leftSlope = Math.tan(leftSide);
+		
+		//gets the y intercept of both lines
+		double rightIntercept = player.getPositionPoint().getY()-(rightSlope*player.getPositionPoint().getX());
+		double leftIntercept = player.getPositionPoint().getY()-(leftSlope*player.getPositionPoint().getX());
+		
+		//based on the agents x value, gets the corresponding y values on each line
+		double rightLineY = (agent.getPositionPoint().getX()*rightSlope)+rightIntercept;
+		double leftLineY = (agent.getPositionPoint().getX()*leftSlope)+leftIntercept;
+
+		//The y value of the agent to be viewed
+		double agentY = agent.getPositionPoint().getY();
+		
+		//Used to return agents within views of ranges between 90 and 180 degrees
+		if(fieldOfVisionAngle>90&&fieldOfVisionAngle<=180){
+			if(Utils.headingNorth(heading)){
+				if(leftSlope<=0&&rightSlope>=0){
+					if(agentY>=rightLineY&&agentY>=leftLineY){
+						return true;
+					}
+				} else if(leftSlope<=0&&rightSlope<=0){
+					if(agentY>=rightLineY&&agentY>=leftLineY){
+						return true;
+					}
+				} else if(leftSlope>=0&&rightSlope>=0){
+					if(agentY>=rightLineY&&agentY>=leftLineY){
+						return true;
+					}
+				} else {
+					if(Utils.headingWest(heading)){
+						if(agentY<=rightLineY&&agentY>=leftLineY){
+							return true;
+						}
+					} else {
+						if(agentY>=rightLineY&&agentY<=leftLineY){
+							return true;
+						}
+					}
+				}
+			} else {
+				if(leftSlope<=0&&rightSlope>=0){
+					if(agentY<=rightLineY&&agentY<=leftLineY){
+						return true;
+					}
+				} else if(leftSlope<=0&&rightSlope<=0){
+					if(agentY<=rightLineY&&agentY<=leftLineY){
+						return true;
+					}
+				} else if(leftSlope>=0&&rightSlope>=0){
+					if(agentY<=rightLineY&&agentY<=leftLineY){
+						return true;
+					}
+				}else {
+					if(Utils.headingWest(heading)){
+						if(agentY<=rightLineY&&agentY>=leftLineY){
+							return true;
+						}
+					} else {
+						if(agentY>=rightLineY&&agentY<=leftLineY){
+							return true;
+						}
+					}
+				}
+			}
+			//Used to return agents within view within a range of 0 to 90 degrees
+		} else if(fieldOfVisionAngle>=0&&fieldOfVisionAngle<=90){
+			if(Utils.headingNorth(heading)){
+				if(leftSlope<=0&&rightSlope>=0){
+					if(agentY>=rightLineY&&agentY>=leftLineY){
+						return true;
+					}
+				} else if(leftSlope<=0&&rightSlope<=0){
+					if(agentY<=rightLineY&&agentY>=leftLineY){
+						return true;
+					}
+				} else if(leftSlope>=0&&rightSlope>=0){
+					if(agentY>=rightLineY&&agentY<=leftLineY){
+						return true;
+					}
+				} else {
+					if(Utils.headingWest(heading)){
+						if(agentY<=rightLineY&&agentY>=leftLineY){
+							return true;
+						}
+					} else {
+						if(agentY>=rightLineY&&agentY<=leftLineY){
+							return true;
+						}
+					}
+				}
+			} else {
+				if(leftSlope<=0&&rightSlope>=0){
+					if(agentY<=rightLineY&&agentY<=leftLineY){
+						return true;
+					}
+				} else if(leftSlope<=0&&rightSlope<=0){
+					if(agentY>=rightLineY&&agentY<=leftLineY){
+						return true;
+					}
+				} else if(leftSlope>=0&&rightSlope>=0){
+					if(agentY<=rightLineY&&agentY>=leftLineY){
+						return true;
+					}
+				}else {
+					if(Utils.headingWest(heading)){
+						if(agentY<=rightLineY&&agentY>=leftLineY){
+							return true;
+						}
+					} else {
+						if(agentY>=rightLineY&&agentY<=leftLineY){
+							return true;
+						}
+					}
+				}
+			}
+			//Used to return all agents within viewing range of an angle between 180 and 270 degrees
+		} else if(fieldOfVisionAngle>180&&fieldOfVisionAngle<270){
+					if((leftSlope<=0&&rightSlope<=0)||(leftSlope>=0&&rightSlope>=0)){
+						if(Utils.headingNorth(heading)){
+							if(agentY>=rightLineY||agentY>=leftLineY){
+								return true;
+							}
+						} else {
+							if(agentY<=rightLineY||agentY<=leftLineY){
+								return true;
+							}
+						}
+					}
+					if((leftSlope<=0&&rightSlope>=0)||(leftSlope>=0&&rightSlope<=0)){
+						if(Utils.headingWest(heading)){
+							if(agentY>=rightLineY||agentY<=leftLineY){
+								return true;
+							}
+						} else {
+							if(agentY<=rightLineY||agentY>=leftLineY){
+								return true;
+							}
+						}
+					}
+		}
+		return false;
+	}
+	
+	/**
+	 * Checks if a heading is within view based on the viewing angle and the heading of the view
+	 * @param headingToObject - the heading (radians) to the object to be viewed
+	 * @param angle - the width of the viewing angle (degrees)
+	 * @param heading - the heading of the centre of the view
+	 */
+	public static boolean inView(double headingToObject, Double angle, Double heading){
+		
+		//Total vision angle
+		double fieldOfVisionAngle = angle;
+		double halfVision = fieldOfVisionAngle/2;
+		
+		//Half vision in radians
+		double headToVisionDiff = halfVision*0.0174533;
+		
+		//Normalizes a radian angle for the right side of vision based on the head angle
+		double rightSide = heading-headToVisionDiff;
+		if(rightSide<0) rightSide=2*Math.PI+rightSide;
+		//Normalizes a radian angle for the left side of vision based on the head angle
+		double leftSide = heading+headToVisionDiff;
+		if(leftSide>2*Math.PI) leftSide=leftSide-2*Math.PI;
+		
+		//special condition
+		if(rightSide>leftSide){
+			if(headingToObject>=rightSide||headingToObject<=leftSide){
+				return true;
+			}
+			//regular condition
+		} else if(leftSide>rightSide){
+			if(headingToObject>=rightSide&&headingToObject<=leftSide){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	/**
+	 * Checks if the current player has the ball
+	 * @return true if the player has the ball
+	 */
+	public static boolean hasBall(Player player){
+		Iterator<Object> it = Sim.context.getObjects(Ball.class).iterator();
+		Ball ball;
+		if(it.hasNext()){
+			ball = (Ball)it.next();
+				Vector3d vectorToBall = Utils.getVector(ball.getPositionVector(), player.getPositionVector());
+				//Player has ball
+				if((Math.abs(vectorToBall.length())<=(Sim.bodyRadius+0.01))&&
+						Utils.inView(ball, player, Sim.armsAngle, player.getArms().getRotation())){
+					if(ball.getPlayer()==null||ball.getPlayer().equals(player)){
+						return true;			
+					}
+				}	
+		}
+		return false;
+	}
+	
+	/**
+	 * Checks if the current player has the ball
+	 * @return true if the player has the ball
+	 */
+	public static Ball getBall(Player player){
+		Iterator<Object> it = Sim.context.getObjects(Ball.class).iterator();
+		Ball ball;
+		if(it.hasNext()){
+			ball = (Ball)it.next();
+				Vector3d vectorToBall = Utils.getVector(ball.getPositionVector(), player.getPositionVector());
+				//Player has ball
+				if((Math.abs(vectorToBall.length())<=(Sim.bodyRadius+.01)&&
+						Utils.inView(ball, player, Sim.armsAngle, player.getArms().getRotation()))){
+					if(ball.getPlayer()==null||ball.getPlayer().equals(player)){
+						return ball;			
+					}
+				}	
+		}
+		return null;
+	}
 }

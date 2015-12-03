@@ -1,7 +1,6 @@
 package environment;
 
 import javax.vecmath.Vector3d;
-import repast.simphony.space.continuous.NdPoint;
 
 /**
  * used for sending players from the senses to the brain - Breaks NdPoints into Vectors
