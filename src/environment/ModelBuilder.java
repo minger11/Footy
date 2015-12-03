@@ -40,11 +40,11 @@ public class ModelBuilder implements ContextBuilder<Object> {
 		space = spaceFactory.createContinuousSpace("space", context, 
 				new SimpleCartesianAdder<Object>(), 
 				new repast.simphony.space.continuous.StrictBorders(),
-				Sim.displayWidth, Sim.displayHeight);				
+				Params.displayWidth, Params.displayHeight);				
 	}
 	
 	public void createSimulation(){
-		Sim.makeSim(context, space);
+		Params.makeParams(context, space);
 	}
 	
 	/**
@@ -93,7 +93,7 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	 * Creates the ball and adds it to the field at the position nominated in the parameters
 	 */
 	public void createBall(){
-		new Ball(Sim.ballStartX, Sim.ballStartY);
+		new Ball(Params.ballStartX, Params.ballStartY);
 	}
 	
 	/**
@@ -109,10 +109,10 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	public void createDefenders() {
 				
 				// iterate through the count
-				for(int i = 0; i < Sim.westernerCount; i++) {
+				for(int i = 0; i < Params.westernerCount; i++) {
 					
 					// Create a new defender for each iteration
-					new Westerner(Sim.westernerStartX, Sim.westernerStartY, i+1);
+					new Westerner(Params.westernerStartX, Params.westernerStartY, i+1);
 				}
 	}
 	
@@ -132,17 +132,17 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	public void createAttackers() {
 		
 		//iterate through the count
-		for (int i = 0; i < Sim.easternerCount; i++) {
+		for (int i = 0; i < Params.easternerCount; i++) {
 			
 			double y;
-			if(Sim.easternerCount==1){
-				y = Sim.easternerStartY;
+			if(Params.easternerCount==1){
+				y = Params.easternerStartY;
 			} else {
-				y = Sim.fieldInset+((i+1)*(Sim.displayHeight/(Sim.easternerCount+1)));
+				y = Params.fieldInset+((i+1)*(Params.displayHeight/(Params.easternerCount+1)));
 			}
 			
 			//create a new attacker for each iteration
-			new Easterner(Sim.easternerStartX, y, i+1);
+			new Easterner(Params.easternerStartX, y, i+1);
 		}
 
 	}
@@ -151,7 +151,7 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	 * Creates the field agent and places it in the middle of the screen
 	 */
 	public void createField() {
-		new Field(Sim.displayWidth/2,Sim.displayHeight/2);
+		new Field(Params.displayWidth/2,Params.displayHeight/2);
 	}
 	
 	/**
@@ -167,10 +167,10 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	 */
 	public void createSidelines() {
 		
-		double southernSideline = Sim.fieldInset;
-		double northernSideline = Sim.displayHeight-Sim.fieldInset;
-		double westernTryline = Sim.fieldInset+Sim.fieldIncrement;
-		double easternTryline = Sim.displayWidth-Sim.fieldInset-Sim.fieldIncrement;
+		double southernSideline = Params.fieldInset;
+		double northernSideline = Params.displayHeight-Params.fieldInset;
+		double westernTryline = Params.fieldInset+Params.fieldIncrement;
+		double easternTryline = Params.displayWidth-Params.fieldInset-Params.fieldIncrement;
 		
 		//create horizontal sidelines
 		for (double i = westernTryline; i <= easternTryline; i=i+10) {
@@ -185,10 +185,10 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	 * creates a new trypoint at each point along the left edge of the display
 	 */
 	public void createTryline() {
-		double southernSideline = Sim.fieldInset;
-		double northernSideline = Sim.displayHeight-Sim.fieldInset;
-		double westernTryline = Sim.fieldInset+Sim.fieldIncrement;
-		double easternTryline = Sim.displayWidth-Sim.fieldInset-Sim.fieldIncrement;
+		double southernSideline = Params.fieldInset;
+		double northernSideline = Params.displayHeight-Params.fieldInset;
+		double westernTryline = Params.fieldInset+Params.fieldIncrement;
+		double easternTryline = Params.displayWidth-Params.fieldInset-Params.fieldIncrement;
 		for (double i = southernSideline; i <= northernSideline; i=i+10) {
 			//create a new trypoint for each iteration
 			new WestTryPoint(westernTryline, i);

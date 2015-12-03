@@ -46,6 +46,9 @@ public class Brain {
 	private String newMessage;
 	//private Vector3d passEffort;
 	//private Vector3d effort;
+	/**
+	 * relative angle to turn body by
+	 */
 	private double turn;
 	private double headTurn;
 	private double armsTurn;
@@ -121,8 +124,8 @@ public class Brain {
 			} else if(armsToBody==target){
 				armsTurn =0;
 			}
-			passEnergy = 100;
-			passDirection = target;
+			//passEnergy = 100;
+			//passDirection = target;
 			//System.out.println("bodyAngle: "+bodyAngle+", armsAngle: "+armsAngle+", armsToBody: "+armsToBody+", target: "+target+", armsTurn: "+armsTurn);
 		} else if(newCount>400){
 			newCount--;
@@ -259,7 +262,6 @@ public class Brain {
 	
 	public void turnAndRun(double velocity){
 		double angle = 0.0;
-		System.out.println(noseHeading);
 		if(noseHeading!=targetAbsAngle){
 			angle = Utils.absoluteToRelative(targetAbsAngle, noseHeading);
 		}
@@ -687,6 +689,10 @@ public class Brain {
 	
 	//-------------------------------MOUTH--------------------------------------//
 	
+	/**
+	 * returns newMessage and sets the value of newMessage to be null
+	 * @return the string the player would like to pass out in a new message
+	 */
 	public String getNewMessage(){
 		String text = newMessage;
 		newMessage = null;
@@ -695,6 +701,10 @@ public class Brain {
 	
 	//--------------------------------NECK----------------------------------------//
 	
+	/**
+	 * returns headTurn and sets headTurn to 0.0
+	 * @return the angle (relative to the head)(in radians) the brain would like to rotate the head by
+	 */
 	public double getHeadTurn(){
 		double angle = headTurn;
 		headTurn = 0.0;
@@ -703,24 +713,41 @@ public class Brain {
 	
 	//-------------------------------ARMS---------------------------------------------//
 	
-	//public Vector3d getPassEffort(){
-		//return passEffort;
-	//}
-	
+	/**
+	 * returns passDirection ans sets pass direction to 0.0
+	 * @return the angle (in radians) (relative to the head) with which the brain would like to move the ball by
+	 */
 	public double getPassDirection(){
-		return passDirection;
+		double angle = passDirection;
+		passDirection = 0.0;
+		return angle;
 	}
-	
+	/**
+	 * returns passEnergy and sets pass energy to 0.0
+	 * @return the energy with which the brain would like to move the ball by
+	 */
 	public double getPassEnergy(){
-		return passEnergy;
+		double x = passEnergy;
+		passEnergy = 0.0;
+		return x;
 	}
 	
+	/**
+	 * return armsTurn and sets armsTurn to 0.0
+	 * @return the angle (relative to the arms) (in radians) the brain wishes to rotate the arms by
+	 */
 	public double getArmsTurn(){
-		return armsTurn;
+		double angle = armsTurn;
+		turn = 0.0;
+		return angle;
 	}
 	
 	//--------------------------------BODY-------------------------------------------//
 	
+	/**
+	 * returns turn and sets turn to 0.0
+	 * @return the angle (relative to the body) (in radians) the brain wishes to rotate the player by
+	 */
 	public double getTurn(){
 		double angle = turn;
 		turn = 0.0;
@@ -729,15 +756,22 @@ public class Brain {
 	
 	//--------------------------------LEGS--------------------------------------------//
 	
-	//public Vector3d getEffort(){
-	//	return effort;
-	//}
-	
+	/**
+	 * returns moveEnergy and sets moveEnergy to 0.0
+	 * @return the energy with which the brain would like to move the body by
+	 */
 	public double getMoveEnergy(){
-		return moveEnergy;
+		double x = moveEnergy;
+		moveEnergy = 0.0;
+		return x;
 	}
-	
+	/**
+	 * returns moveDirection and sets moveDirection to 0.0
+	 * @return the angle (in radians) (relative to the head) with which the brain would like to move the body by
+	 */
 	public double getMoveDirection(){
-		return moveDirection;
+		double angle = moveDirection;
+		moveDirection = 0;
+		return angle;
 	}
 }

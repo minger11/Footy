@@ -11,21 +11,19 @@ import java.util.List;
 
 public class Ball extends MovingAgent{
 	
-	//Ball movement
+	/**
+	 * The ball's movement
+	 */
 	private BallMovement movement;
-	
-	//Balls current handler
+	/**
+	 * The ball's current player
+	 */
 	private Player player;
-	
-	//A list of all ball handlers who touch the ball
+	/**
+	 * A list of all player who touched the ball
+	 */
 	private List<Player> players;
 	
-	/**
-	 * Creates the ball
-	 * @param context
-	 * @param x
-	 * @param y
-	 */
 	Ball(double x, double y){
 		super(x, y);
 		movement = new BallMovement();
@@ -36,7 +34,7 @@ public class Ball extends MovingAgent{
 	
 	/**
 	 * Returns the last player who touched the ball
-	 * @return
+	 * @return last player on the player arraylist
 	 */
 	Player getLastPlayer(){
 		int size = players.size();
@@ -47,17 +45,25 @@ public class Ball extends MovingAgent{
 		return null;
 	}
 	
+	/**
+	 * Simple getter
+	 * @return the ball's current player
+	 */
 	Player getPlayer(){
 		return player;
 	}
 	
+	/**
+	 * Simple getter
+	 * @return the ball's current movement
+	 */
 	BallMovement getMovement(){
 		return movement;
 	}
 	
 	/**
 	 * Sets the player currently possessing the ball and adds to the players list
-	 * @param x
+	 * @param x - the player to be set as the ball's player
 	 */
 	void setPlayer(Player x){
 		player = x;

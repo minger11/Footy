@@ -2,19 +2,13 @@ package environment;
 
 
 /**
- * Attackers try to get past defenders and score tries
+ * Easterners start on the east (right-hand) side of the display and attempt to score tries on the west side
  * @author user
  *
  */
 
 public class Easterner extends Player{
 	
-	/**
-	 * The constructor for the Attacker
-	 * inits the parameters for space, grid and params
-	 * @param space - the space projection
-	 * @param grid - the grid projection
-	 */
 	Easterner(double x, double y, int number) {
 		super(x, y, number);
 	}

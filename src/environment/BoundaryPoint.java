@@ -1,6 +1,5 @@
 package environment;
 
-
 /**
  * BoundaryPoints are used to specify the exterior of the playing surface
  * @author user

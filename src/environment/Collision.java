@@ -1,5 +1,11 @@
 package environment;
 
+/**
+ *  
+ * @author user
+ *
+ */
+
 public class Collision{
 	
 	private MovingAgent agent1;
@@ -21,7 +27,7 @@ public class Collision{
 		//immediately move by this velocity
 		agent1.getPositionVector().add(agent1.getVelocity());
 		//significantly reduce the velocity to model energy loss during the collision
-		agent1.getVelocity().scale(Sim.collisionEnergy);
+		agent1.getVelocity().scale(Params.collisionEnergy);
 	}
 	
 	void twoMovingParts(){
@@ -37,8 +43,8 @@ public class Collision{
 		agent1.getPositionVector().add(agent1.getVelocity());
 		agent2.getPositionVector().add(agent2.getVelocity());
 		//significantly reduce the velocity to model energy loss during the collision
-		agent1.getVelocity().scale(Sim.collisionEnergy);
-		agent2.getVelocity().scale(Sim.collisionEnergy);
+		agent1.getVelocity().scale(Params.collisionEnergy);
+		agent2.getVelocity().scale(Params.collisionEnergy);
 	}
 	
 	MovingAgent getAgent1(){

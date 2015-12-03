@@ -4,7 +4,9 @@ import javax.vecmath.Vector3d;
 
 public class BallMovement{
 	
-	//Positional and velocity vectors
+	/**
+	 * The effort currently being applied to the ball
+	 */
 	private Vector3d effort; 
 	
 	//Rotational angles (in radians)
@@ -17,20 +19,34 @@ public class BallMovement{
 	BallMovement(){
 	}
 	
-	//------SETTERS AND GETTERS -------------------
-	
+	/**
+	 * Simple setter
+	 * @param angle - the new turn angle to be applied to the ball
+	 */
 	void setTurn(double angle){
 		this.turn = angle;
 	}
 	
-	void setEffort(Vector3d position){
-		this.effort = position;
+	/**
+	 * Simple setter
+	 * @param effort - the new effort vector to be applied to the ball
+	 */
+	void setEffort(Vector3d effort){
+		this.effort = effort;
 	}	
 	
+	/**
+	 * Simple getter
+	 * @return the angle of turn currently being applied to the ball
+	 */
 	double getTurn(){
 		return turn;
 	}
 	
+	/**
+	 * Simple getter
+	 * @return the effort vector currently being applied to the ball
+	 */
 	Vector3d getEffort(){
 		return effort;
 	}	

@@ -12,28 +12,26 @@ import java.util.List;
 
 public final class MessageBoard {
 	
-	//The list of sent and pending messages
-	private static List<Message> messageBoard;
-	private static List<Message> pending;
-	private static boolean newMessage;
+	/**
+	 * The actual messageBoard arraylist - each time step, the newest message on this list should be heard by players
+	 */
+	private static List<Message> messageBoard = new ArrayList<Message>();
+	/**
+	 * The pending arraylist - when new unofficial messages are sent they come here first
+	 */
+	private static List<Message> pending = new ArrayList<Message>();
+	/**
+	 * Indicates whether there is a new message on the messageBoard
+	 */
+	private static boolean newMessage = false;
 	
 	private MessageBoard(){
-	}
-	
-	public static void init(){
-		messageBoard = new ArrayList<Message>();
-		pending = new ArrayList<Message>();
-		newMessage = false;
-	}
-	
-	public static void step(){
-		updateMessageBoard();
 	}
 	
 	/**
 	 * Removes messages from the pending list and adds them to the messageboard list
 	 */
-	public static void updateMessageBoard(){
+	public static void update(){
 		newMessage = false;
 		//Iterate through the pending list
 		Iterator<Message> it = pending.iterator();
@@ -46,7 +44,7 @@ public final class MessageBoard {
 				if(mess.getOfficial()){
 					hearable = System.currentTimeMillis();
 				} else {
-					hearable = mess.getTime()+chars*Sim.delayPerChar+Sim.fixedDelay;
+					hearable = mess.getTime()+chars*Params.delayPerChar+Params.fixedDelay;
 				}
 				
 				//If the required time has passed, remove the message from pending and add it to the messageboard
@@ -80,20 +78,33 @@ public final class MessageBoard {
 		pending.add(message);
 	}
 	
+	/**
+	 * Simple getter
+	 * @return the messageBoard arraylist
+	 */
 	public static List<Message> getMessages(){
 		return messageBoard;
 	}
 	
+	/**
+	 * Simple getter
+	 * @return the pending arraylist
+	 */
 	public static List<Message> getPending(){
 		return pending;
 	}
+	
+	/**
+	 * Simple getter
+	 * @return the newMessage boolean indicating if a new message is on the messageBoard
+	 */
 	public static boolean getNewMessage(){
 		return newMessage;
 	}
 	
 	/**
 	 * Returns the last message on the messageboard list
-	 * @return
+	 * @return the last message on the messageBoard
 	 */
 	public static Message getLastMessage(){
 		if(messageBoard.size()>0){

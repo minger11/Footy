@@ -6,11 +6,14 @@ import javax.vecmath.Vector3d;
 
 import repast.simphony.space.continuous.NdPoint;
 
+/**
+ * A utility class. A toolbox for common operations across the model
+ * @author user
+ *
+ */
+
 public final class Utils {
 
-	/**
-	 * A utility class. A toolbox for common operations across the model
-	 */
 	private Utils(){
 		
 	}
@@ -52,12 +55,28 @@ public final class Utils {
 	}
 	
 	/**
+	 * Checks an angle to ensure it is witin the bounds of a radian, updates if neccessary
+	 * @param angle - the angle to be checked
+	 * @return the updated angle
+	 */
+	public static double checkRadian(double angle){
+		
+		//If the angle is greater than the radian limit
+		if(angle>2*Math.PI) angle=angle-2*Math.PI;
+		
+		//If the angle is less than the radian limit
+		else if(angle<0) angle=2*Math.PI+angle;
+		
+		return angle;
+	}
+	
+	/**
 	 * Takes a vector and returns its angle in radians
 	 * @param referencePoint
 	 * @param targetPoint
 	 * @return
 	 */
-	public static Double getAngle(Vector3d vectorToTarget){
+	public static double getAngle(Vector3d vectorToTarget){
 		Vector3d xAxis = new Vector3d(1.0,0.0,0.0);
 		double heading = xAxis.angle(vectorToTarget);
 		if(vectorToTarget.y<0){
@@ -91,21 +110,31 @@ public final class Utils {
 	 * @return the relative angle in radians
 	 */
 	public static double RelativeToAbsolute(double relativeAngle, double absoluteReference){
-	double absoluteAngle = absoluteReference + relativeAngle;
-	//if got the long angle
-	if(absoluteAngle<0){
-		absoluteAngle=2*Math.PI+absoluteAngle;
-	}
-	if(absoluteAngle>2*Math.PI){
-		absoluteAngle=(absoluteAngle-2*Math.PI);
-	}
-	return absoluteAngle;
+		double absoluteAngle = absoluteReference + relativeAngle;
+		//if got the long angle
+		if(absoluteAngle<0){
+			absoluteAngle=2*Math.PI+absoluteAngle;
+		}
+		if(absoluteAngle>2*Math.PI){
+			absoluteAngle=(absoluteAngle-2*Math.PI);
+		}
+		return absoluteAngle;
 }
 	
+	/**
+	 * Returns the vector from a reference ndPoint to a target ndPoint
+	 * @param targetPoint 
+	 * @param referencePoint
+	 * @return Vector3d
+	 */
 	public static Vector3d getVector(NdPoint targetPoint, NdPoint referencePoint){
+		
+		//recreate the ndpoints as vectors
 		Vector3d targetVector = new Vector3d(targetPoint.getX(), targetPoint.getY(),0.0);
 		Vector3d referenceVector = new Vector3d(referencePoint.getX(), referencePoint.getY(),0.0);
 		Vector3d vectorToTarget = new Vector3d();
+		
+		//create and return a vector between the two vectors
 		vectorToTarget.sub(targetVector, referenceVector);
 		return vectorToTarget;
 	}
@@ -378,14 +407,21 @@ public final class Utils {
 	 * @return true if the player has the ball
 	 */
 	public static boolean hasBall(Player player){
-		Iterator<Object> it = Sim.context.getObjects(Ball.class).iterator();
+		
+		//iterate through the balls
+		Iterator<Object> it = Params.context.getObjects(Ball.class).iterator();
 		Ball ball;
 		if(it.hasNext()){
 			ball = (Ball)it.next();
+			
+			//create a vector from the player to the ball
 				Vector3d vectorToBall = Utils.getVector(ball.getPositionVector(), player.getPositionVector());
-				//Player has ball
-				if((Math.abs(vectorToBall.length())<=(Sim.playerRadius+0.01))&&
-						Utils.inView(ball, player, Sim.armsAngle, player.getArms().getRotation())){
+				
+				//If the ball is close enough to the player and within angle of the players arms
+				if((Math.abs(vectorToBall.length())<=(Params.playerRadius+0.01))&&
+						Utils.inView(ball, player, Params.armsAngle, player.getArms().getRotation())){
+
+					//If the ball's player is either the player or null
 					if(ball.getPlayer()==null||ball.getPlayer().equals(player)){
 						return true;			
 					}
@@ -395,18 +431,25 @@ public final class Utils {
 	}
 	
 	/**
-	 * Checks if the current player has the ball
-	 * @return true if the player has the ball
+	 * Returns the ball if the player has one
+	 * @return the ball if the player has the ball
 	 */
 	public static Ball getBall(Player player){
-		Iterator<Object> it = Sim.context.getObjects(Ball.class).iterator();
+		
+		//iterate through the balls
+		Iterator<Object> it = Params.context.getObjects(Ball.class).iterator();
 		Ball ball;
 		if(it.hasNext()){
 			ball = (Ball)it.next();
+			
+				//create a vector from the player to the ball
 				Vector3d vectorToBall = Utils.getVector(ball.getPositionVector(), player.getPositionVector());
-				//Player has ball
-				if((Math.abs(vectorToBall.length())<=(Sim.playerRadius+.01)&&
-						Utils.inView(ball, player, Sim.armsAngle, player.getArms().getRotation()))){
+				
+				//If the ball is close enough to the player and within angle of the players arms
+				if((Math.abs(vectorToBall.length())<=(Params.playerRadius+.01)&&
+						Utils.inView(ball, player, Params.armsAngle, player.getArms().getRotation()))){
+					
+					//If the ball's player is either the player or null
 					if(ball.getPlayer()==null||ball.getPlayer().equals(player)){
 						return ball;			
 					}

@@ -11,6 +11,7 @@ import saf.v3d.scene.VSpatial;
  * @author user
  *
  */
+
 public class SimpleAgentStyle extends DefaultStyleOGL2D{
 
 	private ShapeFactory2D factory;
@@ -123,15 +124,15 @@ public class SimpleAgentStyle extends DefaultStyleOGL2D{
 	@Override
 	public float getScale(Object o) {
 		if (o instanceof Player)
-			return Sim.playerScale;
+			return Params.playerScale;
 		if (o instanceof Field)
-			return Sim.fieldScale;
+			return Params.fieldScale;
 		if (o instanceof Head)
-			return Sim.headScale;
+			return Params.headScale;
 		if (o instanceof Arms)
-			return Sim.headScale;
+			return Params.headScale;
 		if (o instanceof Ball)
-			return Sim.ballScale;
+			return Params.ballScale;
 		return 1f;
 	}
 }

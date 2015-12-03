@@ -8,15 +8,8 @@ package environment;
  */
 
 public class Head extends MovingAgent{
-
-	private Player player;
 	
-	Head(double x, double y, Player player){
-		super(x, y);	
-		this.player = player;
-	}
-
-	Player getPlayer(){
-		return player;
+	Head(double x, double y){
+		super(x, y);
 	}
 }

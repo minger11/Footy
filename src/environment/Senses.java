@@ -15,19 +15,23 @@ import javax.vecmath.Vector3d;
 
 public final class Senses {
 
-	//Current player
+	/**
+	 * The current player
+	 */
 	private static  Player player;
-	
-	//The central headings of the depth vision, the left side vision and the right side vision
-	private static  Double noseHeading;
+	/**
+	 * The central heading of the left side vision angle
+	 */
 	private static  Double leftSideVisionHeading;
+	/**
+	 * The central heading of the right side vision angle
+	 */
 	private static  Double rightSideVisionHeading;
 
 	private Senses(){
 	}
 	
-	
-	public static void init(Player p){
+	public static void sense(Player p){
 		player = p;
 		info();
 		eyes();
@@ -35,15 +39,6 @@ public final class Senses {
 		touch();
 	}
 	
-	
-	public static void step(Player p){
-		player = p;
-		eyes();
-		ears();
-		touch();
-	}
-	
-
 	//-----------INFO---------------------------------------------------------------------------------//
 	
 		/**
@@ -60,10 +55,8 @@ public final class Senses {
 	}
 		
 	private static double getMaxSpeed(){
-			return Sim.maxForwardSpeed;		
+			return Params.maxForwardSpeed;		
 		}
-
-		
 		
 	//---------------EYES-----------------------------------------------------------------//
 	
@@ -77,9 +70,9 @@ public final class Senses {
 	}
 	
 	private static void sendPlayerObservations(){
-		player.getBrain().setNoseHeading(noseHeading);
-		player.getBrain().setBodyRotation(Utils.absoluteToRelative(player.getRotation(), noseHeading));
-		player.getBrain().setArmsRotation(Utils.absoluteToRelative(player.getArms().getRotation(), noseHeading));
+		player.getBrain().setNoseHeading(player.getHead().getRotation());
+		player.getBrain().setBodyRotation(Utils.absoluteToRelative(player.getRotation(), player.getHead().getRotation()));
+		player.getBrain().setArmsRotation(Utils.absoluteToRelative(player.getArms().getRotation(), player.getHead().getRotation()));
 	}
 	
 	/**
@@ -87,13 +80,8 @@ public final class Senses {
 	 */
 	private static void setHeadings(){
 		//The central headings of the respective visions
-		noseHeading = player.getHead().getRotation();
-		if(noseHeading>2*Math.PI) noseHeading=noseHeading-2*Math.PI;
-		else if(noseHeading<0) noseHeading=2*Math.PI+noseHeading;
-		leftSideVisionHeading = noseHeading + ((Sim.depthVision*0.0174533)/2)+((Sim.sideVision*0.0174533)/2);
-		if(leftSideVisionHeading>2*Math.PI) leftSideVisionHeading=leftSideVisionHeading-2*Math.PI;
-		rightSideVisionHeading = noseHeading - ((Sim.depthVision*0.0174533)/2)-((Sim.sideVision*0.0174533)/2);
-		if(rightSideVisionHeading<0) rightSideVisionHeading=2*Math.PI+rightSideVisionHeading;
+		leftSideVisionHeading = Utils.checkRadian(player.getHead().getRotation()+((Params.depthVision*0.0174533)/2)+((Params.sideVision*0.0174533)/2));
+		rightSideVisionHeading = Utils.checkRadian(player.getHead().getRotation()-((Params.depthVision*0.0174533)/2)-((Params.sideVision*0.0174533)/2));
 	}
 	
 	/**
@@ -116,7 +104,7 @@ public final class Senses {
 		List<SensesObject> fresh = new ArrayList<>();
 		
 		//Iterate through each object
-		Iterator<Object> it = Sim.context.getObjects(a).iterator();
+		Iterator<Object> it = Params.context.getObjects(a).iterator();
 		while(it.hasNext()){
 			Object agent = it.next();	
 			
@@ -150,20 +138,20 @@ public final class Senses {
 			if(!isObstructed(agent)){
 				
 				//if the agent is within the depth vision of the player
-				if(Utils.inView(agent, player, Sim.depthVision, noseHeading)){
+				if(Utils.inView(agent, player, Params.depthVision, player.getHead().getRotation())){
 					
 					//Create depth Senses object
 					list.add(new SensesObject(agent,Utils.getVector(agent.getPositionPoint(), player.getPositionPoint()), player, true));
 				}
 				
 				//if the agent to be seen is within the right side vision field of the player
-				if(Utils.inView(agent, player, Sim.sideVision, leftSideVisionHeading)){
+				if(Utils.inView(agent, player, Params.sideVision, leftSideVisionHeading)){
 					//Create non-depth Senses object
 					list.add(new SensesObject(agent, player, leftSideVisionHeading));
 				}
 				
 				//if the agent to be seen is within the left side vision field of the player
-				if(Utils.inView(agent, player, Sim.sideVision, rightSideVisionHeading)){
+				if(Utils.inView(agent, player, Params.sideVision, rightSideVisionHeading)){
 					//Create non-depth Senses object
 					list.add(new SensesObject(agent, player, rightSideVisionHeading));
 				}
@@ -178,14 +166,14 @@ public final class Senses {
 	 */
 	private static boolean isObstructed(SimpleAgent agent){
 		//Iterate through potential obstructors in the environment (the players)
-		Iterator<Object> it = Sim.context.getObjects(Player.class).iterator();
+		Iterator<Object> it = Params.context.getObjects(Player.class).iterator();
 		while(it.hasNext()){
 			Player obstructor = (Player)it.next();
 			
 			//If the player is not the current player
 			if(obstructor!=player){
-				double obstructorRadius = Sim.playerRadius;
-				double distToObstructor = Math.abs(Sim.space.getDistance(player.getPositionPoint(), obstructor.getPositionPoint()));
+				double obstructorRadius = Params.playerRadius;
+				double distToObstructor = Math.abs(Params.space.getDistance(player.getPositionPoint(), obstructor.getPositionPoint()));
 				
 				//Use the length to and radius of the obstruction to derive the obstruction angle in degrees of the object from the player
 				double halfObstructionAngle = Math.atan((obstructorRadius)/distToObstructor);
@@ -206,7 +194,7 @@ public final class Senses {
 					//If the agent is within the obstruction zone
 					//And the distance to the agent is greater than the dist to the obstruction
 					//The agent is obstructed from view
-					if(Math.abs(Sim.space.getDistance(player.getPositionPoint(), agent.getPositionPoint()))>distToObstructor){
+					if(Math.abs(Params.space.getDistance(player.getPositionPoint(), agent.getPositionPoint()))>distToObstructor){
 						return true;
 					}
 				}
@@ -250,7 +238,7 @@ public final class Senses {
 					Vector3d vectorToMessage = Utils.getVector(sender.getPositionPoint(), player.getPositionPoint());
 					
 					//If the length of the vector is less than the hearing radius
-					if(vectorToMessage.length()<=Sim.hearingRadius){
+					if(vectorToMessage.length()<=Params.hearingRadius){
 
 						//Create a new unofficial message
 						Message mess = new Message(false, message.getMessage());
@@ -265,7 +253,6 @@ public final class Senses {
 			}
 		}
 	}
-	
 	
 	//-----------TOUCH--------------------------------------------------------------------------------//
 	

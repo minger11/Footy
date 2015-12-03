@@ -4,7 +4,7 @@ import repast.simphony.context.Context;
 import repast.simphony.engine.environment.RunEnvironment;
 import repast.simphony.space.continuous.ContinuousSpace;
 
-public class Sim {
+public class Params {
 
 	//----------Time----------Time----------Time----------Time----------Time----------Time----------Time----------Time----------Time----------//
 	
@@ -102,7 +102,7 @@ public class Sim {
 	 * The maximum acceleration (pixels) a player can apply in one time step - reflects true distance in meters (m/s^2) before being multiplied by the distance scale and the time scale squared.
 	 */
 	static double 	playerAcceleration = 10 
-			* distanceScale * (Sim.timeScale*Sim.timeScale);
+			* distanceScale * (Params.timeScale*Params.timeScale);
 	/**
 	 * The scaling applied to each player's velocity vector at each time step. Simulates natural energy loss, through forces such as friction and air resistance. 
 	 */
@@ -111,7 +111,7 @@ public class Sim {
 	 * The maximum amount of energy (per time step) that may be applied to a player move - reflects amount of energy that may be applied in one second before being multiplied by the time scale..
 	 */
 	static double 	maxMoveEnergy = 100
-			* Sim.timeScale;
+			* Params.timeScale;
 	/**
 	 * The maximum angle (in radians) that the head can be turned relative to the body. Ranges from negative to positive of this number.
 	 */
@@ -269,10 +269,10 @@ public class Sim {
 	
 	//---------------------------------------------------------------------------------------------------------------------------------------------------//
 	
-	private Sim(){
+	private Params(){
 	}
 	
-	static void makeSim(Context<Object> c, ContinuousSpace<Object> s){
+	static void makeParams(Context<Object> c, ContinuousSpace<Object> s){
 		context = c;
 		space = s;
 	}

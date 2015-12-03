@@ -13,21 +13,13 @@ public final class Mover {
 	private Mover(){
 	}
 	
-	public static void init(){
-	}
-	
-	public static void step(){
-			movePlayers();
-			moveBalls();	
-	}
-	
 	/**
 	 * Iterates through all players and physically moves them and their heads based on their velocity
 	 */
-	private static void movePlayers(){
+	static void movePlayers(){
 		
 		//Iterate through players
-		Iterator<Object> players = Sim.context.getObjects(Player.class).iterator();
+		Iterator<Object> players = Params.context.getObjects(Player.class).iterator();
 		while (players.hasNext()){
 			Player player = (Player)players.next();
 			//Add the current velocity to the current positionVector
@@ -46,10 +38,10 @@ public final class Mover {
 	/**
 	 * Iterates through all balls and physically moves them based on their velocity
 	 */
-	private static void moveBalls(){
+	static void moveBalls(){
 		
 		//Iterate through balls
-		Iterator<Object> balls = Sim.context.getObjects(Ball.class).iterator();
+		Iterator<Object> balls = Params.context.getObjects(Ball.class).iterator();
 		while (balls.hasNext()){
 			Ball ball = (Ball)balls.next();
 			
