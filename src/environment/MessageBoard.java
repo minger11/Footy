@@ -68,9 +68,9 @@ public final class MessageBoard {
 	}
 	
 	/**
-	 * For official messages only
-	 * @param sender
-	 * @param text
+	 * Adds a new message directly to the messageboard, bypassing the pending queue - for official messages only
+	 * @param text - the text of the message
+	 * @param gameOn - boolean signifying whether the game is still on
 	 */
 	public static void addMessage(String text, boolean gameOn){
 		Message message;

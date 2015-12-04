@@ -91,7 +91,7 @@ public class Brain {
 			//runSquare();
 			moveArmsSideToSide();
 			//}
-			runUpAndBack();
+			//runUpAndBack();
 			//strafeBox();
 			//runForward();
 			//longCircle();
@@ -126,8 +126,8 @@ public class Brain {
 			} else if(armsToBody==target){
 				armsTurn =0;
 			}
-			//passEnergy = 100;
-			//passDirection = target;
+			passEnergy = 100;
+			passDirection = target;
 			//System.out.println("bodyAngle: "+bodyAngle+", armsAngle: "+armsAngle+", armsToBody: "+armsToBody+", target: "+target+", armsTurn: "+armsTurn);
 		} else if(newCount>400){
 			newCount--;

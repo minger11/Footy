@@ -198,6 +198,10 @@ public class Params {
 	 */
 	static double 	ballMaxSpeed 	= 	20 
 			* distanceScale * timeScale;
+	/**
+	 * The scaling applied to each ball's velocity vector at each time step after a collision. Simulates natural energy loss, through forces such as friction and air resistance. 
+	 */
+	static double 	ballVelocityDecay = 0.99;
 	
 
 	//----------Boundary---------Boundary---------Boundary---------Boundary---------Boundary---------Boundary---------Boundary---------Boundary---------//

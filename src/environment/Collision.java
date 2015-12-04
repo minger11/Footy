@@ -50,6 +50,11 @@ public class Collision{
 		
 		//reduce the velocity to model energy loss during the collision
 		agent1.getVelocity().scale(Params.collisionEnergy);
+		
+		//If the agent is a ball, set the collided value to be true
+		if(agent1 instanceof Ball){
+			((Ball)agent1).getMovement().setCollided(true);
+		}
 	}
 	
 	/**
@@ -75,6 +80,14 @@ public class Collision{
 		//significantly reduce the velocity to model energy loss during the collision
 		agent1.getVelocity().scale(Params.collisionEnergy);
 		agent2.getVelocity().scale(Params.collisionEnergy);
+		
+		//If the agent is a ball, set the collided value to be true
+		if(agent1 instanceof Ball){
+			((Ball)agent1).getMovement().setCollided(true);
+		} 
+		if(agent2 instanceof Ball){
+			((Ball)agent2).getMovement().setCollided(true);
+		}
 	}
 	
 	/**

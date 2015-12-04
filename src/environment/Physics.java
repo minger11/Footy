@@ -179,6 +179,10 @@ public final class Physics {
 			
 			//reset the balls effort vector to null (as no external energy will be applied from now)
 			ball.getMovement().setEffort(null);
+			
+			//If the ball has collided, decay the velocity
+		} else if(ball.getMovement().getCollided()){
+			ball.getVelocity().scale(Params.ballVelocityDecay);
 		}
 	
 	}
@@ -200,7 +204,13 @@ public final class Physics {
 				
 				//set the balls rotation to be equal to that of the player
 				ball.setRotation(Utils.checkRadian(ball.getPlayer().getRotation()));
-		} 
+				
+				//If the ball has recently collided
+		} else if(ball.getMovement().getCollided()){
+			
+			//Make the ball spin
+			ball.setRotation(ball.getRotation()+(ball.getVelocity().length()*.5));
+		}
 	}
 	
 	
@@ -260,6 +270,9 @@ public final class Physics {
 						
 						//Set the ball's player to be this player
 						ball.setPlayer(player);
+						
+						//Set the ball's collide boolean to false  (in case it has previously collided)
+						ball.getMovement().setCollided(false);
 					}
 					
 					//If there is pass effort, send the player and ball to the makePass method

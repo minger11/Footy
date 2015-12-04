@@ -236,7 +236,7 @@ public final class Senses {
 					if(vectorToMessage.length()<=Params.hearingRadius){
 
 						//Create a new unofficial message
-						Message mess = new Message(false, message.getMessage());
+						Message mess = new Message(message.getMessage());
 						
 						//Put the message into a new senses object
 						SensesObject lastMess = new SensesObject(mess, vectorToMessage, player, false);

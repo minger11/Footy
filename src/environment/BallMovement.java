@@ -8,8 +8,13 @@ public class BallMovement{
 	 * The effort currently being applied to the ball
 	 */
 	private Vector3d effort; 
-	
-	//Rotational angles (in radians)
+	/**
+	 * A boolean to indicate whether the ball has recently been involved in a collision. Used in physics to switch on decay.
+	 */
+	private boolean collided = false;
+	/**
+	 * The rotation of the ball (in radians)
+	 */
 	private double turn;
 	
 	/**
@@ -36,11 +41,27 @@ public class BallMovement{
 	}	
 	
 	/**
+	 * Simple setter
+	 * @param collided - the boolean indicating whether the ball has recently been involved in a collision
+	 */
+	void setCollided(boolean collided){
+		this.collided = collided;
+	}
+	
+	/**
 	 * Simple getter
 	 * @return the angle of turn currently being applied to the ball
 	 */
 	double getTurn(){
 		return turn;
+	}
+	
+	/**
+	 * Simple getter
+	 * @return a boolean to indicate whether the ball has been involved in a collision recently or not
+	 */
+	boolean getCollided(){
+		return collided;
 	}
 	
 	/**
