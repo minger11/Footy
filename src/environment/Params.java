@@ -2,6 +2,7 @@ package environment;
 
 import repast.simphony.context.Context;
 import repast.simphony.engine.environment.RunEnvironment;
+import repast.simphony.parameter.Parameters;
 import repast.simphony.space.continuous.ContinuousSpace;
 
 public class Params {
@@ -57,7 +58,22 @@ public class Params {
 	 * The field's size relative to the size of the png image - field.png is 1300*780 pixels.
 	 */
 	static float 	fieldScale 		= 	(float)displayWidth/1300;
-	
+	/**
+	 * The y value of the southern sideline
+	 */
+	static double southernSideline = fieldInset;
+	/**
+	 * The y value of the northern sideline
+	 */
+	static double northernSideline = displayHeight-fieldInset;
+	/**
+	 * The x value of the western sideline
+	 */
+	static double westernTryline = fieldInset+fieldIncrement;
+	/**
+	 * the x value of the eastern tryline
+	 */
+	static double easternTryline = displayWidth-fieldInset-fieldIncrement;
 	
 	//----------Player----------Player----------Player----------Player----------Player----------Player----------Player----------Player----------//
 	
@@ -84,7 +100,7 @@ public class Params {
 	/**
 	 * The radius (in pixels) of the player - reflects true distance in meters before being multiplied by the distance scale.
 	 */
-	static double	playerRadius	=	1 
+	static double	playerRadius	=	.5 
 			* distanceScale;
 	/**
 	 * The player's size relative to the size of the png image - player.png is 100*100 pixels.
@@ -160,35 +176,7 @@ public class Params {
 	 * The weight of a player (in grams).
 	 */
 	static double	playerWeight	=	8000.00;
-	
-	
-	//----------Teams----------Teams----------Teams----------Teams----------Teams----------Teams----------Teams----------Teams----------Teams----------//
-	
-	/**
-	 * The amount of westerners in the simulation.
-	 */
-	static int		westernerCount	=	(Integer)RunEnvironment.getInstance().getParameters().getValue("westernerCount");
-	/**
-	 * The amount of easterners in the simulation.
-	 */
-	static int		easternerCount	=	(Integer)RunEnvironment.getInstance().getParameters().getValue("easternerCount");
-	/**
-	 * The desired starting x position of the westerners team - reflects true distance in meters before being multiplied by the distance scale.
-	 */
-	static double	westernerStartX	=	((double)RunEnvironment.getInstance().getParameters().getValue("westernerStartX")*distanceScale)+fieldInset+fieldIncrement;	
-	/**
-	 * The desired starting y position of the westerners team - reflects true distance in meters before being multiplied by the distance scale.
-	 */
-	static double 	westernerStartY	=	((double)RunEnvironment.getInstance().getParameters().getValue("westernerStartY")*distanceScale)+fieldInset;
-	/**
-	 * The desired starting x position of the easterners team - reflects true distance in meters before being multiplied by the distance scale.
-	 */
-	static double	easternerStartX	=	((double)RunEnvironment.getInstance().getParameters().getValue("easternerStartX")*distanceScale)+fieldInset+fieldIncrement;
-	/**
-	 * The desired starting y position of the easterners team - reflects true distance in meters before being multiplied by the distance scale.
-	 */
-	static double	easternerStartY	=	((double)RunEnvironment.getInstance().getParameters().getValue("easternerStartY")*distanceScale)+fieldInset;
-	
+		
 	
 	//----------Ball----------Ball----------Ball----------Ball----------Ball----------Ball----------Ball----------Ball----------Ball----------//
 	
@@ -202,18 +190,6 @@ public class Params {
 	 */
 	static float 	ballScale = (float)(2*ballRadius)/100;
 	/**
-	 * The desired starting x position of the ball - reflects true distance in meters before being multiplied by the distance scale.
-	 */
-	static double	ballStartX		=	((double)RunEnvironment.getInstance().getParameters().getValue("ballStartX")*distanceScale)+fieldInset+fieldIncrement;
-	/**
-	 * The desired starting y position of the ball - reflects true distance in meters before being multiplied by the distance scale.
-	 */
-	static double	ballStartY		=	((double)RunEnvironment.getInstance().getParameters().getValue("ballStartY")*distanceScale)+fieldInset;
-	/**
-	 * The amount of balls in the simulation.
-	 */
-	static int		ballCount		=	(Integer)RunEnvironment.getInstance().getParameters().getValue("ballCount");
-	/**
 	 * The weight of the ball (in grams).
 	 */
 	static double	ballWeight	=	500.00;	
@@ -224,6 +200,14 @@ public class Params {
 			* distanceScale * timeScale;
 	
 
+	//----------Boundary---------Boundary---------Boundary---------Boundary---------Boundary---------Boundary---------Boundary---------Boundary---------//
+	
+	/**
+	 * The frequency of boundary points (every x pixels) - true value reflects meters before being multiplied by the distance scale
+	 */
+	static double boundaryFrequency = 5
+			* distanceScale;
+	
 	//----------Physics----------Physics----------Physics----------Physics----------Physics----------Physics----------Physics----------Physics----------//
 
 	/**
@@ -272,8 +256,80 @@ public class Params {
 	private Params(){
 	}
 	
+	/**
+	 * Sets the final requirements for the params class, the context and the space.
+	 * @param c - the context of the simulation
+	 * @param s - the space being used for the simulation
+	 */
 	static void makeParams(Context<Object> c, ContinuousSpace<Object> s){
 		context = c;
 		space = s;
+	}
+	
+	//----------Teams----------Teams----------Teams----------Teams----------Teams----------Teams----------Teams----------Teams----------Teams----------//
+	
+	/**
+	* The amount of westerners in the simulation.
+	*/
+	public static int getWesternerCount(){
+		return (Integer)RunEnvironment.getInstance().getParameters().getValue("westernerCount");
+	}
+	
+	/**
+	 * The amount of easterners in the simulation.
+	 */
+	public static int getEasternerCount(){
+		return (Integer)RunEnvironment.getInstance().getParameters().getValue("easternerCount");
+	}
+	
+	/**
+	 * The desired starting x position of the westerners team - reflects true distance in meters before being multiplied by the distance scale.
+	 */
+	public static double getWesternerStartX(){
+		return ((double)RunEnvironment.getInstance().getParameters().getValue("westernerStartX")*distanceScale)+fieldInset+fieldIncrement;	
+	}
+	
+	/**
+	 * The desired starting y position of the westerners team - reflects true distance in meters before being multiplied by the distance scale.
+	 */
+	public static double getWesternerStartY(){
+		return ((double)RunEnvironment.getInstance().getParameters().getValue("westernerStartY")*distanceScale)+fieldInset;
+	}
+	
+	/**
+	 * The desired starting x position of the easterners team - reflects true distance in meters before being multiplied by the distance scale.
+	 */
+	public static double getEasternerStartX(){
+		return ((double)RunEnvironment.getInstance().getParameters().getValue("easternerStartX")*distanceScale)+fieldInset+fieldIncrement;
+	}
+	
+	/**
+	 * The desired starting y position of the easterners team - reflects true distance in meters before being multiplied by the distance scale.
+	 */
+	public static double getEasternerStartY(){
+		return ((double)RunEnvironment.getInstance().getParameters().getValue("easternerStartY")*distanceScale)+fieldInset;
+	}
+	
+	//----------Ball----------Ball----------Ball----------Ball----------Ball----------Ball----------Ball----------Ball----------Ball----------//
+	
+	/**
+	 * The desired starting x position of the ball - reflects true distance in meters before being multiplied by the distance scale.
+	 */
+	public static double getBallStartX(){
+		return ((double)RunEnvironment.getInstance().getParameters().getValue("ballStartX")*distanceScale)+fieldInset+fieldIncrement;
+	}
+	
+	/**
+	 * The desired starting y position of the ball - reflects true distance in meters before being multiplied by the distance scale.
+	 */
+	public static double getBallStartY(){
+		return ((double)RunEnvironment.getInstance().getParameters().getValue("ballStartY")*distanceScale)+fieldInset;
+	}
+	
+	/**
+	 * The amount of balls in the simulation.
+	 */
+	public static int getBallCount(){
+		return (Integer)RunEnvironment.getInstance().getParameters().getValue("ballCount");
 	}
 }

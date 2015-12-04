@@ -7,10 +7,15 @@ import repast.simphony.dataLoader.ContextBuilder;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.SimpleCartesianAdder;
 
+/**
+ * Builds the model
+ * @author user
+ *
+ */
+
 public class ModelBuilder implements ContextBuilder<Object> {
 	
 	private Context<Object> context;
-	private ContinuousSpace<Object> space;
 
 	/**
 	 * Creates the context, init's variables, fills context with projections, objects, etc before returning the context
@@ -18,33 +23,11 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	@Override
 	public Context<Object> build(Context<Object> context) {
 		createContext(context);
-		createProjections();	
 		createSimulation();
-		createScheduler();
-		createMessageBoard();
 		createField();
-		createMover();
 		createPlayers();
-		createBall();
-		createBoundary();
-		createReferee();
+		createBalls();
 		return this.context;
-	}
-	
-	/**
-	 * Creates both the continuous space and grid style layouts for display
-	 */
-	public void createProjections() {
-		//Creates the space
-		ContinuousSpaceFactory spaceFactory = ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null);
-		space = spaceFactory.createContinuousSpace("space", context, 
-				new SimpleCartesianAdder<Object>(), 
-				new repast.simphony.space.continuous.StrictBorders(),
-				Params.displayWidth, Params.displayHeight);				
-	}
-	
-	public void createSimulation(){
-		Params.makeParams(context, space);
 	}
 	
 	/**
@@ -56,93 +39,87 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	}
 	
 	/**
-	 * Creates a scheduler to tell each class when and what to do
+	 * Sets up the space and parameters to be used by the simulation
 	 */
-	public void createScheduler() {
-		Scheduler sim = new Scheduler();
-		context.add(sim);
+	public void createSimulation(){
+		
+		//Creates the space which the simulation will be played on
+		ContinuousSpaceFactory spaceFactory = ContinuousSpaceFactoryFinder.createContinuousSpaceFactory(null);
+		ContinuousSpace<Object> space = spaceFactory.createContinuousSpace("space", context, 
+				new SimpleCartesianAdder<Object>(), 
+				new repast.simphony.space.continuous.StrictBorders(),
+				Params.displayWidth, Params.displayHeight);	
+		
+		//Calls the make Params method, which renders the params class ready for use in the simulation
+		Params.makeParams(context, space);
 	}
 	
 	/**
-	 * Creates a referee to adjudicate the game
-	 */
-	public void createReferee(){
-	}
-	
-	/**
-	 * Creates a messageboard for audio messages to be sent
-	 */
-	public void createMessageBoard(){
-	}
-	
-	/**
-	 * Creates a mover that moves all movable objects at the end of each step and checks for collisions
-	 */
-	public void createMover(){
-	}
-	
-	/**
-	 * Initiates both create attackers and create defenders
+	 * Creates the players
 	 */
 	public void createPlayers() {
-		createDefenders();
-		createAttackers();
+		createWesterners();
+		createEasterners();
 	}
 	
 	/**
-	 * Creates the ball and adds it to the field at the position nominated in the parameters
+	 * Creates the balls and adds them to the field at the position nominated in the parameters
 	 */
-	public void createBall(){
-		new Ball(Params.ballStartX, Params.ballStartY);
+	public void createBalls(){
+		
+		// iterate through the count
+		for(int i = 0; i < Params.getBallCount(); i++) {
+			new Ball(Params.getBallStartX(), Params.getBallStartY());
+		}
 	}
 	
 	/**
-	 * Creates the defenders and positions them in the relevant spaces
-	 * This should be relatively straight forward. We create a specified number of Defenders
-	 * by looping through some creation code the specified number of times. 
-	 * In this case we loop through the amount of times as specified in the parameters
-	 * Note that the parameter’s value is returned as an Object so we need to cast it appropriately
-	 * We add the new Defenders to context. 
-	 * In adding them to the context we automatically add them to any projections associated with that context. 
-	 * So in this case, the Defenders are added to the space and grid using their Adders as described above. 
+	 * Creates the westerners
 	*/
-	public void createDefenders() {
-				
-				// iterate through the count
-				for(int i = 0; i < Params.westernerCount; i++) {
-					
-					// Create a new defender for each iteration
-					new Westerner(Params.westernerStartX, Params.westernerStartY, i+1);
-				}
-	}
-	
-	/**
-	 * Creates the Attackers and positions them in the relevant spaces
-	 * This should be relatively straight forward. We create a specified number of Attackers
-	 * by looping through some creation code the specified number of times. 
-	 * In this case we loop through the amount of times as specified in the parameters
-	 * Note that the parameter’s value is returned as an Object so we need to cast it appropriately
-	 * We add the new Attackers to context. 
-	 * In adding them to the context we automatically add them to any projections associated with that context. 
-	 * So in this case, the Attackers are added to the space and grid using their Adders as described above. 
-	 * The Attackers are created with a random energy level from 4 to 10. 
-	 * We use the RandomHelper to do this for us. 
-	 * In general, all random number type operations should be done through the RandomHelper. 
-	*/
-	public void createAttackers() {
+	public void createWesterners() {
 		
 		//iterate through the count
-		for (int i = 0; i < Params.easternerCount; i++) {
+		for (int i = 0; i < Params.getWesternerCount(); i++) {
 			
+			//set a variable for the y axis
 			double y;
-			if(Params.easternerCount==1){
-				y = Params.easternerStartY;
+			
+			//if the count is 1, y is the starting y
+			if(Params.getWesternerCount()==1){
+				y = Params.getWesternerStartY();
+				
+				//else distribute evenly along the y axis
 			} else {
-				y = Params.fieldInset+((i+1)*(Params.displayHeight/(Params.easternerCount+1)));
+				y = Params.fieldInset+((i+1)*((Params.displayHeight-(2*Params.fieldInset))/(Params.getWesternerCount()+1)));
 			}
 			
 			//create a new attacker for each iteration
-			new Easterner(Params.easternerStartX, y, i+1);
+			new Westerner(Params.getWesternerStartX(), y, i+1);
+		}
+	}
+	
+	/**
+	 * Creates the easterners
+	*/
+	public void createEasterners() {
+		
+		//iterate through the count
+		for (int i = 0; i < Params.getEasternerCount(); i++) {
+			
+			//set a variable for the y axis
+			double y;
+			
+			//if the count is 1, y is the starting y
+			if(Params.getEasternerCount()==1){
+				y = Params.getEasternerStartY();
+				
+				//else distribute evenly along the y axis
+			} else {
+				y = Params.fieldInset+((i+1)*((Params.displayHeight-(2*Params.fieldInset))/(Params.getEasternerCount()+1)));
+			}
+			
+			//create a new attacker for each iteration
+			new Easterner(Params.getEasternerStartX(), y, i+1);
 		}
 
 	}
@@ -152,6 +129,7 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	 */
 	public void createField() {
 		new Field(Params.displayWidth/2,Params.displayHeight/2);
+		createBoundary();
 	}
 	
 	/**
@@ -159,45 +137,35 @@ public class ModelBuilder implements ContextBuilder<Object> {
 	 */
 	public void createBoundary() {
 		createSidelines();
-		createTryline();
+		createTrylines();
 	}
 	
 	/**
 	 * creates sideline points at each point along the upper, lower and right edges of the display
 	 */
 	public void createSidelines() {
-		
-		double southernSideline = Params.fieldInset;
-		double northernSideline = Params.displayHeight-Params.fieldInset;
-		double westernTryline = Params.fieldInset+Params.fieldIncrement;
-		double easternTryline = Params.displayWidth-Params.fieldInset-Params.fieldIncrement;
-		
 		//create horizontal sidelines
-		for (double i = westernTryline; i <= easternTryline; i=i+10) {
+		for (double i = Params.westernTryline; i <= Params.easternTryline; i=i+Params.boundaryFrequency) {
 			
 			//create upper and lower sidepoints
-			new SidePoint(i, southernSideline);
-			new SidePoint(i, northernSideline);
+			new SidePoint(i, Params.southernSideline);
+			new SidePoint(i, Params.northernSideline);
 		}
 	}
 	
 	/**
-	 * creates a new trypoint at each point along the left edge of the display
+	 * creates the east and west trylines
 	 */
-	public void createTryline() {
-		double southernSideline = Params.fieldInset;
-		double northernSideline = Params.displayHeight-Params.fieldInset;
-		double westernTryline = Params.fieldInset+Params.fieldIncrement;
-		double easternTryline = Params.displayWidth-Params.fieldInset-Params.fieldIncrement;
-		for (double i = southernSideline; i <= northernSideline; i=i+10) {
+	public void createTrylines() {
+		for (double i = Params.southernSideline; i <= Params.northernSideline; i=i+Params.boundaryFrequency) {
 			//create a new trypoint for each iteration
-			new WestTryPoint(westernTryline, i);
+			new WestTryPoint(Params.westernTryline, i);
 		}
 		
-		//create opposing tryline (sideline for this instance)
-		for (double i = southernSideline; i <= northernSideline; i=i+10) {
+		//create opposing tryline
+		for (double i = Params.southernSideline; i <= Params.northernSideline; i=i+Params.boundaryFrequency) {
 			//create sidepoint
-			new EastTryPoint(easternTryline, i);
+			new EastTryPoint(Params.easternTryline, i);
 		}
 	}
 

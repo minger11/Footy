@@ -14,16 +14,16 @@ public class Scheduler {
 	/**
 	 * Variable used to keep track of the last step
 	 */
-	private long time;
+	static private long time;
 	
-	Scheduler(){
+	private Scheduler(){
 	}
 
 	/**
 	 * Called only once at the beginning of the simulation
 	 */
 	@ScheduledMethod(start=0)
-	public void init(){
+	public static void init(){
 		
 		//set the current time 
 		time = System.currentTimeMillis();
@@ -47,7 +47,7 @@ public class Scheduler {
 	 * Called immediately after the init method and recalled each time the previous step is finished
 	 */
 	@ScheduledMethod ( start = 1 , interval = 1)
-	public void step(){
+	public static void step(){
 		
 		//pauses the simulation if the scheduler delay has not pass since the last time step
 		while(System.currentTimeMillis()<time+Params.schedulerDelay){

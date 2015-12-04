@@ -24,8 +24,11 @@ import environment.Westerner;
 public class Brain {
 
 	private Player player;
-	
 	private double maxSpeed;
+	private int easternersCount;
+	private int westernersCount;
+	
+	private boolean gameOn;
 	
 	//Received
 	private SensesObject message;
@@ -33,11 +36,10 @@ public class Brain {
 	private List<SensesObject> eastTryline;
 	private List<SensesObject> players;
 	private List<SensesObject> balls;
+	private SensesObject me;
 	private boolean hasBall;
-	private boolean gameOn;
 	private double noseHeading;
-	private double bodyRotation;
-	private double armsRotation;
+	
 	
 	//Derived
 	private SensesObject targetObject;
@@ -86,10 +88,10 @@ public class Brain {
 			//}
 			//turnHeadSideToSide();
 			//turnBody();
-			runSquare();
+			//runSquare();
 			moveArmsSideToSide();
 			//}
-			//runUpAndBack();
+			runUpAndBack();
 			//strafeBox();
 			//runForward();
 			//longCircle();
@@ -109,9 +111,9 @@ public class Brain {
 			newCount--;
 			//where are my arms relative to my body
 			//abs
-			double bodyAngle = Utils.RelativeToAbsolute(bodyRotation, noseHeading);
+			double bodyAngle = Utils.RelativeToAbsolute(me.getRelativeBodyRotation(), noseHeading);
 			//abs
-			double armsAngle = Utils.RelativeToAbsolute(armsRotation, noseHeading);
+			double armsAngle = Utils.RelativeToAbsolute(me.getRelativeArmsRotation(), noseHeading);
 			//rel
 			double armsToBody = Utils.absoluteToRelative(armsAngle, bodyAngle);
 			//rel
@@ -130,8 +132,8 @@ public class Brain {
 		} else if(newCount>400){
 			newCount--;
 			//where are my arms relative to my body
-			double bodyAngle = Utils.RelativeToAbsolute(bodyRotation, noseHeading);
-			double armsAngle = Utils.RelativeToAbsolute(armsRotation, noseHeading);
+			double bodyAngle = Utils.RelativeToAbsolute(me.getRelativeBodyRotation(), noseHeading);
+			double armsAngle = Utils.RelativeToAbsolute(me.getRelativeArmsRotation(), noseHeading);
 			double armsToBody = Utils.absoluteToRelative(armsAngle, bodyAngle);
 			double target = -Math.PI/2;
 			if(armsToBody>target){
@@ -378,7 +380,7 @@ public class Brain {
 				int randomNumber = RandomHelper.nextIntFromTo(0, players.size()-1);
 				Iterator<SensesObject> it = players.iterator();
 				while(it.hasNext()){
-					if(it.next().getSimpleAgent() instanceof Easterner){
+					if(it.next().getObject() instanceof Easterner){
 						//SensesObject y = players.iterator().next();
 						targetObject = players.iterator().next();
 						//effort = targetObject.getRelativeVector();
@@ -392,7 +394,7 @@ public class Brain {
 				int randomNumber = RandomHelper.nextIntFromTo(0, players.size()-1);
 				Iterator<SensesObject> it = players.iterator();
 				while(it.hasNext()){
-					if(it.next().getSimpleAgent() instanceof Westerner){
+					if(it.next().getObject() instanceof Westerner){
 						//SensesObject y = players.iterator().next();
 						targetObject = players.iterator().next();
 						//effort = targetObject.getRelativeVector();
@@ -513,7 +515,7 @@ public class Brain {
 		Iterator<SensesObject> it = players.iterator();
 		while(it.hasNext()){
 			SensesObject p = it.next();
-			if(p.getSimpleAgent().getClass().equals(player.getClass())&&p.isWithinDepth()){
+			if(p.getObject().getClass().equals(player.getClass())&&p.isWithinDepth()){
 				//SensesObject y = players.iterator().next();
 				return p;
 				//effort = targetObject.getRelativeVector();
@@ -530,7 +532,7 @@ public class Brain {
 			Iterator<SensesObject> it = players.iterator();
 			while(it.hasNext()){
 				SensesObject p = it.next();
-				if(p.getSimpleAgent().getClass().equals(player.getClass())){
+				if(p.getObject().getClass().equals(player.getClass())){
 					//SensesObject y = players.iterator().next();
 					return p;
 					//effort = targetObject.getRelativeVector();
@@ -560,7 +562,7 @@ public class Brain {
 		while(it.hasNext()){
 			SensesObject ball = it.next();
 			try{
-				if(ball.getSimpleAgent().equals(ballTarget.getSimpleAgent())){
+				if(ball.getObject().equals(ballTarget.getObject())){
 					ballTarget = ball;
 				}
 			}catch(Exception e){
@@ -582,7 +584,7 @@ public class Brain {
 		while(it.hasNext()){
 			SensesObject tryPoint = it.next();
 			try{
-				if(tryPoint.getSimpleAgent().equals(targetObject.getSimpleAgent())){
+				if(tryPoint.getObject().equals(targetObject.getObject())){
 					targetObject = tryPoint;
 				}
 			}catch(Exception e){
@@ -600,7 +602,7 @@ public class Brain {
 		while(it.hasNext()){
 			SensesObject player = it.next();
 			try{
-				if(player.getSimpleAgent().equals(targetObject.getSimpleAgent())){
+				if(player.getObject().equals(targetObject.getObject())){
 					targetObject = player;
 				}
 			}catch(Exception e){
@@ -627,14 +629,17 @@ public class Brain {
 		maxSpeed = x;
 	}
 	
-	public void setSpace(ContinuousSpace<Object> x){
-		
-	}	
-	
 	public void setPlayer(Player x){
 		player = x;
 	}	
 	
+	public void setEasternersCount(int x){
+		easternersCount = x;
+	}
+	
+	public void setWesternersCount(int x){
+		westernersCount = x;
+	}
 	//---------------------------------------EYES-----------------------------------//
 	//------------------Received every timestep------------------------------------//
 			
@@ -656,11 +661,9 @@ public class Brain {
 	public void setNoseHeading(double x){
 		noseHeading = x;
 	}
-	public void setBodyRotation(double x){
-		bodyRotation = x;
-	}
-	public void setArmsRotation(double x){
-		armsRotation = x;
+	
+	public void setMe(SensesObject x){
+		me = x;
 	}
 	
 	//--------------------------------------EARS--------------------------------------//
@@ -668,7 +671,7 @@ public class Brain {
 	
 	public void setMessage(SensesObject message){
 		this.message = message;
-		Message mess = (Message)message.getSimpleAgent();
+		Message mess = (Message)message.getObject();
 		if(mess.getOfficial()){
 			gameOn = mess.getGameOn();
 		}

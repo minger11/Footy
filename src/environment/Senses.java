@@ -42,22 +42,15 @@ public final class Senses {
 	//-----------INFO---------------------------------------------------------------------------------//
 	
 		/**
-	 * Everything to do with inherent knowledge
+	 * Everything to do with inherent knowledge of the game being played
 	 */
 	private static void info(){
 		player.getBrain().setPlayer(player);
-		player.getBrain().setMaxSpeed(getMaxSpeed());
-		//energy
-		//playernumber
-		//how many a side
-		//how many balls
-		//etc
+		player.getBrain().setMaxSpeed(Params.maxForwardSpeed);
+		player.getBrain().setEasternersCount(Params.getEasternerCount());
+		player.getBrain().setWesternersCount(Params.getWesternerCount());
 	}
-		
-	private static double getMaxSpeed(){
-			return Params.maxForwardSpeed;		
-		}
-		
+	
 	//---------------EYES-----------------------------------------------------------------//
 	
 	/**
@@ -67,12 +60,6 @@ public final class Senses {
 		setHeadings();
 		sendView();
 		sendPlayerObservations();
-	}
-	
-	private static void sendPlayerObservations(){
-		player.getBrain().setNoseHeading(player.getHead().getRotation());
-		player.getBrain().setBodyRotation(Utils.absoluteToRelative(player.getRotation(), player.getHead().getRotation()));
-		player.getBrain().setArmsRotation(Utils.absoluteToRelative(player.getArms().getRotation(), player.getHead().getRotation()));
 	}
 	
 	/**
@@ -93,6 +80,14 @@ public final class Senses {
 		player.getBrain().setPlayers(getObjectsInView(Player.class));
 		player.getBrain().setSidelines(getObjectsInView(SidePoint.class));
 		player.getBrain().setBalls(getObjectsInView(Ball.class));
+	}
+	
+	/**
+	 * Sends the players senses object and the absolute heading of the players head
+	 */
+	private static void sendPlayerObservations(){
+		player.getBrain().setMe(new SensesObject(player, new Vector3d(0.0,0.0,0.0), player, true));
+		player.getBrain().setNoseHeading(player.getHead().getRotation());
 	}
 	
 	/**

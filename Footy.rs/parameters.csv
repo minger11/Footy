@@ -4,7 +4,7 @@ easternerStartX;easternerStartX;double;50;FALSE;repast.simphony.parameter.String
 easternerStartY;easternerStartY;double;34;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
 westernerCount;westernerCount;int;1;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
 easternerCount;easternerCount;int;1;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
-ballStartX;ballStartX;double;51;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
+ballStartX;ballStartX;double;50;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
 ballStartY;ballStartY;double;34;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
 ballCount;ballCount;int;1;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
 randomSeed;randomSeed;int;__NULL__;FALSE;repast.simphony.parameter.StringConverterFactory$IntConverter
