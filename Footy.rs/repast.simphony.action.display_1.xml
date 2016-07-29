@@ -63,7 +63,7 @@
     <pType>LAST</pType>
     <duration>-1.0</duration>
     <frequency>REPEAT</frequency>
-    <hashCode>1380392319</hashCode>
+    <hashCode>1174956271</hashCode>
   </schedParams>
   <layoutClassName>foo.bar.baz</layoutClassName>
   <layoutProjection>space</layoutProjection>
@@ -133,9 +133,9 @@
   </projectionDescriptors>
   <props/>
   <backgroundColor>
-    <red>255</red>
-    <green>255</green>
-    <blue>255</blue>
+    <red>1</red>
+    <green>1</green>
+    <blue>1</blue>
     <alpha>255</alpha>
   </backgroundColor>
   <valueLayers/>

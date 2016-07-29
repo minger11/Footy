@@ -154,7 +154,7 @@ public final class Referee {
 				}
 			} else {
 				double ballEdge = ball.getPositionPoint().getX()+Params.ballRadius;
-				if(ballEdge<=eastTryEdge){
+				if(ballEdge>=eastTryEdge){
 					
 					makeCall("Try to the westerners!");
 				}

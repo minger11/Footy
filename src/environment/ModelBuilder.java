@@ -4,6 +4,7 @@ import repast.simphony.context.Context;
 import repast.simphony.context.space.continuous.ContinuousSpaceFactory;
 import repast.simphony.context.space.continuous.ContinuousSpaceFactoryFinder;
 import repast.simphony.dataLoader.ContextBuilder;
+import repast.simphony.random.RandomHelper;
 import repast.simphony.space.continuous.ContinuousSpace;
 import repast.simphony.space.continuous.SimpleCartesianAdder;
 
@@ -94,7 +95,7 @@ public class ModelBuilder implements ContextBuilder<Object> {
 			}
 			
 			//create a new attacker for each iteration
-			new Westerner(Params.getWesternerStartX(), y, i+1);
+			new Westerner(Params.getWesternerStartX()+(Params.getmaxStagger()*RandomHelper.nextDoubleFromTo(-1.0,1.0)), y, i+1);
 		}
 	}
 	
@@ -109,6 +110,10 @@ public class ModelBuilder implements ContextBuilder<Object> {
 			//set a variable for the y axis
 			double y;
 			
+			//create v formation
+			int x = Params.getEasternerCount()/2;
+			int setback = Math.abs(i-x);
+			
 			//if the count is 1, y is the starting y
 			if(Params.getEasternerCount()==1){
 				y = Params.getEasternerStartY();
@@ -119,7 +124,7 @@ public class ModelBuilder implements ContextBuilder<Object> {
 			}
 			
 			//create a new attacker for each iteration
-			new Easterner(Params.getEasternerStartX(), y, i+1);
+			new Easterner(Params.getEasternerStartX()+(setback*Params.getmaxStagger()*RandomHelper.nextDoubleFromTo(0.0,1.0)), y, i+1);
 		}
 
 	}

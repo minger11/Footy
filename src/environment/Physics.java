@@ -66,7 +66,6 @@ public final class Physics {
 					
 					//If the ball has no current player, the ball has collided with the player
 					if(ball.getPlayer()==null){
-						System.out.println("collision");
 						Collision collision = new Collision(player1, ball);
 						collisionList.add(collision);
 					}

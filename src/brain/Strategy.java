@@ -9,7 +9,16 @@ package brain;
  */
 public class Strategy {
 
-	Strategy(){
-		
+	public void Defend(){
+		//knowMyMark();
+		//knowMyself();
+		//knowBall();
+		//makeDecision();
+		//moveMofo();
 	}
+	
+	public void Attack(){
+		Brain.strafeSideToSide();
+	}
+	
 }

@@ -33,6 +33,12 @@ public class Scheduler {
 		while(it.hasNext()){
 			Player player = (Player)it.next();
 			
+			if(player instanceof Easterner){
+				player.setRotation(Params.easternerInitialRotation);
+				player.getHead().setRotation(Params.easternerInitialRotation);
+				player.getArms().setRotation(Params.easternerInitialRotation);
+			}
+			
 			//initialize the player's senses, brain and reflexes
 			Senses.sense(player);
 			player.getBrain().init();

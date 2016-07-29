@@ -175,7 +175,7 @@ public class Params {
 	/**
 	 * The weight of a player (in grams).
 	 */
-	static double	playerWeight	=	8000.00;
+	static double	playerWeight	=	80000.00;
 		
 	
 	//----------Ball----------Ball----------Ball----------Ball----------Ball----------Ball----------Ball----------Ball----------Ball----------//
@@ -255,6 +255,13 @@ public class Params {
 	static Context<Object> context;
 	
 	
+	//----------Teams----------Teams----------Teams----------Teams----------Teams----------Teams----------Teams----------Teams----------Teams----------//
+	
+	/**
+	 * The initial rotation of easterners
+	 */
+	static double easternerInitialRotation = Math.PI;
+	
 	//---------------------------------------------------------------------------------------------------------------------------------------------------//
 	
 	private Params(){
@@ -271,6 +278,13 @@ public class Params {
 	}
 	
 	//----------Teams----------Teams----------Teams----------Teams----------Teams----------Teams----------Teams----------Teams----------Teams----------//
+	
+	/**
+	* The amount of westerners in the simulation.
+	*/
+	public static int getmaxStagger(){
+		return (Integer)RunEnvironment.getInstance().getParameters().getValue("maxStagger");
+	}
 	
 	/**
 	* The amount of westerners in the simulation.

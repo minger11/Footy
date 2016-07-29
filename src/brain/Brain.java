@@ -43,6 +43,7 @@ public class Brain {
 	
 	//Derived
 	private SensesObject targetObject;
+	private Boolean hadBall;
 	
 	//Sent
 	private String newMessage;
@@ -68,28 +69,76 @@ public class Brain {
 	
 	public void init(){
 		mapSurroundings();
-		//setTarget();
-		//if(player instanceof Easterner){
-		//	turn = headTurn = Math.PI;
-		//}
-		
+		setTargets();	
 	}
 	
 	public void step(){
 		mapSurroundings();
 		if(gameOn){
 			//moveBody();
+			//possessionChange();
 			//if(hasBall) {
+				//inPosition();
 				//moveBall();
 			//}
 			//else {
+				//catchBall();
+			//}
 				//find();
 				//passEnergy=0;
 			//}
 			//turnHeadSideToSide();
 			//turnBody();
+			//if(player instanceof Easterner) {
+				//strafeSideToSide();
+				if(player instanceof Easterner){
+					adjustTargetAngle();
+					turnAndRun(100);
+				} else {
+					
+					//PHASE 1
+						setBallTarget();
+						adjustTargetAngle();
+						turnAndRun(100);
+					
+					
+					
+					//PHASE 2
+					/**
+					defenderSetTarget();
+					strafeMark();
+					*/
+					
+					//PHASE 3
+					/**
+					createAttackerAngleList();
+					setMark();
+					strafeMark();
+					*/
+					
+					//PHASE 4
+					/**
+					if(startChaseCounter>0){
+					createAttackerAngleList();
+					setMark();
+					strafeMark();
+					interceptDetection();
+					} else {
+						adjustTargetAngle();
+						parabolicChase();
+					}
+					**/
+				}
+				
 			//runSquare();
-			moveArmsSideToSide();
+			//}
+			//if(player instanceof Westerner){
+				//find();
+				//watchTarget();
+				//turnAndRun(100);
+				//markAttacker();
+			//}
+			//moveArmsSideToSide();
 			//}
 			//runUpAndBack();
 			//strafeBox();
@@ -98,6 +147,7 @@ public class Brain {
 			//runDiagLines();
 			//runBackAndForward();
 			//runForward();
+			//}
 		} 
 		//else {
 			//passEnergy = 0;
@@ -105,9 +155,360 @@ public class Brain {
 		//}
 	}
 	
-	private int newCount = 800;
+	//----------------------------------------------------------------------------------------------------------
+		//-----------------------------------------IMPORTANT----------------------------------------------------
+		//----------------------------------------------------------------------------------------------------------
+	/**
+	 * Puts the contents of SimpleObject lists onto the internal projection space
+	 */
+	public void mapSurroundings(){
+		mapPlayers();
+		mapTryline();
+		mapBalls();
+	}
+	
+	/**
+	 * Iterates through the tryline and moves each trypoint onto the internal projection space
+	 */
+	public void mapBalls(){
+		Iterator<SensesObject> it;
+		it = balls.iterator();
+		while(it.hasNext()){
+			SensesObject ball = it.next();
+			try{
+				if(ball.getObject().equals(ballTarget.getObject())){
+					ballTarget = ball;
+				}
+			}catch(Exception e){
+				
+			}
+		}
+	}
+	
+	/**
+	 * Iterates through the tryline and moves each trypoint onto the internal projection space
+	 */
+	public void mapTryline(){
+		Iterator<SensesObject> it;
+		if(player instanceof Easterner){
+			it = westTryline.iterator();
+		} else {
+			it = eastTryline.iterator();
+		}
+		while(it.hasNext()){
+			SensesObject tryPoint = it.next();
+			try{
+				if(tryPoint.getObject().equals(targetObject.getObject())){
+					targetObject = tryPoint;
+				}
+			}catch(Exception e){
+				
+			}
+		}
+	}
+	
+	/**
+	 * Iterates through the list of players and moves them on the internal projection space
+	 * Sets the point of the target
+	 */
+	public void mapPlayers(){
+		Iterator<SensesObject> it = players.iterator();
+		while(it.hasNext()){
+			SensesObject player = it.next();
+			try{
+				if(player.getObject().equals(targetObject.getObject())){
+					targetObject = player;
+				}
+			}catch(Exception e){
+				
+			}
+		}
+	}
+	
+	/**
+	 * Sets the initial targets of both attackers and defenders
+	 */
+	private void setTargets(){
+		if(player instanceof Easterner) {
+			attackerSetTarget();
+		} else {
+			defenderSetTarget();
+		}
+	}
+	
+	/**
+	 * Sets a random piece of Western tryline as the target for Easterner attackers
+	 */
+	private void attackerSetTarget(){
+				int randomNumber = RandomHelper.nextIntFromTo(0, westTryline.size()-1);
+			try {
+					targetObject = westTryline.get(randomNumber);
+					targetAbsAngle = Utils.RelativeToAbsolute(targetObject.getRelativeAngle(), noseHeading);
+					turnAndRun(100);
+				} catch (Exception e){
+				}
+	}
+	
+	/**
+	 * Sets the opposing Easterner and the Westerners target
+	 */
+	private void defenderSetTarget(){
+		try {
+		Iterator<SensesObject> it = players.iterator();
+		while(it.hasNext()){
+			SensesObject o = it.next();
+			if(o.getNumber()==me.getNumber()){
+				targetObject = o;
+				targetAbsAngle = Utils.RelativeToAbsolute(targetObject.getRelativeAngle(), noseHeading);
+				turnAndRun(100);
+			}
+		} 
+		} catch (Exception e){
+		}
+	}
+	
+	/**
+	 * Sets both the SimleAgent target and NdPoint of the target
+	 */
+	public void setBallTarget() {
+		try{
+			if(player instanceof Westerner) {
+				Iterator<SensesObject> it = players.iterator();
+				while(it.hasNext()){
+					SensesObject o = it.next();
+					if(o.getObject() instanceof Easterner){
+						//SensesObject y = players.iterator().next();
+						if(o.getNumber()==1){
+							targetObject = o;
+						//effort = targetObject.getRelativeVector();
+						//moveEnergy = targetObject.getDistance();
+						//moveDirection = targetObject.getRelativeAngle();
+						}
+					}
+				}
+			}
+		} catch(Exception e){
+			
+		}
+			try{
+				if(targetObject.isWithinDepth()){
+					headTurn = targetObject.getRelativeAngle();
+				} else {
+					headTurn = targetObject.getRelativeAngle();
+				}
+				turn = headTurn;
+			} catch (Exception e) {
+			}
+	}
+	
+	/**
+	 * Adjusts the angle to the target
+	 */
+	private void adjustTargetAngle(){
+		try {
+		targetAbsAngle = Utils.RelativeToAbsolute(targetObject.getRelativeAngle(), noseHeading);
+		} catch (Exception e){
+		}
+	}
+	
+	private void parabolicChase(){
+		//targetAbsAngle = Utils.RelativeToAbsolute(targetObject.getRelativeAngle(), noseHeading);
+		try{
+		double targetVelocityAngle = targetObject.getMoveDirection();
+		double myDirection = me.getMoveDirection();
+		double targetAngle = targetObject.getRelativeAngle();
+		double distanceToTarget = Math.abs(targetObject.getDistance());
+		
+		//System.out.println("TargetDir"+targetVelocityAngle+", "+"MyDir"+myDirection+", Angle2Target"+targetAngle);
+		
+		double simon = Math.abs(180 - Math.abs(targetVelocityAngle)*57.2958);
+		double bob = Math.abs(180 - (180 - simon - Math.abs(targetAngle)*57.2958));
+		
+		double c = Math.abs(distanceToTarget);
+		
+		double opp = Math.sin(Math.toRadians(bob))*c;
+		double angle = Math.asin(opp/c);
+		double runAngle = ((((angle)*(targetVelocityAngle/Math.abs(targetVelocityAngle)))*.6)+(.4*targetObject.getRelativeAngle()));
+		targetAbsAngle = runAngle;
+		turnAndRun(100);
+		} catch(Exception e){
+			
+		}
+	}
+	
+	private double targetAbsAngle;
+	
+	/**
+	 * Turns the players head, body and arms and accelerates in the direction of the target angle
+	 * @param velocity
+	 */
+	public void turnAndRun(double velocity){
+		double angle = 0.0;
+		if(noseHeading!=targetAbsAngle){
+			angle = Utils.absoluteToRelative(targetAbsAngle, noseHeading);
+		}
+		turn = angle;
+		moveDirection = angle;
+		moveEnergy = velocity;
+	}
+	
+	public void strafeMark(){
+		if(targetAbsAngle<1){
+			strafeLeft();
+		} else {
+			strafeRight();
+		}
+	}
+	
+	public class playerAngle{
+		SensesObject player;
+		Double angle;
+	}
+	
+	private ArrayList<SensesObject> list;
+	
+	public void createAttackerAngleList(){
+		try {
+		Iterator<SensesObject> it = players.iterator();
+		//Double RelativeAngle = 9999999.00;
+		list = new ArrayList<SensesObject>();
+		int x = 0;
+		while(it.hasNext()){
+			tempObject = it.next();
+			if(tempObject.getObject() instanceof Easterner){
+					list.add(x, tempObject);
+					x++;
+			}
+		}
+	} catch (Exception e){
+	}
+	} 
+	
+	
+	public void setMark(){
+		try{
+		if(list.size()>0){
+			ArrayList<SensesObject> attackerCountoff = new ArrayList<SensesObject>();
+			double floor = 0;
+			SensesObject current = null;
+			for(int w=0; w<list.size(); w++){
+				double ceiling = Math.PI;
+				double g = 0;
+				for(int z=0; z<list.size(); z++){
+					g = Utils.RelativeToAbsolute(list.get(z).getRelativeAngle(), noseHeading);
+					if(g>Math.PI){
+						g=g-Math.PI;
+					}
+					if(g<Math.PI/2){
+						g=g+(Math.PI)/2;
+					} else {
+						g=g-Math.PI/2;
+					}
+					if(g<ceiling&&g>floor){
+						ceiling = g;
+						current = list.get(z);
+					}
+				}
+				attackerCountoff.add(w, current);
+				//current = null;
+				floor = ceiling;
+			}
+			targetObject = attackerCountoff.get(me.getNumber()-1);
+			targetAbsAngle = Utils.RelativeToAbsolute(targetObject.getRelativeAngle(), noseHeading);
+		}
+		} catch(Exception e){
+			}
+		}
+	
+	public int startChaseCounter = 100;
+	
+	public void interceptDetection(){
+		try{
+		double targetVelocityAngle = targetObject.getMoveDirection();
+		double targetVelocity = targetObject.getMoveVelocity();
+		
+		double mySpeed = me.getMoveVelocity();
+		double myDirection = me.getMoveDirection();
+		
+		double targetAngle = targetObject.getRelativeAngle();
+		double distanceToTarget = Math.abs(targetObject.getDistance());
+		
+		//System.out.println("TargetDir"+targetVelocityAngle+", "+"MyDir"+myDirection+", Angle2Target"+targetAngle);
+		
+		
+		double jim = (Math.abs(myDirection)-Math.abs(targetAngle))*57.2958;
+		double simon = Math.abs(180 - Math.abs(targetVelocityAngle)*57.2958);
+		double bob = Math.abs(180 - (180 - simon - Math.abs(targetAngle)*57.2958));
+		double roger = Math.abs(180 - jim - bob);
+		double c = Math.abs(distanceToTarget);
+		
+		double opp = Math.sin(Math.toRadians(bob))*c;
+		double adj = Math.cos(Math.toRadians(bob))*c;
+		double myLine = opp/Math.sin(Math.toRadians(roger));
+		double enemyLine = adj+(Math.cos(Math.toRadians(roger))*myLine);
+		
+		//System.out.println("Attack:"+bob+", FromMe"+jim+", ToInterSect"+roger+","+c);
+		//System.out.println("Opp;"+opp+", Adj: "+adj);
+		//System.out.println("MyLine:"+myLine+",EnemyLine:"+enemyLine);
+		//System.out.println(mySpeed+","+targetVelocity);
+		
+		double timeTargetToIntersection = enemyLine/targetVelocity;
+		double timeMeToIntersection = myLine/mySpeed;
+		
+		//System.out.println(timeTargetToIntersection+","+timeMeToIntersection);
+		
+		if(timeTargetToIntersection<timeMeToIntersection){
+			startChaseCounter--;
+			if(startChaseCounter<=0){
+				targetAbsAngle = Utils.RelativeToAbsolute(myDirection, noseHeading);
+				turnAndRun(100);
+				}} 
+		else {
+			startChaseCounter=100;
+		}
+		} catch(Exception e){
+			
+		}
+		}		
+	
+	//----------------------------------------------------------------------------------------------------------
+	//-----------------------------------------RANDOM FUNTIONS----------------------------------------------------
+	//----------------------------------------------------------------------------------------------------------
+	
+	private SensesObject tempObject;
+	
+	private void markAttacker(){
+			Iterator<SensesObject> it = players.iterator();
+			Double RelativeAngle = 9999999.00;
+			while(it.hasNext()){
+				tempObject = players.iterator().next();
+				if(tempObject.getObject() instanceof Easterner){
+					if(Utils.RelativeToAbsolute(tempObject.getRelativeAngle(), noseHeading)<RelativeAngle){
+						targetObject = tempObject;
+						targetAbsAngle = Utils.RelativeToAbsolute(targetObject.getRelativeAngle(), noseHeading);
+					}
+				}
+				turnAndRun(100);
+			}
+	}
+	
+	private SensesObject headAndArmsTarget;
+	
+	private void catchBall(){
+		if(balls.size()!=0){
+			headAndArmsTarget = balls.get(0);
+			double targetAngle = headAndArmsTarget.getRelativeAngle();
+			double targetAbsTAngle = Utils.RelativeToAbsolute(targetAngle, noseHeading);
+			if(noseHeading!=targetAbsTAngle){
+				headTurn = targetAngle;
+				armsTurn = targetAngle;
+			}
+		}
+	}
+	
+	private int newCount = 200;
 	public void moveArmsSideToSide(){
-		if(0<newCount&&newCount<=400){
+		if(0<newCount&&newCount<=100){
 			newCount--;
 			//where are my arms relative to my body
 			//abs
@@ -129,7 +530,7 @@ public class Brain {
 			passEnergy = 100;
 			passDirection = target;
 			//System.out.println("bodyAngle: "+bodyAngle+", armsAngle: "+armsAngle+", armsToBody: "+armsToBody+", target: "+target+", armsTurn: "+armsTurn);
-		} else if(newCount>400){
+		} else if(newCount>100){
 			newCount--;
 			//where are my arms relative to my body
 			double bodyAngle = Utils.RelativeToAbsolute(me.getRelativeBodyRotation(), noseHeading);
@@ -144,7 +545,7 @@ public class Brain {
 				armsTurn =0;
 			}
 		} else if(newCount==0){
-			newCount=800;
+			newCount=200;
 		}
 	}
 	public void runDiagLines(){
@@ -154,14 +555,14 @@ public class Brain {
 			counter--;
 		} else if(counter==800){
 			targetAbsAngle = Utils.RelativeToAbsolute(Math.PI/4, noseHeading);
-			turnAndRun(20);
+			turnAndRun(50);
 			counter--;
 		} else if(0<counter&&counter<400){
 			counter--;
 			turnAndRun(100);
 		} else if(counter>400){
 			counter--;
-			turnAndRun(20);
+			turnAndRun(50);
 		} else if(counter==0){
 			targetAbsAngle = Utils.RelativeToAbsolute(Math.PI/2, noseHeading);
 			turnAndRun(100);
@@ -217,6 +618,24 @@ public class Brain {
 		}
 	}
 	
+	public void strafeSideToSide(){
+		if(400<=counter&&counter<600){
+			counter--;
+			strafeLeft();
+		} else if(200<=counter&&counter<400){
+			counter--;
+			strafeLeft();
+		} else if(0<counter&&counter<200){
+			counter--;
+			strafeRight();
+		} else if(counter>=600){
+			counter--;
+			strafeRight();
+		} else if(counter==0){
+			counter=800;
+		}
+	}
+	
 	public void longCircle(){
 		if(counter%2==0){
 			counter--;
@@ -247,29 +666,17 @@ public class Brain {
 	
 	private int counter = 800;
 	
-	private int newcounter = 300;
+	private int newcounter = 100;
 	public void turnHeadSideToSide(){
-		if(-300<newcounter&&newcounter<0){
+		if(-100<newcounter&&newcounter<0){
 			newcounter--;
 			turnHeadRight();
 		} else if(newcounter>=0){
 			newcounter--;
 			turnHeadLeft();
-		} else if(newcounter==-300){
-			newcounter=300;
+		} else if(newcounter==-100){
+			newcounter=100;
 		}
-	}
-	
-	private double targetAbsAngle;
-	
-	public void turnAndRun(double velocity){
-		double angle = 0.0;
-		if(noseHeading!=targetAbsAngle){
-			angle = Utils.absoluteToRelative(targetAbsAngle, noseHeading);
-		}
-		turn = angle;
-		moveDirection = angle;
-		moveEnergy = velocity;
 	}
 	
 	public void runUpAndBack(){
@@ -340,81 +747,6 @@ public class Brain {
 		turn = 2;
 	}
 
-	/**
-	 * Sets both the SimleAgent target and NdPoint of the target
-	 */
-	public void setTarget() {
-		if(hasBall){
-			if(player instanceof Easterner) {
-				int randomNumber = RandomHelper.nextIntFromTo(0, westTryline.size()-1);
-			try {
-					targetObject = westTryline.get(randomNumber);
-					//moveEnergy = targetObject.getDistance();
-					//moveDirection = targetObject.getRelativeAngle();
-					//effort = targetObject.getRelativeVector();
-				} catch (Exception e){
-				}
-			}
-			else 
-				if(player instanceof Westerner) {
-					int randomNumber = RandomHelper.nextIntFromTo(0, eastTryline.size()-1);
-				try {
-						targetObject = eastTryline.get(randomNumber);
-						//moveEnergy = targetObject.getDistance();
-						//moveDirection = targetObject.getRelativeAngle();
-						//effort = targetObject.getRelativeVector();
-					} catch (Exception e){
-					}
-				}
-			try{
-				if(targetObject.isWithinDepth()){
-					headTurn = targetObject.getRelativeAngle();
-				} else {
-					headTurn = targetObject.getRelativeAngle();
-				}
-				turn = headTurn;
-			} catch (Exception e) {
-			}
-		} else {
-			if(player instanceof Westerner) {
-				int randomNumber = RandomHelper.nextIntFromTo(0, players.size()-1);
-				Iterator<SensesObject> it = players.iterator();
-				while(it.hasNext()){
-					if(it.next().getObject() instanceof Easterner){
-						//SensesObject y = players.iterator().next();
-						targetObject = players.iterator().next();
-						//effort = targetObject.getRelativeVector();
-						//moveEnergy = targetObject.getDistance();
-						//moveDirection = targetObject.getRelativeAngle();
-					}
-				}
-			}
-			else 
-			if(player instanceof Easterner) {
-				int randomNumber = RandomHelper.nextIntFromTo(0, players.size()-1);
-				Iterator<SensesObject> it = players.iterator();
-				while(it.hasNext()){
-					if(it.next().getObject() instanceof Westerner){
-						//SensesObject y = players.iterator().next();
-						targetObject = players.iterator().next();
-						//effort = targetObject.getRelativeVector();
-						//moveEnergy = targetObject.getDistance();
-						//moveDirection = targetObject.getRelativeAngle();
-					}
-				}
-			}
-			try{
-				if(targetObject.isWithinDepth()){
-					headTurn = targetObject.getRelativeAngle();
-				} else {
-					headTurn = targetObject.getRelativeAngle();
-				}
-				turn = headTurn;
-			} catch (Exception e) {
-			}
-		}
-	}
-
 	public void run(double speed){
 		
 		//if(speed>maxSpeed){
@@ -440,19 +772,8 @@ public class Brain {
 		//bodyVelocity = new Vector3d(10000,0,0);
 		
 		if(targetObject!=null){
-			if(targetObject.isWithinDepth()){
-				//effort = targetObject.getRelativeVector();
-				//moveEnergy = targetObject.getDistance();
-				//run(1000);
-				moveDirection = targetObject.getRelativeAngle();
-
-				headTurn = targetObject.getRelativeAngle();
-				turn = headTurn;
-			}
-			else {
-				headTurn = targetObject.getRelativeAngle();
-				turn = headTurn;
-			}
+			targetAbsAngle = Utils.RelativeToAbsolute(targetObject.getRelativeAngle(), noseHeading);
+			turnAndRun(100);
 		}
 		if(targetObject==null){
 			setTarget();
@@ -473,25 +794,58 @@ public class Brain {
 		//}*/
 	}
 	
-	private int count = 100;
+	private void possessionChange(){
+		try{
+		//just received ball
+		if(hasBall==true&&(hadBall==null||hadBall==false)){
+			hadBall=true;
+			temporaryTurnAngle = Math.PI;
+		}
+		//just lost ball
+		if(hasBall==false&&(hadBall==true)){
+			hadBall=false;
+			ballPassCounter = 100;
+		}
+		}catch(Exception e){
+			
+		}
+	}
 	
+	private Double temporaryTurnAngle;
+	private void inPosition(){
+		if(temporaryTurnAngle!=null){
+			if(noseHeading!=temporaryTurnAngle){
+				double angle = Utils.absoluteToRelative(temporaryTurnAngle, noseHeading);
+				headTurn = angle;
+				armsTurn = angle;
+			} else {
+				temporaryTurnAngle = null;
+			}
+		}
+	}
+	
+	private int ballPassCounter = 100;
+	private double moveBallAngle;
 	public void moveBall(){
 		//if(currentPosition.getX()>=640||currentPosition.getX()<=630){
 			//passEffort = effort;
 		//wait 
-		if(count <= 0){
+		if(ballPassCounter <= 0){
 			SensesObject mate = getMate();
 			if(mate!=null&&mate.isWithinDepth()){
-				
+				double targetHeadAngle = mate.getRelativeAngle();
+				if(targetHeadAngle!=0){
+					headTurn = targetHeadAngle;
+				}
+				double targetArmsAngle = -me.getRelativeArmsRotation()+targetHeadAngle;
+				if(targetArmsAngle!=0){
+					armsTurn = targetArmsAngle;
+				}
 				passEnergy = 100;
 				passDirection = mate.getRelativeAngle();
-				System.out.println("Passing!");
 			}
-		} else {
-			passEnergy = moveEnergy;
-			passDirection = moveDirection;
 		}
-		count--;
+		ballPassCounter--;
 		//} else {
 			//pass ball
 			//ballVelocity.set(50.0, 2000.0, 0.0);
@@ -504,7 +858,6 @@ public class Brain {
 			return mate;
 		} else {
 			mate=findMate();
-			turn = mate.getRelativeAngle();
 			headTurn = mate.getRelativeAngle();
 			return mate;
 		}
@@ -542,75 +895,7 @@ public class Brain {
 				}
 			}
 			return null;
-	}
-	
-	/**
-	 * Puts the contents of SimpleObject lists onto the internal projection space
-	 */
-	public void mapSurroundings(){
-		mapPlayers();
-		mapTryline();
-		mapBalls();
-	}
-	
-	/**
-	 * Iterates through the tryline and moves each trypoint onto the internal projection space
-	 */
-	public void mapBalls(){
-		Iterator<SensesObject> it;
-		it = balls.iterator();
-		while(it.hasNext()){
-			SensesObject ball = it.next();
-			try{
-				if(ball.getObject().equals(ballTarget.getObject())){
-					ballTarget = ball;
-				}
-			}catch(Exception e){
-				
-			}
-		}
-	}
-	
-	/**
-	 * Iterates through the tryline and moves each trypoint onto the internal projection space
-	 */
-	public void mapTryline(){
-		Iterator<SensesObject> it;
-		if(player instanceof Easterner){
-			it = westTryline.iterator();
-		} else {
-			it = eastTryline.iterator();
-		}
-		while(it.hasNext()){
-			SensesObject tryPoint = it.next();
-			try{
-				if(tryPoint.getObject().equals(targetObject.getObject())){
-					targetObject = tryPoint;
-				}
-			}catch(Exception e){
-				
-			}
-		}
-	}
-	
-	/**
-	 * Iterates through the list of players and moves them on the internal projection space
-	 * Sets the point of the target
-	 */
-	public void mapPlayers(){
-		Iterator<SensesObject> it = players.iterator();
-		while(it.hasNext()){
-			SensesObject player = it.next();
-			try{
-				if(player.getObject().equals(targetObject.getObject())){
-					targetObject = player;
-				}
-			}catch(Exception e){
-				
-			}
-		}
-	}
-		
+	}		
 	
 	/**
 	 * -----------------BEGIN SETTERS AND GETTERS--------------------
@@ -741,7 +1026,7 @@ public class Brain {
 	 */
 	public double getArmsTurn(){
 		double angle = armsTurn;
-		turn = 0.0;
+		armsTurn = 0.0;
 		return angle;
 	}
 	
